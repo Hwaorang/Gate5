@@ -18,6 +18,9 @@ public class SquadManager : MonoBehaviour
     // 현재 생성되어 있는 병사들을 관리하는 리스트
     private List<GameObject> soldiers = new List<GameObject>();
 
+    // 현재 병사 수를 외부에서 읽을 수 있도록 제공
+    public int CurrentCount => soldiers.Count;
+
     private void Start()
     {
         // 게임 시작 시 기본 병사 생성
@@ -26,12 +29,17 @@ public class SquadManager : MonoBehaviour
 
     private void Update()
     {
-        // 테스트용 코드
-        // Space 키를 누르면 병사 1명 추가
-        // 게이트 시스템이 완성되면 제거 예정
+        // 병사 추가 테스트
         if (Keyboard.current.spaceKey.wasPressedThisFrame)
         {
             AddUnit(1);
+        }
+
+        // 피격 테스트
+        // H 키를 누르면 병사 1명 제거
+        if (Keyboard.current.hKey.wasPressedThisFrame)
+        {
+            RemoveUnit(1);
         }
     }
 
@@ -42,18 +50,48 @@ public class SquadManager : MonoBehaviour
     {
         for (int i = 0; i < amount; i++)
         {
-            // PlayerRoot의 자식으로 병사 생성
             GameObject soldier = Instantiate(
                 soldierPrefab,
                 transform
             );
 
-            // 생성된 병사를 리스트에 저장
             soldiers.Add(soldier);
         }
 
-        // 병사 수가 변경됐으므로 위치를 다시 정렬
+        // 병사 위치 다시 정렬
         UpdateFormation();
+    }
+
+    /// <summary>
+    /// 병사를 지정된 수만큼 제거한다.
+    /// </summary>
+    public void RemoveUnit(int amount)
+    {
+        for (int i = 0; i < amount; i++)
+        {
+            // 병사가 더 이상 없으면 제거 중단
+            if (soldiers.Count <= 0)
+            {
+                break;
+            }
+
+            // 리스트의 마지막 병사를 가져온다.
+            int lastIndex = soldiers.Count - 1;
+
+            GameObject soldier = soldiers[lastIndex];
+
+            // 리스트에서 제거
+            soldiers.RemoveAt(lastIndex);
+
+            // 실제 오브젝트 삭제
+            Destroy(soldier);
+        }
+
+        // 병사가 남아있다면 위치 다시 정렬
+        UpdateFormation();
+
+        // 모든 병사가 죽었는지 확인
+        CheckGameOver();
     }
 
     /// <summary>
@@ -61,26 +99,29 @@ public class SquadManager : MonoBehaviour
     /// </summary>
     private void UpdateFormation()
     {
-        // 한 줄에 배치할 병사 수
         int columnCount = 3;
 
         for (int i = 0; i < soldiers.Count; i++)
         {
-            // 현재 병사가 몇 번째 행인지 계산
             int row = i / columnCount;
-
-            // 현재 병사가 몇 번째 열인지 계산
             int column = i % columnCount;
 
-            // 좌우 위치 계산
             float x = (column - 1) * spacing;
-
-            // 뒤쪽 방향으로 행 배치
             float z = -row * spacing;
 
-            // PlayerRoot 기준의 로컬 위치로 배치
             soldiers[i].transform.localPosition =
                 new Vector3(x, 0f, z);
+        }
+    }
+
+    /// <summary>
+    /// 병사가 모두 사망했는지 확인한다.
+    /// </summary>
+    private void CheckGameOver()
+    {
+        if (soldiers.Count <= 0)
+        {
+            Debug.Log("Game Over");
         }
     }
 }
