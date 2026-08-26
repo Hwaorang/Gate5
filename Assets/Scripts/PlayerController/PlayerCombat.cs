@@ -66,7 +66,13 @@ public class PlayerCombat : MonoBehaviour
     /// </summary>
     private void Fire(Transform target)
     {
-        Debug.Log($"공격 대상 : {target.name}");
+        SoldierAttack[] soldiers =
+        GetComponentsInChildren<SoldierAttack>();
+
+        foreach (SoldierAttack soldier in soldiers)
+        {
+            soldier.Fire(target);
+        }
 
         // 이후 추가 예정
         // 총알 생성
