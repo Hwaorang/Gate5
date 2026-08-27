@@ -5,7 +5,7 @@ public class PlayerController : MonoBehaviour
 {
     [Header("이동 설정")]
     [SerializeField] private float forwardSpeed = 5f;
-    [SerializeField] private float sideSpeed = 5f;
+    [SerializeField] private PlayerStats playerStats;
 
     [Header("좌우 이동 범위")]
     [SerializeField] private float xLimit = 4f;
@@ -34,7 +34,7 @@ public class PlayerController : MonoBehaviour
         // 앞으로 자동 이동 + 좌우 입력
         Vector3 direction =
             Vector3.forward * forwardSpeed +
-            Vector3.right * horizontal * sideSpeed;
+            Vector3.right * horizontal * playerStats.MoveSpeed;
 
         transform.position += direction * Time.deltaTime;
 
