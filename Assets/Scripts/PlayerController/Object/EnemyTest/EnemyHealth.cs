@@ -15,8 +15,6 @@ public class EnemyHealth : MonoBehaviour
     {
         currentHp -= damage;
 
-        Debug.Log($"{gameObject.name} HP : {currentHp}");
-
         if (currentHp <= 0f)
         {
             Die();
@@ -25,8 +23,6 @@ public class EnemyHealth : MonoBehaviour
 
     private void Die()
     {
-        Debug.Log($"{gameObject.name} 사망");
-
         Destroy(gameObject);
     }
 }
