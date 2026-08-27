@@ -108,7 +108,7 @@ public class SquadManager : MonoBehaviour
     {
         if (soldiers.Count <= 0)
         {
-            Debug.Log("Game Over");
+            GameManager.Instance.GameOver();
         }
     }
 }
