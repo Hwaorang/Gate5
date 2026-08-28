@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: fc99f4b4a172f1e499845706d0122d79
+timeCreated: 1522687106
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 115694
+  packageName: Toony Tiny WW1 Soldiers Demo
+  packageVersion: 1.0
+  assetPath: Assets/ToonyTinyPeople/TT_ww1_demo/models/Materials/TT_WW1_demo_material.mat
+  uploadId: 980964

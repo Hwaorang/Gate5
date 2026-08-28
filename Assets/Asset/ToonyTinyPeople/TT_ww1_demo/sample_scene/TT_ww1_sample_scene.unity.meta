@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: eb4fed3485d830b49810b12950c81666
+timeCreated: 1522685497
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 115694
+  packageName: Toony Tiny WW1 Soldiers Demo
+  packageVersion: 1.0
+  assetPath: Assets/ToonyTinyPeople/TT_ww1_demo/sample_scene/TT_ww1_sample_scene.unity
+  uploadId: 980964

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: c8a1bbb8896fdf24fae2b5c6b7f06a11
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 4890085278179872738
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 115694
+  packageName: Toony Tiny WW1 Soldiers Demo
+  packageVersion: 1.0
+  assetPath: Assets/ToonyTinyPeople/TT_ww1_demo/sample_scene/TT_ww1_sample_sceneSettings.lighting
+  uploadId: 980964
