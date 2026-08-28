@@ -2,34 +2,19 @@ using UnityEngine;
 
 public class PlayerCombat : MonoBehaviour
 {
-    [Header("공격 설정")]
-    [SerializeField] private float attackRange = 8f;
-    [SerializeField] private float attackDelay = 1f;
-
-    [Header("적 설정")]
+    [Header("적 탐색")]
+    [SerializeField] private float attackRange = 10f;
     [SerializeField] private LayerMask enemyLayer;
-
-    private float attackTimer;
 
     private void Update()
     {
-        attackTimer += Time.deltaTime;
+        Transform target = FindNearestEnemy();
 
-        // 공격 가능한 시간이 되면 적 탐색
-        if (attackTimer >= attackDelay)
-        {
-            Transform target = FindNearestEnemy();
-
-            if (target != null)
-            {
-                Fire(target);
-                attackTimer = 0f;
-            }
-        }
+        SetTargetToSoldiers(target);
     }
 
     /// <summary>
-    /// 공격 범위 안에서 가장 가까운 적을 찾는다.
+    /// 공격 범위 내 가장 가까운 Enemy 탐색
     /// </summary>
     private Transform FindNearestEnemy()
     {
@@ -60,24 +45,16 @@ public class PlayerCombat : MonoBehaviour
     }
 
     /// <summary>
-    /// 공격 실행.
-    /// 현재는 테스트용 로그만 출력하고,
-    /// 나중에 총알 생성 기능을 추가할 예정.
+    /// 현재 모든 병사에게 공격 대상 전달
     /// </summary>
-    private void Fire(Transform target)
+    private void SetTargetToSoldiers(Transform target)
     {
         SoldierAttack[] soldiers =
-        GetComponentsInChildren<SoldierAttack>();
+            GetComponentsInChildren<SoldierAttack>();
 
         foreach (SoldierAttack soldier in soldiers)
         {
-            soldier.Fire(target);
+            soldier.SetTarget(target);
         }
-
-        // 이후 추가 예정
-        // 총알 생성
-        // 총구 위치 설정
-        // 총알 방향 설정
-        // 공격 애니메이션 실행
     }
 }

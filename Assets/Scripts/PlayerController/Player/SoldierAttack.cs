@@ -13,6 +13,9 @@ public class SoldierAttack : MonoBehaviour
     private float currentDamage;
     private float currentAttackDelay;
 
+    private float attackTimer;
+    private Transform target;
+
     public float CurrentDamage => currentDamage;
     public float CurrentAttackDelay => currentAttackDelay;
 
@@ -22,7 +25,32 @@ public class SoldierAttack : MonoBehaviour
         currentAttackDelay = baseAttackDelay;
     }
 
-    public void Fire(Transform target)
+    private void Update()
+    {
+        if (target == null)
+        {
+            return;
+        }
+
+        attackTimer += Time.deltaTime;
+
+        if (attackTimer >= currentAttackDelay)
+        {
+            Fire();
+
+            attackTimer = 0f;
+        }
+    }
+
+    /// <summary>
+    /// PlayerCombat에서 현재 공격 대상을 전달받는다.
+    /// </summary>
+    public void SetTarget(Transform newTarget)
+    {
+        target = newTarget;
+    }
+
+    private void Fire()
     {
         if (target == null)
         {
@@ -47,12 +75,18 @@ public class SoldierAttack : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 현재 공격력 배율 적용
+    /// </summary>
     public void SetDamageMultiplier(float multiplier)
     {
         currentDamage =
             baseDamage * multiplier;
     }
 
+    /// <summary>
+    /// 현재 공격속도 배율 적용
+    /// </summary>
     public void SetAttackSpeedMultiplier(float multiplier)
     {
         currentAttackDelay =
