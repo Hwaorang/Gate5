@@ -49,24 +49,6 @@ public class UpgradeManager_PlayerController : MonoBehaviour
         Time.timeScale = 0f;
     }
 
-    private void CreateUpgradeButtons()
-    {
-        ClearButtons();
-
-        foreach (UpgradeData data in upgradeDatas)
-        {
-            UpgradeButton button =
-                Instantiate(upgradeButtonPrefab, content);
-
-            button.Setup(
-                data,
-                this
-            );
-
-            createdButtons.Add(button);
-        }
-    }
-
     private void ClearButtons()
     {
         foreach (UpgradeButton button in createdButtons)
@@ -104,5 +86,47 @@ public class UpgradeManager_PlayerController : MonoBehaviour
         upgradePanel.SetActive(false);
 
         Time.timeScale = 1f;
+    }
+
+    private void CreateUpgradeButtons()
+    {
+        ClearButtons();
+
+        List<UpgradeData> selectedUpgrades = GetRandomUpgrades(3);
+
+        foreach (UpgradeData data in selectedUpgrades)
+        {
+            UpgradeButton button =
+                Instantiate(upgradeButtonPrefab, content);
+
+            button.Setup(data, this);
+
+            createdButtons.Add(button);
+        }
+    }
+
+    private List<UpgradeData> GetRandomUpgrades(int count)
+    {
+        List<UpgradeData> candidates =
+            new List<UpgradeData>(upgradeDatas);
+
+        List<UpgradeData> result =
+            new List<UpgradeData>();
+
+        count = Mathf.Min(count, candidates.Count);
+
+        for (int i = 0; i < count; i++)
+        {
+            int randomIndex =
+                Random.Range(0, candidates.Count);
+
+            result.Add(candidates[randomIndex]);
+
+            // 뽑은 데이터는 후보에서 제거
+            // 같은 강화가 한 번에 중복 등장하는 것을 방지
+            candidates.RemoveAt(randomIndex);
+        }
+
+        return result;
     }
 }
