@@ -9,11 +9,11 @@ public class UpgradeButton : MonoBehaviour
     [SerializeField] private Image icon;
 
     private UpgradeData upgradeData;
-    private UpgradeManager upgradeManager;
+    private UpgradeManager_PlayerController upgradeManager;
 
     public void Setup(
         UpgradeData data,
-        UpgradeManager manager
+        UpgradeManager_PlayerController manager
     )
     {
         upgradeData = data;
