@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 789396300d039cc4fa674d36eddb10a7
+timeCreated: 1522688035
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 115694
+  packageName: Toony Tiny WW1 Soldiers Demo
+  packageVersion: 1.0
+  assetPath: Assets/ToonyTinyPeople/TT_ww1_demo/prefabs/TT_ww1_demo_german_A.prefab
+  uploadId: 980964
