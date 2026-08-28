@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e22f565e3122a2542b94c842e3804bf4, type: 3}
-  m_Name: DamageUpgrade
+  m_Name: DamageSmall
   m_EditorClassIdentifier: Assembly-CSharp::UpgradeData
-  upgradeName: 
-  description: 
+  upgradeName: DamageSmall
+  description: Damage increases slightly.
   icon: {fileID: 0}
   upgradeType: 0
-  value: 0
+  value: 0.1
