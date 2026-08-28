@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class UpgradeManager : MonoBehaviour
+public class UpgradeManager_PlayerController : MonoBehaviour
 {
     [SerializeField] private GameObject upgradePanel;
     [SerializeField] private SquadManager squadManager;
