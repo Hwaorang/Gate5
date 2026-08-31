@@ -20,6 +20,10 @@ public class SoldierAttack : MonoBehaviour
     [SerializeField]
     private GameObject bulletPrefab;
 
+    [Header("총알 풀")]
+    [SerializeField]
+    private BulletPool bulletPool;
+
     // 총알이 생성될 위치와 기본 발사 방향
     [SerializeField]
     private Transform firePoint;
@@ -119,47 +123,24 @@ public class SoldierAttack : MonoBehaviour
     /// </summary>
     private void Fire()
     {
-        // 필수 참조가 없으면 발사하지 않는다.
-        if (bulletPrefab == null || firePoint == null)
+        if (bulletPool == null ||
+            firePoint == null ||
+            projectileUpgradeData == null)
         {
             return;
         }
 
-        // 투사체 데이터가 없다면 발사 설정을 알 수 없으므로 종료
-        if (projectileUpgradeData == null)
-        {
-            Debug.LogWarning(
-                $"{name} : ProjectileUpgradeData가 연결되지 않았습니다."
-            );
-
-            return;
-        }
-
-
-        // 투사체들이 중앙을 기준으로 대칭으로 퍼지도록
-        // 첫 번째 총알의 시작 각도를 계산한다.
-        //
-        // 예:
-        // 3발 / SpreadAngle = 5라면
-        //
-        // -5도 / 0도 / +5도
         float startAngle =
             -projectileUpgradeData.spreadAngle *
             (projectileCount - 1) *
             0.5f;
 
-
-        // 현재 투사체 개수만큼 반복 발사
         for (int i = 0; i < projectileCount; i++)
         {
-            // 현재 총알의 퍼짐 각도 계산
             float angle =
                 startAngle +
                 projectileUpgradeData.spreadAngle * i;
 
-
-            // FirePoint의 방향을 기준으로
-            // Y축 회전을 추가해서 좌우로 퍼지게 만든다.
             Quaternion rotation =
                 firePoint.rotation *
                 Quaternion.Euler(
@@ -168,33 +149,28 @@ public class SoldierAttack : MonoBehaviour
                     0f
                 );
 
-
-            // 총알 생성
+            // Instantiate 대신 Pool에서 가져오기
             GameObject bullet =
-                Instantiate(
-                    bulletPrefab,
+                bulletPool.GetBullet(
                     firePoint.position,
                     rotation
                 );
 
-
-            // 현재 투사체 강화 상태에 맞춰
-            // 총알 크기 적용
-            bullet.transform.localScale *=
+            // Pool에서 재사용되므로
+            // 크기도 현재 강화값으로 다시 정확히 설정
+            bullet.transform.localScale =
+                Vector3.one *
                 projectileScaleMultiplier;
 
-
-            // Bullet 스크립트 가져오기
             Bullet bulletScript =
                 bullet.GetComponent<Bullet>();
 
             if (bulletScript != null)
             {
-                // 해당 총알이 실제로 바라보는 방향과
-                // 현재 병사의 공격력을 전달
                 bulletScript.Init(
                     rotation * Vector3.forward,
-                    currentDamage
+                    currentDamage,
+                    bulletPool
                 );
             }
         }
@@ -362,5 +338,10 @@ public class SoldierAttack : MonoBehaviour
             $" / Scale : {projectileScaleMultiplier:F1}"
         );
 #endif
+    }
+
+    public void SetBulletPool(BulletPool pool)
+    {
+        bulletPool = pool;
     }
 }
