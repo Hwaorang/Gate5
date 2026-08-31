@@ -10,12 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e22f565e3122a2542b94c842e3804bf4, type: 3}
-  m_Name: Soldier5
+  m_Name: ProjectileUpgrade
   m_EditorClassIdentifier: Assembly-CSharp::UpgradeData
-  upgradeName: Soldier5
-  description: '
-
-    The number of soldiers increases by 5.'
+  upgradeName: ProjectileUpgrade
+  description: ProjectileUpgrade
   icon: {fileID: 0}
-  upgradeType: 2
-  value: 5
+  upgradeType: 0
+  value: 1
+  maxLevel: 7

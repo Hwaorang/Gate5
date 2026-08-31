@@ -29,6 +29,12 @@ public class SquadManager : MonoBehaviour
     // 1.0 = 기본 공격속도
     private float attackSpeedMultiplier = 1f;
 
+    // 현재 투사체 강화 단계
+    // 0 = 기본 상태
+    private int projectileUpgradeLevel = 0;
+
+    public IReadOnlyList<GameObject> Soldiers => soldiers;
+
     private void Start()
     {
         // PlayerStats에 설정된 시작 병사 수만큼 생성
@@ -78,6 +84,10 @@ public class SquadManager : MonoBehaviour
 
                 soldierAttack.SetAttackSpeedMultiplier(
                     attackSpeedMultiplier
+                );
+
+                soldierAttack.SetProjectileUpgradeLevel(
+                    projectileUpgradeLevel
                 );
             }
         }
@@ -202,9 +212,33 @@ public class SquadManager : MonoBehaviour
                 );
             }
         }
-
+#if UNITY_EDITOR
         Debug.Log(
             $"현재 공격속도 배율 : {attackSpeedMultiplier}"
         );
+#endif
+    }
+
+    public void UpgradeAllSoldierProjectile()
+    {
+        projectileUpgradeLevel++;
+
+        foreach (GameObject soldierObject in soldiers)
+        {
+            if (soldierObject == null)
+            {
+                continue;
+            }
+
+            SoldierAttack soldierAttack =
+                soldierObject.GetComponent<SoldierAttack>();
+
+            if (soldierAttack != null)
+            {
+                soldierAttack.SetProjectileUpgradeLevel(
+                    projectileUpgradeLevel
+                );
+            }
+        }
     }
 }

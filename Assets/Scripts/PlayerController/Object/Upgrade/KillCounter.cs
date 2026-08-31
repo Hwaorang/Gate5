@@ -11,7 +11,7 @@ public class KillCounter : MonoBehaviour
     private UpgradeProgressionData progressionData;
 
     // 현재 강화 단계에서 처치한 적 수
-    private int currentKills;
+    private int totalKills;
 
     // 현재 강화 단계
     // 0 = 첫 번째 강화
@@ -22,34 +22,43 @@ public class KillCounter : MonoBehaviour
     // 플레이어가 아직 강화를 선택하지 않은 상태인지 확인
     private bool isWaitingForUpgrade;
 
-    public int CurrentKills => currentKills;
-
     public int UpgradeIndex => upgradeIndex;
 
     public bool IsWaitingForUpgrade => isWaitingForUpgrade;
+
+    public int TotalKills => totalKills;
+    public int RequiredKills => GetRequiredKills();
+
+    public event System.Action<int, int> OnKillProgressChanged;
 
     /// <summary>
     /// 적이 사망했을 때 호출
     /// </summary>
     public void AddKill()
     {
-        // 이미 강화 선택을 기다리고 있다면
-        // 추가 킬 카운트가 올라가지 않도록 막는다.
+        // 강화 선택 중이라면 추가 처리 방지
         if (isWaitingForUpgrade)
         {
             return;
         }
 
-        currentKills++;
+        // 총 처치 수 증가
+        totalKills++;
 
         int requiredKills = GetRequiredKills();
 
-        Debug.Log(
-            $"Kill Count : {currentKills} / {requiredKills}"
+        // UI 갱신
+        OnKillProgressChanged?.Invoke(
+            totalKills,
+            requiredKills
         );
 
-        // 강화 조건 달성
-        if (currentKills >= requiredKills)
+        Debug.Log(
+            $"Kill Count : {totalKills} / {requiredKills}"
+        );
+
+        // 누적 처치 수가 현재 강화 조건에 도달했는지 확인
+        if (totalKills >= requiredKills)
         {
             OpenUpgrade();
         }
@@ -99,9 +108,6 @@ public class KillCounter : MonoBehaviour
             return;
         }
 
-        // 다음 강화 단계를 위해 킬 수 초기화
-        currentKills = 0;
-
         // 실제 강화 선택이 끝났으므로
         // 다음 강화 단계로 이동
         upgradeIndex++;
@@ -109,8 +115,14 @@ public class KillCounter : MonoBehaviour
         // 다시 킬 카운트 가능
         isWaitingForUpgrade = false;
 
+#if UNITY_EDITOR
         Debug.Log(
             $"[KillCounter] 강화 선택 완료 / 다음 단계 : {upgradeIndex}"
+        );
+#endif
+        OnKillProgressChanged?.Invoke(
+            totalKills,
+            GetRequiredKills()
         );
     }
 

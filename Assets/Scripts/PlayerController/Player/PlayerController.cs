@@ -15,6 +15,11 @@ public class PlayerController : MonoBehaviour
         Move();
     }
 
+    public void UpgradeMoveSpeed(float percent)
+    {
+        playerStats.UpgradeMoveSpeed(percent);
+    }
+
     private void Move()
     {
         float horizontal = 0f;

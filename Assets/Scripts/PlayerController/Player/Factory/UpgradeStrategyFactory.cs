@@ -1,34 +1,31 @@
 public class UpgradeStrategyFactory
 {
     private readonly SquadManager squadManager;
+    private readonly PlayerController playerController;
 
     public UpgradeStrategyFactory(
-        SquadManager squadManager
-    )
+        SquadManager squadManager,
+        PlayerController playerController)
     {
         this.squadManager = squadManager;
+        this.playerController = playerController;
     }
 
-    public IUpgradeStrategy Create(
-        UpgradeType type
-    )
+    public IUpgradeStrategy Create(UpgradeType type)
     {
         switch (type)
         {
             case UpgradeType.Damage:
-                return new DamageUpgradeStrategy(
-                    squadManager
-                );
+                return new DamageUpgradeStrategy(squadManager);
 
             case UpgradeType.AttackSpeed:
-                return new AttackSpeedUpgradeStrategy(
-                    squadManager
-                );
+                return new AttackSpeedUpgradeStrategy(squadManager);
 
-            case UpgradeType.SoldierCount:
-                return new SoldierUpgradeStrategy(
-                    squadManager
-                );
+            case UpgradeType.ProjectileCount:
+                return new ProjectileUpgradeStrategy(squadManager);
+
+            case UpgradeType.MoveSpeed:
+                return new MoveSpeedUpgradeStrategy(playerController);
 
             default:
                 return null;
