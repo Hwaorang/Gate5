@@ -33,6 +33,9 @@ public class SquadManager : MonoBehaviour
     // 0 = 기본 상태
     private int projectileUpgradeLevel = 0;
 
+    [SerializeField]
+    private BulletPool bulletPool;
+
     public IReadOnlyList<GameObject> Soldiers => soldiers;
 
     private void Start()
@@ -88,6 +91,11 @@ public class SquadManager : MonoBehaviour
 
                 soldierAttack.SetProjectileUpgradeLevel(
                     projectileUpgradeLevel
+                );
+
+                // Soldier가 사용할 BulletPool 전달
+                soldierAttack.SetBulletPool(
+                    bulletPool
                 );
             }
         }
@@ -238,6 +246,27 @@ public class SquadManager : MonoBehaviour
                 soldierAttack.SetProjectileUpgradeLevel(
                     projectileUpgradeLevel
                 );
+            }
+        }
+    }
+
+    public void RemoveUnits(int amount)
+    {
+        // 현재 병사 수보다 많이 제거하려고 해도
+        // 실제 존재하는 병사까지만 제거
+        int removeCount =
+            Mathf.Min(amount, soldiers.Count);
+
+        for (int i = 0; i < removeCount; i++)
+        {
+            // 뒤쪽 병사부터 제거
+            SoldierUnit soldier =
+                soldiers[soldiers.Count - 1]
+                .GetComponent<SoldierUnit>();
+
+            if (soldier != null)
+            {
+                RemoveUnit(soldier);
             }
         }
     }

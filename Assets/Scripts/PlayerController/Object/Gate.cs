@@ -3,91 +3,70 @@ using UnityEngine;
 
 public class Gate : MonoBehaviour
 {
-    // 게이트가 어떤 연산을 할지 구분
     public enum GateType
     {
-        Add,        // +
-        Multiply    // ×
+        Add,
+        Subtract
     }
 
     [Header("게이트 설정")]
     [SerializeField] private GateType gateType;
 
-    // +5라면 5
-    // ×2라면 2
-    [SerializeField] private int value = 5;
+    // 현재 게이트 값
+    [SerializeField] private int value = 1;
+
+    // 총알 1발 맞을 때 변화할 값
+    [SerializeField] private int changePerHit = 1;
 
     [Header("UI")]
-    // 게이트 위에 표시할 숫자
-    // 아직 UI를 만들지 않았다면 비워둬도 됨
+    // 게이트 위에 표시되는 숫자 텍스트
     [SerializeField] private TMP_Text valueText;
 
-    // 한 번만 작동하도록 확인
+    // 게이트 중복 적용 방지
     private bool isUsed;
+
 
     private void Start()
     {
+        // 시작할 때 현재 값 표시
         UpdateText();
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        // 이미 사용한 게이트라면 다시 실행하지 않는다.
-        if (isUsed)
-        {
-            return;
-        }
-
-        // 충돌한 오브젝트 또는 부모에서 SquadManager 검색
-        SquadManager squadManager =
-            other.GetComponentInParent<SquadManager>();
-
-        // 플레이어가 아니라면 무시
-        if (squadManager == null)
-        {
-            return;
-        }
-
-        isUsed = true;
-
-        ApplyGate(squadManager);
-
-        // 사용한 게이트 제거
-        //gameObject.SetActive(false);
-    }
 
     /// <summary>
-    /// 게이트 종류에 따라 병사 수를 변경한다.
+    /// 총알이 게이트를 맞았을 때 호출
+    /// 게이트 종류에 따라 숫자를 변경한다.
     /// </summary>
-    private void ApplyGate(SquadManager squadManager)
+    public void HitByBullet()
     {
         switch (gateType)
         {
             case GateType.Add:
 
-                // +5, +10 등
-                squadManager.AddUnit(value);
-
+                // + 게이트는 총알을 맞으면 숫자 증가
+                value += changePerHit;
                 break;
 
-            case GateType.Multiply:
 
-                // 현재 병력 × 배율
-                //
-                // 예)
-                // 현재 5명이고 ×2라면
-                // 기존 5명 + 추가 5명 = 10명
-                int addAmount =
-                    squadManager.CurrentCount * (value - 1);
+            case GateType.Subtract:
 
-                squadManager.AddUnit(addAmount);
+                // - 게이트는 총알을 맞으면
+                // 페널티 숫자를 줄여준다.
+                value -= changePerHit;
 
+                // -0이나 음수까지 내려가지 않게 최소 0으로 제한
+                value = Mathf.Max(0, value);
                 break;
         }
+
+        // 변경된 숫자를 화면에 바로 반영
+        UpdateText();
     }
 
+
     /// <summary>
-    /// 게이트에 +5, ×2 등의 텍스트 표시
+    /// 현재 GateType과 value를
+    /// TextMeshPro에 표시한다.
     /// </summary>
     private void UpdateText()
     {
@@ -102,8 +81,39 @@ public class Gate : MonoBehaviour
                 valueText.text = $"+{value}";
                 break;
 
-            case GateType.Multiply:
-                valueText.text = $"×{value}";
+            case GateType.Subtract:
+                valueText.text = $"-{value}";
+                break;
+        }
+    }
+
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (isUsed)
+        {
+            return;
+        }
+
+        // PlayerRoot에서 SquadManager 찾기
+        SquadManager squadManager =
+            other.GetComponentInParent<SquadManager>();
+
+        if (squadManager == null)
+        {
+            return;
+        }
+
+        isUsed = true;
+
+        switch (gateType)
+        {
+            case GateType.Add:
+                squadManager.AddUnit(value);
+                break;
+
+            case GateType.Subtract:
+                squadManager.RemoveUnits(value);
                 break;
         }
     }
