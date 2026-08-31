@@ -15,8 +15,18 @@ public class UpgradeManager_PlayerController : MonoBehaviour
     [Header("Reference")]
     [SerializeField] private SquadManager squadManager;
 
+    [Header("Experience")]
+    [SerializeField]
+    private PlayerExperience playerExperience;
+
+    [SerializeField]
+    private PlayerController playerController;
+
     [SerializeField]
     private KillCounter killCounter;
+
+    private Dictionary<UpgradeType, int> upgradeLevels
+    = new Dictionary<UpgradeType, int>();
 
     private UpgradeStrategyFactory strategyFactory;
 
@@ -26,7 +36,10 @@ public class UpgradeManager_PlayerController : MonoBehaviour
     private void Awake()
     {
         strategyFactory =
-            new UpgradeStrategyFactory(squadManager);
+            new UpgradeStrategyFactory(
+                squadManager,
+                playerController
+            );
     }
 
     private void Start()
@@ -65,10 +78,32 @@ public class UpgradeManager_PlayerController : MonoBehaviour
         createdButtons.Clear();
     }
 
+    private int GetUpgradeLevel(UpgradeType type)
+    {
+        if (!upgradeLevels.TryGetValue(type, out int level))
+        {
+            return 0;
+        }
+
+        return level;
+    }
+
     public void SelectUpgrade(UpgradeData data)
     {
         if (data == null)
         {
+            return;
+        }
+
+        int currentLevel = GetUpgradeLevel(data.upgradeType);
+
+        // 최대 강화 레벨 도달
+        if (currentLevel >= data.maxLevel)
+        {
+            Debug.Log(
+                $"{data.upgradeName}은 최대 레벨입니다."
+            );
+
             return;
         }
 
@@ -77,24 +112,17 @@ public class UpgradeManager_PlayerController : MonoBehaviour
 
         if (strategy == null)
         {
-#if UNITY_EDITOR
-            Debug.LogWarning(
-                $"Upgrade Strategy 없음 : {data.upgradeType}"
-            );
-#endif
-
             return;
         }
 
-        // 실제 강화 적용
+        // 강화 적용
         strategy.Apply(data.value);
 
-        // 강화 선택이 정상적으로 완료된 시점에서
-        // KillCounter의 다음 강화 단계 진행
-        if (killCounter != null)
-        {
-            killCounter.CompleteUpgrade();
-        }
+        // 현재 강화 단계 증가
+        upgradeLevels[data.upgradeType] =
+            currentLevel + 1;
+
+        playerExperience.CompleteLevelUp();
 
         CloseUpgradePanel();
     }

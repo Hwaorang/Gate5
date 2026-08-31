@@ -43,7 +43,10 @@ public class UpgradeButton : MonoBehaviour
             case UpgradeType.AttackSpeed:
                 return $"+{data.value * 100f:0}%";
 
-            case UpgradeType.SoldierCount:
+            case UpgradeType.MoveSpeed:
+                return $"+{data.value * 100f:0}%";
+
+            case UpgradeType.ProjectileCount:
                 return $"+{data.value:0}";
 
             default:

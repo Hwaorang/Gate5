@@ -8,9 +8,7 @@ public class PlayerCombat : MonoBehaviour
 
     private void Update()
     {
-        Transform target = FindNearestEnemy();
 
-        SetTargetToSoldiers(target);
     }
 
     /// <summary>
@@ -42,19 +40,5 @@ public class PlayerCombat : MonoBehaviour
         }
 
         return nearestEnemy;
-    }
-
-    /// <summary>
-    /// 현재 모든 병사에게 공격 대상 전달
-    /// </summary>
-    private void SetTargetToSoldiers(Transform target)
-    {
-        SoldierAttack[] soldiers =
-            GetComponentsInChildren<SoldierAttack>();
-
-        foreach (SoldierAttack soldier in soldiers)
-        {
-            soldier.SetTarget(target);
-        }
     }
 }

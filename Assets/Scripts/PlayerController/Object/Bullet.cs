@@ -5,50 +5,39 @@ public class Bullet : MonoBehaviour
     [SerializeField] private float speed = 15f;
     [SerializeField] private float lifeTime = 3f;
 
-    private Transform target;
+    private Vector3 direction;
     private float damage;
 
-    public void Init(Transform target, float damage)
+    /// <summary>
+    /// 총알 생성 시 이동 방향과 데미지를 전달받는다.
+    /// </summary>
+    public void Init(Vector3 fireDirection, float bulletDamage)
     {
-        this.target = target;
-        this.damage = damage;
+        direction = fireDirection.normalized;
+        damage = bulletDamage;
 
         Destroy(gameObject, lifeTime);
     }
 
     private void Update()
     {
-        // 적이 이미 죽었거나 사라졌으면 총알 제거
-        if (target == null)
-        {
-            Destroy(gameObject);
-            return;
-        }
-
-        // 적 방향 계산
-        Vector3 direction =
-            (target.position - transform.position).normalized;
-
-        // 적을 향해 이동
+        // 지정된 방향으로 계속 직진
         transform.position +=
             direction * speed * Time.deltaTime;
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        //이 함수는 추후 Enemy담당자분께 여쭈어봐서 해결할것
-        EnemyHealth enemyHealth =
+        EnemyHealth enemy =
             other.GetComponent<EnemyHealth>();
 
-        if (enemyHealth == null)
+        if (enemy == null)
         {
             return;
         }
 
-        // 적에게 데미지 전달
-        enemyHealth.TakeDamage(damage);
+        enemy.TakeDamage(damage);
 
-        // 총알 제거
         Destroy(gameObject);
     }
 }

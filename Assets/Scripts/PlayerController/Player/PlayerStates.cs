@@ -41,4 +41,13 @@ public class PlayerStats : MonoBehaviour
     {
         MoveSpeed += MoveSpeed * percent;
     }
+
+    /// <summary>
+    /// 이동속도를 퍼센트 단위로 증가시킨다.
+    /// 예: 0.1f = 10% 증가
+    /// </summary>
+    public void UpgradeMoveSpeed(float percent)
+    {
+        MoveSpeed *= 1f + percent;
+    }
 }
