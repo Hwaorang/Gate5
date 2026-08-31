@@ -15,6 +15,9 @@ public class UpgradeManager_PlayerController : MonoBehaviour
     [Header("Reference")]
     [SerializeField] private SquadManager squadManager;
 
+    [SerializeField]
+    private KillCounter killCounter;
+
     private UpgradeStrategyFactory strategyFactory;
 
     private readonly List<UpgradeButton> createdButtons
@@ -64,19 +67,34 @@ public class UpgradeManager_PlayerController : MonoBehaviour
 
     public void SelectUpgrade(UpgradeData data)
     {
+        if (data == null)
+        {
+            return;
+        }
+
         IUpgradeStrategy strategy =
             strategyFactory.Create(data.upgradeType);
 
         if (strategy == null)
         {
+#if UNITY_EDITOR
             Debug.LogWarning(
                 $"Upgrade Strategy 없음 : {data.upgradeType}"
             );
+#endif
 
             return;
         }
 
+        // 실제 강화 적용
         strategy.Apply(data.value);
+
+        // 강화 선택이 정상적으로 완료된 시점에서
+        // KillCounter의 다음 강화 단계 진행
+        if (killCounter != null)
+        {
+            killCounter.CompleteUpgrade();
+        }
 
         CloseUpgradePanel();
     }
