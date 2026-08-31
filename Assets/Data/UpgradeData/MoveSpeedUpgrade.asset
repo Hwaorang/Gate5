@@ -10,12 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e22f565e3122a2542b94c842e3804bf4, type: 3}
-  m_Name: Soldier3
+  m_Name: MoveSpeedUpgrade
   m_EditorClassIdentifier: Assembly-CSharp::UpgradeData
-  upgradeName: Reinforcements
-  description: '
-
-    Three additional soldiers are added.'
+  upgradeName: 
+  description: 
   icon: {fileID: 0}
-  upgradeType: 2
-  value: 3
+  upgradeType: 0
+  value: 0
+  maxLevel: 5

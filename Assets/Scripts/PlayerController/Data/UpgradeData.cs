@@ -2,9 +2,9 @@ using UnityEngine;
 
 public enum UpgradeType
 {
-    Damage,
+    ProjectileCount,
     AttackSpeed,
-    SoldierCount,
+    Damage,
     MoveSpeed
 }
 
@@ -25,5 +25,9 @@ public class UpgradeData : ScriptableObject
     [Header("강화 설정")]
     public UpgradeType upgradeType;
 
+    // 한 번 선택했을 때 증가량
     public float value;
+
+    // 최대 강화 횟수
+    public int maxLevel = 5;
 }
