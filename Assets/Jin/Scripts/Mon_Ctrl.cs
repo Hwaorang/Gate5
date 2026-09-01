@@ -11,10 +11,15 @@ public class Mon_Ctrl : MonoBehaviour
 
     NavMeshAgent agent;
     bool arrive = false;
+
+    string objname;
     void Start()
     {
-        agent = GetComponent<NavMeshAgent>();
+        agent = GetComponent<NavMeshAgent>();        
+    }
 
+    private void OnEnable()
+    {
         SetTarget();
 
         if (targetPos != null || testTargetPos != null)
@@ -22,11 +27,15 @@ public class Mon_Ctrl : MonoBehaviour
             StartCoroutine(Move());   
         }
     }
-
-
     public void SetTarget()
     {
         targetPos = FindFirstObjectByType<PlayerController>().transform;
+
+        if (targetPos != null)
+        {
+            Debug.Log("target_Set");
+            targetPos.position = new Vector3(targetPos.position.x, targetPos.position.y, this.transform.position.z);
+        }
     }
 
     IEnumerator Move()
@@ -48,9 +57,8 @@ public class Mon_Ctrl : MonoBehaviour
         if(collision.gameObject.CompareTag("Goal"))
         {
             arrive = true;
-
-            MonSpawn_Mgr.instance.ReturnObject(this.gameObject);
-
+            //Damage 
+            MonSpawn_Mgr.instance.ReturnObject(objname, this.gameObject);
         }
     }
 }
