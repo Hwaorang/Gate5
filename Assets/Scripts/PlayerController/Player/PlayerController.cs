@@ -1,10 +1,13 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+/// <summary>
+/// 플레이어의 좌우 이동만 담당한다.
+/// 앞으로 이동하지 않고 X축으로만 움직인다.
+/// </summary>
 public class PlayerController : MonoBehaviour
 {
-    [Header("이동 설정")]
-    [SerializeField] private float forwardSpeed = 5f;
+    [Header("플레이어 스탯")]
     [SerializeField] private PlayerStats playerStats;
 
     [Header("좌우 이동 범위")]
@@ -15,37 +18,41 @@ public class PlayerController : MonoBehaviour
         Move();
     }
 
-    public void UpgradeMoveSpeed(float percent)
-    {
-        playerStats.UpgradeMoveSpeed(percent);
-    }
-
+    /// <summary>
+    /// A / D 키를 이용해서 좌우로만 이동한다.
+    /// </summary>
     private void Move()
     {
         float horizontal = 0f;
 
-        // A : 왼쪽
+        // A키 : 왼쪽
         if (Keyboard.current.aKey.isPressed)
         {
             horizontal = -1f;
         }
 
-        // D : 오른쪽
+        // D키 : 오른쪽
         if (Keyboard.current.dKey.isPressed)
         {
             horizontal = 1f;
         }
 
-        // 앞으로 자동 이동 + 좌우 입력
+        // 좌우 방향만 계산한다.
         Vector3 direction =
-            Vector3.forward * forwardSpeed +
-            Vector3.right * horizontal * playerStats.MoveSpeed;
+            Vector3.right *
+            horizontal *
+            playerStats.MoveSpeed;
 
-        transform.position += direction * Time.deltaTime;
+        // 실제 이동
+        transform.position +=
+            direction *
+            Time.deltaTime;
 
-        // 좌우 이동 범위 제한
-        Vector3 position = transform.position;
+        // 현재 위치 가져오기
+        Vector3 position =
+            transform.position;
 
+        // 플레이어가 지정된 좌우 범위를 벗어나지 않게 제한
         position.x = Mathf.Clamp(
             position.x,
             -xLimit,

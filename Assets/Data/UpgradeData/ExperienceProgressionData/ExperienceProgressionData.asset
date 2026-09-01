@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f70fdb66f0db43a4db8a4e4d848a6f51, type: 3}
   m_Name: ExperienceProgressionData
   m_EditorClassIdentifier: Assembly-CSharp::ExperienceProgressionData
-  requiredExp: 
+  requiredExp: 050000000a0000000f0000001400000019000000

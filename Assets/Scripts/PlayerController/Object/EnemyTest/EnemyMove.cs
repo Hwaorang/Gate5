@@ -1,47 +1,19 @@
 using UnityEngine;
 
+/// <summary>
+/// 몬스터가 자신의 라인을 유지하면서
+/// 플레이어 방향으로 내려오도록 이동시킨다.
+/// </summary>
 public class EnemyMove : MonoBehaviour
 {
-    [SerializeField] private float moveSpeed = 2f;
+    [Header("몬스터 이동 속도")]
+    [SerializeField] private float moveSpeed = 6f;
 
-    private Rigidbody rb;
-    private Transform target;
-
-    private void Awake()
+    private void Update()
     {
-        rb = GetComponent<Rigidbody>();
-    }
-
-    public void SetTarget(Transform target)
-    {
-        this.target = target;
-    }
-
-    private void FixedUpdate()
-    {
-        if (target == null)
-        {
-            return;
-        }
-
-        Vector3 direction =
-            target.position - rb.position;
-
-        direction.y = 0f;
-        direction.Normalize();
-
-        Vector3 nextPosition =
-            rb.position +
-            direction * moveSpeed * Time.fixedDeltaTime;
-
-        rb.MovePosition(nextPosition);
-
-        if (direction != Vector3.zero)
-        {
-            Quaternion targetRotation =
-                Quaternion.LookRotation(direction);
-
-            rb.MoveRotation(targetRotation);
-        }
+        transform.position +=
+            Vector3.back *
+            moveSpeed *
+            Time.deltaTime;
     }
 }
