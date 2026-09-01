@@ -3,87 +3,142 @@ using UnityEngine;
 
 public class UpgradeManager : MonoBehaviour
 {
+    // =====================================================
+    // 공격력 강화 설정
+    // =====================================================
+
     [Header("공격력 강화")]
     [SerializeField] private int attackBaseCost = 100;
     [SerializeField] private int attackCostIncrease = 50;
     [SerializeField] private int attackMaxLevel = 10;
+
+    // 레벨 1당 증가하는 공격력
     [SerializeField] private int attackIncrease = 5;
+
+
+    // =====================================================
+    // 이동속도 강화 설정
+    // =====================================================
 
     [Header("이동속도 강화")]
     [SerializeField] private int speedBaseCost = 100;
     [SerializeField] private int speedCostIncrease = 50;
     [SerializeField] private int speedMaxLevel = 10;
+
+    // 레벨 1당 증가하는 이동속도
     [SerializeField] private float speedIncrease = 0.5f;
 
-    [Header("체력 강화")]
-    [SerializeField] private int hpBaseCost = 100;
-    [SerializeField] private int hpCostIncrease = 50;
-    [SerializeField] private int hpMaxLevel = 10;
-    [SerializeField] private int hpIncrease = 20;
 
-    [Header("UI")]
+    // =====================================================
+    // 공격속도 강화 설정
+    // =====================================================
+
+    [Header("공격속도 강화")]
+    [SerializeField] private int attackSpeedBaseCost = 100;
+    [SerializeField] private int attackSpeedCostIncrease = 50;
+    [SerializeField] private int attackSpeedMaxLevel = 10;
+
+    // 레벨 1당 증가하는 공격속도
+    [SerializeField] private float attackSpeedIncrease = 0.1f;
+
+
+    // =====================================================
+    // 스테이지 클리어 골드 강화 설정
+    // =====================================================
+
+    [Header("스테이지 골드 획득량 강화")]
+    [SerializeField] private int goldRewardBaseCost = 200;
+    [SerializeField] private int goldRewardCostIncrease = 100;
+    [SerializeField] private int goldRewardMaxLevel = 10;
+
+    // 레벨 1당 추가되는 골드
+    [SerializeField] private int goldRewardIncrease = 10;
+
+
+    // =====================================================
+    // UI
+    // =====================================================
+
+    [Header("골드 UI")]
     [SerializeField] private TMP_Text goldText;
 
+
+    [Header("공격력 UI")]
     [SerializeField] private TMP_Text attackLevelText;
     [SerializeField] private TMP_Text attackCostText;
 
+
+    [Header("이동속도 UI")]
     [SerializeField] private TMP_Text speedLevelText;
     [SerializeField] private TMP_Text speedCostText;
 
-    [SerializeField] private TMP_Text hpLevelText;
-    [SerializeField] private TMP_Text hpCostText;
+
+    [Header("공격속도 UI")]
+    [SerializeField] private TMP_Text attackSpeedLevelText;
+    [SerializeField] private TMP_Text attackSpeedCostText;
+
+
+    [Header("스테이지 골드 UI")]
+    [SerializeField] private TMP_Text goldRewardLevelText;
+    [SerializeField] private TMP_Text goldRewardCostText;
+
 
     private void Start()
     {
         RefreshUI();
     }
 
-    // =========================
+
+    // =====================================================
     // 공격력 강화
-    // =========================
+    // =====================================================
 
     public void UpgradeAttack()
     {
-        int level = SaveManager.Instance.Data.attackLevel;
+        PlayerData data = SaveManager.Instance.Data;
 
-        if (level >= attackMaxLevel)
+        // 최대 레벨 검사
+        if (data.attackLevel >= attackMaxLevel)
         {
             Debug.Log("공격력이 최대 레벨입니다.");
             return;
         }
 
-        int cost = attackBaseCost +
-                   level * attackCostIncrease;
+        int cost = GetAttackCost();
 
+        // 골드 사용
         if (!SaveManager.Instance.SpendGold(cost))
         {
             Debug.Log("골드가 부족합니다.");
             return;
         }
 
-        SaveManager.Instance.Data.attackLevel++;
+        // 레벨 증가
+        data.attackLevel++;
 
+        // 저장
         SaveManager.Instance.Save();
 
+        // UI 갱신
         RefreshUI();
     }
 
-    // =========================
+
+    // =====================================================
     // 이동속도 강화
-    // =========================
+    // =====================================================
 
     public void UpgradeSpeed()
     {
-        int level = SaveManager.Instance.Data.speedLevel;
+        PlayerData data = SaveManager.Instance.Data;
 
-        if (level >= speedMaxLevel)
+        if (data.speedLevel >= speedMaxLevel)
         {
             Debug.Log("이동속도가 최대 레벨입니다.");
             return;
         }
 
-        int cost = speedBaseCost +
-                   level * speedCostIncrease;
+        int cost = GetSpeedCost();
 
         if (!SaveManager.Instance.SpendGold(cost))
         {
@@ -91,29 +146,29 @@ public class UpgradeManager : MonoBehaviour
             return;
         }
 
-        SaveManager.Instance.Data.speedLevel++;
+        data.speedLevel++;
 
         SaveManager.Instance.Save();
 
         RefreshUI();
     }
 
-    // =========================
-    // 체력 강화
-    // =========================
 
-    public void UpgradeHP()
+    // =====================================================
+    // 공격속도 강화
+    // =====================================================
+
+    public void UpgradeAttackSpeed()
     {
-        int level = SaveManager.Instance.Data.hpLevel;
+        PlayerData data = SaveManager.Instance.Data;
 
-        if (level >= hpMaxLevel)
+        if (data.attackSpeedLevel >= attackSpeedMaxLevel)
         {
-            Debug.Log("체력이 최대 레벨입니다.");
+            Debug.Log("공격속도가 최대 레벨입니다.");
             return;
         }
 
-        int cost = hpBaseCost +
-                   level * hpCostIncrease;
+        int cost = GetAttackSpeedCost();
 
         if (!SaveManager.Instance.SpendGold(cost))
         {
@@ -121,16 +176,101 @@ public class UpgradeManager : MonoBehaviour
             return;
         }
 
-        SaveManager.Instance.Data.hpLevel++;
+        data.attackSpeedLevel++;
 
         SaveManager.Instance.Save();
 
         RefreshUI();
     }
 
-    // =========================
+
+    // =====================================================
+    // 스테이지 골드 획득량 강화
+    // =====================================================
+
+    public void UpgradeGoldReward()
+    {
+        PlayerData data = SaveManager.Instance.Data;
+
+        if (data.goldRewardLevel >= goldRewardMaxLevel)
+        {
+            Debug.Log("스테이지 골드 획득량이 최대 레벨입니다.");
+            return;
+        }
+
+        int cost = GetGoldRewardUpgradeCost();
+
+        if (!SaveManager.Instance.SpendGold(cost))
+        {
+            Debug.Log("골드가 부족합니다.");
+            return;
+        }
+
+        data.goldRewardLevel++;
+
+        SaveManager.Instance.Save();
+
+        RefreshUI();
+    }
+
+
+    // =====================================================
+    // 공격력 강화 비용
+    // =====================================================
+
+    public int GetAttackCost()
+    {
+        int level = SaveManager.Instance.Data.attackLevel;
+
+        return attackBaseCost +
+               level * attackCostIncrease;
+    }
+
+
+    // =====================================================
+    // 이동속도 강화 비용
+    // =====================================================
+
+    public int GetSpeedCost()
+    {
+        int level = SaveManager.Instance.Data.speedLevel;
+
+        return speedBaseCost +
+               level * speedCostIncrease;
+    }
+
+
+    // =====================================================
+    // 공격속도 강화 비용
+    // =====================================================
+
+    public int GetAttackSpeedCost()
+    {
+        int level =
+            SaveManager.Instance.Data.attackSpeedLevel;
+
+        return attackSpeedBaseCost +
+               level * attackSpeedCostIncrease;
+    }
+
+
+    // =====================================================
+    // 스테이지 골드 강화 비용
+    // =====================================================
+
+    public int GetGoldRewardUpgradeCost()
+    {
+        int level =
+            SaveManager.Instance.Data.goldRewardLevel;
+
+        return goldRewardBaseCost +
+               level * goldRewardCostIncrease;
+    }
+
+
+    // =====================================================
     // UI 갱신
-    // =========================
+    // =====================================================
 
     public void RefreshUI()
     {
@@ -141,13 +281,21 @@ public class UpgradeManager : MonoBehaviour
 
         PlayerData data = SaveManager.Instance.Data;
 
+
+        // -------------------------
         // 골드
+        // -------------------------
+
         if (goldText != null)
         {
             goldText.text = data.gold.ToString();
         }
 
+
+        // -------------------------
         // 공격력
+        // -------------------------
+
         if (attackLevelText != null)
         {
             attackLevelText.text =
@@ -167,7 +315,11 @@ public class UpgradeManager : MonoBehaviour
             }
         }
 
+
+        // -------------------------
         // 이동속도
+        // -------------------------
+
         if (speedLevelText != null)
         {
             speedLevelText.text =
@@ -187,54 +339,59 @@ public class UpgradeManager : MonoBehaviour
             }
         }
 
-        // 체력
-        if (hpLevelText != null)
+
+        // -------------------------
+        // 공격속도
+        // -------------------------
+
+        if (attackSpeedLevelText != null)
         {
-            hpLevelText.text =
-                "Lv. " + data.hpLevel;
+            attackSpeedLevelText.text =
+                "Lv. " + data.attackSpeedLevel;
         }
 
-        if (hpCostText != null)
+        if (attackSpeedCostText != null)
         {
-            if (data.hpLevel >= hpMaxLevel)
+            if (data.attackSpeedLevel >= attackSpeedMaxLevel)
             {
-                hpCostText.text = "MAX";
+                attackSpeedCostText.text = "MAX";
             }
             else
             {
-                hpCostText.text =
-                    GetHPCost() + " G";
+                attackSpeedCostText.text =
+                    GetAttackSpeedCost() + " G";
+            }
+        }
+
+
+        // -------------------------
+        // 스테이지 골드
+        // -------------------------
+
+        if (goldRewardLevelText != null)
+        {
+            goldRewardLevelText.text =
+                "Lv. " + data.goldRewardLevel;
+        }
+
+        if (goldRewardCostText != null)
+        {
+            if (data.goldRewardLevel >= goldRewardMaxLevel)
+            {
+                goldRewardCostText.text = "MAX";
+            }
+            else
+            {
+                goldRewardCostText.text =
+                    GetGoldRewardUpgradeCost() + " G";
             }
         }
     }
 
-    public int GetAttackCost()
-    {
-        int level = SaveManager.Instance.Data.attackLevel;
 
-        return attackBaseCost +
-               level * attackCostIncrease;
-    }
-
-    public int GetSpeedCost()
-    {
-        int level = SaveManager.Instance.Data.speedLevel;
-
-        return speedBaseCost +
-               level * speedCostIncrease;
-    }
-
-    public int GetHPCost()
-    {
-        int level = SaveManager.Instance.Data.hpLevel;
-
-        return hpBaseCost +
-               level * hpCostIncrease;
-    }
-
-    // =========================
-    // 실제 능력치 가져오기
-    // =========================
+    // =====================================================
+    // 실제 능력치 계산
+    // =====================================================
 
     public int GetAttack()
     {
@@ -243,6 +400,7 @@ public class UpgradeManager : MonoBehaviour
                attackIncrease;
     }
 
+
     public float GetSpeed()
     {
         return 5f +
@@ -250,10 +408,23 @@ public class UpgradeManager : MonoBehaviour
                speedIncrease;
     }
 
-    public int GetMaxHP()
+
+    public float GetAttackSpeed()
+    {
+        return 1f +
+               SaveManager.Instance.Data.attackSpeedLevel *
+               attackSpeedIncrease;
+    }
+
+
+    // =====================================================
+    // 스테이지 클리어 골드 계산
+    // =====================================================
+
+    public int GetStageGold()
     {
         return 100 +
-               SaveManager.Instance.Data.hpLevel *
-               hpIncrease;
+               SaveManager.Instance.Data.goldRewardLevel *
+               goldRewardIncrease;
     }
 }
