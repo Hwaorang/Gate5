@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b707a1df7a6b0674187c923c65ecd142, type: 3}
   m_Name: UpgradeProgressionData
   m_EditorClassIdentifier: Assembly-CSharp::UpgradeProgressionData
-  requiredKills: 
+  requiredKills: 0300000008000000100000001e00000032000000

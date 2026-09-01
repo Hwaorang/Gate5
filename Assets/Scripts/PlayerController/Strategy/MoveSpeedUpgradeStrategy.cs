@@ -1,15 +1,14 @@
 public class MoveSpeedUpgradeStrategy : IUpgradeStrategy
 {
-    private readonly PlayerController playerController;
+    private readonly PlayerStats playerStats;
 
-    public MoveSpeedUpgradeStrategy(
-        PlayerController playerController)
+    public MoveSpeedUpgradeStrategy(PlayerStats playerStats)
     {
-        this.playerController = playerController;
+        this.playerStats = playerStats;
     }
 
     public void Apply(float value)
     {
-        playerController.UpgradeMoveSpeed(value);
+        playerStats.UpgradeMoveSpeed(value);
     }
 }
