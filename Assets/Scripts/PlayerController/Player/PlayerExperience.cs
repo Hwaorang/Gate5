@@ -20,6 +20,10 @@ public class PlayerExperience : MonoBehaviour
     // 강화 선택을 기다리는 중인지 확인
     private bool isWaitingForUpgrade;
 
+    private bool isAllUpgradesCompleted = false;
+
+    public bool IsAllUpgradesCompleted => isAllUpgradesCompleted;
+
     public int CurrentExp => currentExp;
 
     public int RequiredExp => GetRequiredExp();
@@ -39,25 +43,24 @@ public class PlayerExperience : MonoBehaviour
             return;
         }
 
+        // 강화 선택 대기 중이면 경험치 획득 중단
         if (isWaitingForUpgrade)
+        {
+            return;
+        }
+
+        // 모든 강화가 끝났으면 더 이상 경험치를 받지 않음
+        if (isAllUpgradesCompleted)
         {
             return;
         }
 
         currentExp += amount;
 
-        int requiredExp = GetRequiredExp();
-
-        // 경험치 UI 갱신
         OnExpChanged?.Invoke(
             currentExp,
-            requiredExp
+            GetRequiredExp()
         );
-#if UNITY_EDITOR
-        Debug.Log(
-            $"EXP : {currentExp} / {requiredExp}"
-        );
-#endif
 
         CheckLevelUp();
     }
@@ -72,17 +75,39 @@ public class PlayerExperience : MonoBehaviour
             return;
         }
 
-        isWaitingForUpgrade = true;
-
         if (upgradeManager == null)
         {
+#if UNITY_EDITOR
             Debug.LogError(
                 "UpgradeManager_PlayerController가 연결되지 않았습니다."
             );
+#endif
 
-            isWaitingForUpgrade = false;
             return;
         }
+
+        // 이제 더 이상 강화할 게 없으면
+        // 경험치 시스템을 종료 상태로 바꾼다.
+        if (!upgradeManager.HasAvailableUpgrade())
+        {
+            isAllUpgradesCompleted = true;
+
+            // UI를 꽉 찬 상태로 보이게 하고 싶다면
+            currentExp = GetRequiredExp();
+
+            OnExpChanged?.Invoke(
+                currentExp,
+                GetRequiredExp()
+            );
+
+            GameMessageUI.Instance?.ShowMessage(
+                "\r\nAll upgrades are at maximum level."
+            );
+
+            return;
+        }
+
+        isWaitingForUpgrade = true;
 
         upgradeManager.OpenUpgradePanel();
     }

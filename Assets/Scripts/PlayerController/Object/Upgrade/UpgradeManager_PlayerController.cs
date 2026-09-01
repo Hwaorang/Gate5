@@ -58,6 +58,19 @@ public class UpgradeManager_PlayerController : MonoBehaviour
 
     public void OpenUpgradePanel()
     {
+        // 모든 강화가 최대 레벨이면
+        // 강화창을 열지 않는다.
+        if (!HasAvailableUpgrade())
+        {
+            string message =
+                        "모든 강화가 최대 레벨입니다.";
+#if UNITY_EDITOR
+            Debug.Log(message);
+#endif
+            GameMessageUI.Instance?.ShowMessage(message);
+            return;
+        }
+
         CreateUpgradeButtons();
 
         upgradePanel.SetActive(true);
@@ -204,5 +217,29 @@ public class UpgradeManager_PlayerController : MonoBehaviour
         }
 
         return result;
+    }
+
+    /// <summary>
+    /// 아직 최대 레벨에 도달하지 않은 강화가 있는지 확인한다.
+    /// </summary>
+    public bool HasAvailableUpgrade()
+    {
+        foreach (UpgradeData data in upgradeDatas)
+        {
+            if (data == null)
+            {
+                continue;
+            }
+
+            int currentLevel =
+                GetUpgradeLevel(data.upgradeType);
+
+            if (currentLevel < data.maxLevel)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

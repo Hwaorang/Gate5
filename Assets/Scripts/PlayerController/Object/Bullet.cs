@@ -29,6 +29,12 @@ public class Bullet : MonoBehaviour
     // 자신을 관리하는 BulletPool
     private BulletPool bulletPool;
 
+    // 총알이 발사된 시작 위치
+    private Vector3 startPosition;
+
+    // 총알이 이동할 수 있는 최대 거리
+    [SerializeField] private float maxDistance = 20f;
+
 
     /// <summary>
     /// BulletPool에서 총알을 꺼낼 때 호출한다.
