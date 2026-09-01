@@ -158,7 +158,13 @@ public class UpgradeManager_PlayerController : MonoBehaviour
             UpgradeButton button =
                 Instantiate(upgradeButtonPrefab, content);
 
-            button.Setup(data, this);
+            int currentLevel = GetUpgradeLevel(data.upgradeType);
+
+            button.Setup(
+                data,
+                this,
+                currentLevel
+            );
 
             createdButtons.Add(button);
         }

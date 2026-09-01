@@ -9,28 +9,60 @@ public class UpgradeButton : MonoBehaviour
     [SerializeField] private TMP_Text descriptionText;
     [SerializeField] private TMP_Text valueText;
 
-    private UpgradeData data;
-    private UpgradeManager_PlayerController manager;
+    // 현재 강화 레벨 표시
+    [SerializeField] private TMP_Text levelText;
 
+    private UpgradeData upgradeData;
+    private UpgradeManager_PlayerController upgradeManager;
+
+    /// <summary>
+    /// 강화 버튼에 표시할 정보를 설정한다.
+    /// </summary>
     public void Setup(
-        UpgradeData upgradeData,
-        UpgradeManager_PlayerController upgradeManager)
+        UpgradeData data,
+        UpgradeManager_PlayerController manager,
+        int currentLevel)
     {
-        data = upgradeData;
-        manager = upgradeManager;
-
-        nameText.text = data.upgradeName;
-        descriptionText.text = data.description;
+        upgradeData = data;
+        upgradeManager = manager;
 
         if (icon != null)
         {
             icon.sprite = data.icon;
         }
 
+        if (nameText != null)
+        {
+            nameText.text = data.upgradeName;
+        }
+
+        if (descriptionText != null)
+        {
+            descriptionText.text = data.description;
+        }
+
         if (valueText != null)
         {
             valueText.text = GetValueText(data);
         }
+
+        // 현재 레벨 / 최대 레벨 표시
+        if (levelText != null)
+        {
+            levelText.text =
+                $"Lv. {currentLevel} / {data.maxLevel}";
+        }
+    }
+
+    public void OnClick()
+    {
+        if (upgradeData == null ||
+            upgradeManager == null)
+        {
+            return;
+        }
+
+        upgradeManager.SelectUpgrade(upgradeData);
     }
 
     private string GetValueText(UpgradeData data)
@@ -52,15 +84,5 @@ public class UpgradeButton : MonoBehaviour
             default:
                 return "";
         }
-    }
-
-    public void OnClick()
-    {
-        if (data == null || manager == null)
-        {
-            return;
-        }
-
-        manager.SelectUpgrade(data);
     }
 }
