@@ -141,15 +141,53 @@ public class SquadManager : MonoBehaviour
     /// </summary>
     private void UpdateFormation()
     {
-        int columnCount = 3;
+        if (soldiers.Count == 0)
+        {
+            return;
+        }
+
+        // 병사 수에 따라 열 개수를 자동 계산
+        // 예: 15명 -> 4열
+        int columnCount =
+            Mathf.CeilToInt(Mathf.Sqrt(soldiers.Count));
+
+        // 너무 넓어지는 것을 방지하기 위한 최대 열 개수
+        int maxColumnCount = 7;
+
+        columnCount =
+            Mathf.Min(columnCount, maxColumnCount);
 
         for (int i = 0; i < soldiers.Count; i++)
         {
+            // 현재 병사가 몇 번째 행인지 계산
             int row = i / columnCount;
+
+            // 현재 행에서 몇 번째 위치인지 계산
             int column = i % columnCount;
 
+            // 현재 행의 첫 번째 병사 인덱스
+            int rowStartIndex =
+                row * columnCount;
+
+            // 이 행에 실제로 배치될 병사 수
+            int remainingSoldiers =
+                soldiers.Count - rowStartIndex;
+
+            int soldiersInThisRow =
+                Mathf.Min(
+                    columnCount,
+                    remainingSoldiers
+                );
+
+            // 현재 행의 실제 병사 수 기준으로
+            // 가운데 정렬하기 위한 X 오프셋 계산
+            float xOffset =
+                (soldiersInThisRow - 1)
+                * spacing
+                * 0.5f;
+
             float x =
-                (column - 1) * spacing;
+                column * spacing - xOffset;
 
             float z =
                 -row * spacing;
