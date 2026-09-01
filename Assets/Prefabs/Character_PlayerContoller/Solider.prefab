@@ -50,6 +50,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SoldierAttack
   bulletPrefab: {fileID: 8307298274136730328, guid: 3e6c8290ee920094da57b89b1822705e, type: 3}
+  bulletPool: {fileID: 0}
   firePoint: {fileID: 8557784688854896453}
   baseDamage: 10
   baseAttackDelay: 0.3
