@@ -20,7 +20,7 @@ public class UpgradeManager_PlayerController : MonoBehaviour
     private PlayerExperience playerExperience;
 
     [SerializeField]
-    private PlayerController playerController;
+    private PlayerStats playerStats;
 
     [SerializeField]
     private KillCounter killCounter;
@@ -38,7 +38,7 @@ public class UpgradeManager_PlayerController : MonoBehaviour
         strategyFactory =
             new UpgradeStrategyFactory(
                 squadManager,
-                playerController
+                playerStats
             );
     }
 
@@ -154,22 +154,52 @@ public class UpgradeManager_PlayerController : MonoBehaviour
     private List<UpgradeData> GetRandomUpgrades(int count)
     {
         List<UpgradeData> candidates =
-            new List<UpgradeData>(upgradeDatas);
+            new List<UpgradeData>();
+
+        // 전체 UpgradeData 중
+        // 아직 최대 레벨에 도달하지 않은 것만 후보에 추가
+        foreach (UpgradeData data in upgradeDatas)
+        {
+            if (data == null)
+            {
+                continue;
+            }
+
+            int currentLevel =
+                GetUpgradeLevel(data.upgradeType);
+
+            // 최대 레벨이면 후보에서 제외
+            if (currentLevel >= data.maxLevel)
+            {
+                continue;
+            }
+
+            candidates.Add(data);
+        }
 
         List<UpgradeData> result =
             new List<UpgradeData>();
 
-        count = Mathf.Min(count, candidates.Count);
+        // 후보 수보다 많이 뽑지 않도록 제한
+        count = Mathf.Min(
+            count,
+            candidates.Count
+        );
 
+        // 중복 없이 랜덤 선택
         for (int i = 0; i < count; i++)
         {
             int randomIndex =
-                Random.Range(0, candidates.Count);
+                Random.Range(
+                    0,
+                    candidates.Count
+                );
 
-            result.Add(candidates[randomIndex]);
+            result.Add(
+                candidates[randomIndex]
+            );
 
-            // 뽑은 데이터는 후보에서 제거
-            // 같은 강화가 한 번에 중복 등장하는 것을 방지
+            // 이미 뽑은 강화는 후보에서 제거
             candidates.RemoveAt(randomIndex);
         }
 

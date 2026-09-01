@@ -1,14 +1,14 @@
 public class UpgradeStrategyFactory
 {
     private readonly SquadManager squadManager;
-    private readonly PlayerController playerController;
+    private readonly PlayerStats playerStats;
 
     public UpgradeStrategyFactory(
-        SquadManager squadManager,
-        PlayerController playerController)
+    SquadManager squadManager,
+    PlayerStats playerStats)
     {
         this.squadManager = squadManager;
-        this.playerController = playerController;
+        this.playerStats = playerStats;
     }
 
     public IUpgradeStrategy Create(UpgradeType type)
@@ -25,7 +25,7 @@ public class UpgradeStrategyFactory
                 return new ProjectileUpgradeStrategy(squadManager);
 
             case UpgradeType.MoveSpeed:
-                return new MoveSpeedUpgradeStrategy(playerController);
+                return new MoveSpeedUpgradeStrategy(playerStats);
 
             default:
                 return null;
