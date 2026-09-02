@@ -1,59 +1,60 @@
 using UnityEngine;
 
 /// <summary>
-/// 전방으로 이동하는 Bullet
-/// 사용이 끝나면 Destroy하지 않고 BulletPool로 반환한다.
+/// 시각 연출용 Bullet.
+///
+/// 역할:
+/// 1. 지정된 방향으로 빠르게 이동
+/// 2. 일정 시간이 지나면 BulletPool로 반환
+///
+/// 실제 데미지 판정은 SoldierAttack의 Raycast가 담당한다.
+/// 따라서 Bullet에는 Collider / Rigidbody가 필요하지 않는다.
 /// </summary>
 public class Bullet : MonoBehaviour
 {
-    [Header("Bullet 설정")]
+    [Header("총알 설정")]
 
-    // 총알 이동 속도
-    [SerializeField]
-    private float speed = 15f;
-
-    // 최대 생존 시간
-    [SerializeField]
-    private float lifeTime = 3f;
+    // 총알이 화면에 유지되는 시간
+    // 시간이 지나면 자동으로 Pool에 반환된다.
+    [SerializeField] private float lifeTime = 0.5f;
 
 
-    // 발사 방향
+    // 현재 총알이 이동할 방향
     private Vector3 direction;
 
-    // 현재 총알의 데미지
-    private float damage;
+    // 현재 총알 이동 속도
+    private float speed;
 
-    // 현재 총알이 활성화된 시간
+    // 총알이 활성화된 이후 흐른 시간
     private float lifeTimer;
 
-    // 자신을 관리하는 BulletPool
+    // 사용이 끝난 총알을 반환할 Object Pool
     private BulletPool bulletPool;
-
-    // 총알이 발사된 시작 위치
-    private Vector3 startPosition;
-
-    // 총알이 이동할 수 있는 최대 거리
-    [SerializeField] private float maxDistance = 20f;
 
 
     /// <summary>
-    /// BulletPool에서 총알을 꺼낼 때 호출한다.
+    /// BulletPool에서 총알을 꺼냈을 때
+    /// 이동 방향과 속도 등을 초기화한다.
+    ///
+    /// 실제 공격 판정은 이미 Raycast로 처리되었기 때문에
+    /// Bullet은 시각적으로 이동하는 역할만 담당한다.
     /// </summary>
-    public void Init(
+    public void InitVisual(
         Vector3 fireDirection,
-        float bulletDamage,
+        float bulletSpeed,
         BulletPool pool)
     {
-        direction =
-            fireDirection.normalized;
+        // 전달받은 발사 방향을 정규화해서 저장
+        direction = fireDirection.normalized;
 
-        damage =
-            bulletDamage;
+        // 현재 총알 이동 속도 설정
+        speed = bulletSpeed;
 
-        bulletPool =
-            pool;
+        // 사용이 끝났을 때 반환할 Pool 저장
+        bulletPool = pool;
 
-        // 재사용될 때 타이머 초기화
+        // Pool에서 재사용되는 총알이므로
+        // 생존 시간을 반드시 초기화한다.
         lifeTimer = 0f;
     }
 
@@ -66,7 +67,10 @@ public class Bullet : MonoBehaviour
 
 
     /// <summary>
-    /// 지정된 방향으로 Bullet 이동
+    /// 현재 지정된 방향으로 총알을 이동시킨다.
+    ///
+    /// Rigidbody를 사용하지 않고
+    /// Transform을 직접 이동시킨다.
     /// </summary>
     private void Move()
     {
@@ -78,7 +82,10 @@ public class Bullet : MonoBehaviour
 
 
     /// <summary>
-    /// 일정 시간이 지나면 Pool로 반환
+    /// 총알의 생존 시간을 확인한다.
+    ///
+    /// 설정된 lifeTime 이상 살아있었다면
+    /// BulletPool로 반환한다.
     /// </summary>
     private void CheckLifeTime()
     {
@@ -91,28 +98,11 @@ public class Bullet : MonoBehaviour
     }
 
 
-    private void OnTriggerEnter(Collider other)
-    {
-        // Enemy 충돌 확인
-        EnemyHealth enemy =
-            other.GetComponent<EnemyHealth>();
-
-        if (enemy != null)
-        {
-            enemy.TakeDamage(damage);
-
-            ReturnToPool();
-
-            return;
-        }
-
-        // Gate 기능을 다시 사용하게 된다면
-        // 여기서 Gate 충돌도 추가하면 됨
-    }
-
-
     /// <summary>
-    /// Bullet을 삭제하지 않고 Pool로 반환
+    /// 사용이 끝난 총알을 Object Pool로 반환한다.
+    ///
+    /// BulletPool이 연결되지 않은 예외 상황에서는
+    /// 단순 비활성화 처리한다.
     /// </summary>
     private void ReturnToPool()
     {
@@ -122,7 +112,6 @@ public class Bullet : MonoBehaviour
         }
         else
         {
-            // Pool 참조가 없는 예외 상황
             gameObject.SetActive(false);
         }
     }

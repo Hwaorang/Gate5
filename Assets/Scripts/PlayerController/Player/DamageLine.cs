@@ -7,41 +7,49 @@ public class DamageLine : MonoBehaviour
     [SerializeField] private SquadManager squadManager;
     [SerializeField] private BoxCollider boxCollider;
 
-    [Header("설정")]
+    [Header("방어선 설정")]
+    // 좌우 각각 추가할 여유 공간
     [SerializeField] private float extraWidth = 1f;
 
     private void Start()
     {
+        // 게임이 시작되면 PlayerRoot와 부모 관계를 끊는다.
+        // 현재 월드 위치는 그대로 유지된다.
+        transform.SetParent(null, true);
+
+        // 플레이어 이동 범위에 맞춰 방어선 폭 설정
         UpdateLineWidth();
     }
 
     /// <summary>
-    /// PlayerController의 좌우 이동 범위를 기준으로
-    /// DamageLine의 가로 길이를 자동으로 설정
+    /// 플레이어 좌우 이동 범위를 기준으로
+    /// DamageLine Collider의 폭을 설정한다.
     /// </summary>
     private void UpdateLineWidth()
     {
-        if (playerController == null || boxCollider == null)
+        if (playerController == null ||
+            boxCollider == null)
         {
             return;
         }
 
-        // 플레이어 이동 범위 전체 폭
-        float width =
+        // Player가 이동할 수 있는 전체 가로 폭
+        float playerMoveWidth =
             playerController.XLimit * 2f;
 
-        // 좌우 여유 공간 추가
-        width += extraWidth;
+        // 좌우에 각각 extraWidth만큼 여유 추가
+        float totalWidth =
+            playerMoveWidth + (extraWidth * 2f);
 
         Vector3 size = boxCollider.size;
 
-        size.x = width;
+        size.x = totalWidth;
 
         boxCollider.size = size;
     }
 
     /// <summary>
-    /// 몬스터가 DamageLine을 통과했을 때 처리
+    /// 몬스터가 방어선을 통과했을 때 처리
     /// </summary>
     private void OnTriggerEnter(Collider other)
     {
@@ -53,13 +61,15 @@ public class DamageLine : MonoBehaviour
             return;
         }
 
+        Debug.Log("[DamageLine] 몬스터 방어선 통과");
 
+        // 병사 한 명 감소
         if (squadManager != null)
         {
             squadManager.RemoveOneSoldier();
         }
 
-        // 임시 몬스터 제거
+        // 몬스터 제거는 임시 처리
         enemy.gameObject.SetActive(false);
     }
 }
