@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7181957554767505398}
   - component: {fileID: 2752880226268360062}
-  - component: {fileID: 9138463767685320561}
   - component: {fileID: 5406407406328679316}
   m_Layer: 10
   m_Name: Solider
@@ -49,35 +48,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20ac2c71ee05621439853b963628a51b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SoldierAttack
-  bulletPrefab: {fileID: 8307298274136730328, guid: 3e6c8290ee920094da57b89b1822705e, type: 3}
-  bulletPool: {fileID: 0}
   firePoint: {fileID: 8557784688854896453}
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  attackRange: 30
+  bulletPool: {fileID: 0}
+  visualBulletSpeed: 80
   baseDamage: 10
   baseAttackDelay: 0.3
   projectileUpgradeData: {fileID: 11400000, guid: 6f6e5cd23afe0974ebb4e7a5c2a68ec7, type: 2}
---- !u!136 &9138463767685320561
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1490259114253722615}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &5406407406328679316
 MonoBehaviour:
   m_ObjectHideFlags: 0

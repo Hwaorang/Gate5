@@ -1,135 +1,108 @@
 using UnityEngine;
 
 /// <summary>
-/// 병사의 자동 사격을 담당하는 스크립트
+/// 병사의 공격 기능을 담당한다.
 ///
-/// 역할:
-/// 1. 일정 공격 주기마다 전방으로 총알 발사
-/// 2. 공격력 / 공격속도 강화 적용
-/// 3. 투사체 강화 단계에 따라
-///    - 투사체 개수 증가
-///    - 최대 개수 이후 투사체 크기 증가
+/// 현재 구조
+/// - 공격 타이밍은 SquadManager에서 관리
+/// - SoldierAttack은 Fire() 호출을 받으면 공격 수행
+/// - 실제 데미지 판정은 Raycast 사용
+/// - Bullet은 데미지 판정 없이 시각 연출만 담당
 ///
-/// 실제 강화 수치는 ProjectileUpgradeData에서 가져온다.
+/// 강화
+/// - 공격력 증가
+/// - 공격속도 증가
+/// - 투사체 개수 증가
+/// - 최대 투사체 개수 이후 투사체 크기 증가
 /// </summary>
 public class SoldierAttack : MonoBehaviour
 {
-    [Header("총알 설정")]
+    [Header("공격 위치")]
+    // 총알과 Raycast가 시작되는 위치
+    [SerializeField] private Transform firePoint;
 
-    // 발사할 Bullet Prefab
-    [SerializeField]
-    private GameObject bulletPrefab;
 
-    [Header("총알 풀")]
-    [SerializeField]
-    private BulletPool bulletPool;
+    [Header("공격 판정")]
+    // Raycast가 Enemy만 감지하도록 설정
+    [SerializeField] private LayerMask enemyLayer;
 
-    // 총알이 생성될 위치와 기본 발사 방향
-    [SerializeField]
-    private Transform firePoint;
+    // Raycast 최대 거리
+    [SerializeField] private float attackRange = 30f;
+
+
+    [Header("총알 연출")]
+    // 시각용 Bullet을 가져올 Object Pool
+    [SerializeField] private BulletPool bulletPool;
+
+    // 실제 판정은 즉시 이루어지기 때문에
+    // 시각적으로 어색하지 않도록 총알을 빠르게 이동시킨다.
+    [SerializeField] private float visualBulletSpeed = 80f;
 
 
     [Header("기본 공격 스탯")]
+    // 강화가 적용되기 전 기본 공격력
+    [SerializeField] private float baseDamage = 10f;
 
-    // 병사의 기본 공격력
-    [SerializeField]
-    private float baseDamage = 10f;
-
-    // 병사의 기본 공격 간격
-    // 값이 작을수록 더 빠르게 공격한다.
-    [SerializeField]
-    private float baseAttackDelay = 1f;
+    // 강화가 적용되기 전 기본 공격 간격
+    [SerializeField] private float baseAttackDelay = 1f;
 
 
     [Header("투사체 강화 데이터")]
-
-    // 투사체 기본 개수, 최대 개수,
-    // 크기 증가량, 퍼짐 각도 등의 설정 데이터
-    [SerializeField]
-    private ProjectileUpgradeData projectileUpgradeData;
+    // 투사체 개수, 최대 개수, 퍼짐 각도,
+    // 크기 증가량 등을 가지고 있는 ScriptableObject
+    [SerializeField] private ProjectileUpgradeData projectileUpgradeData;
 
 
-    // 현재 실제로 적용되고 있는 공격력
+    // 현재 적용 중인 실제 공격력
     private float currentDamage;
 
-    // 현재 실제 공격 간격
+    // 현재 적용 중인 실제 공격 간격
     private float currentAttackDelay;
 
-    // 마지막 공격 이후 흐른 시간
-    private float attackTimer;
-
-
-    // 현재 한 번에 발사하는 투사체 개수
+    // 현재 한 번의 공격에서 발사할 투사체 개수
     private int projectileCount;
 
-    // 현재 투사체 크기 배율
-    // 1 = 기본 크기
-    // 1.2 = 기본보다 20% 큰 크기
+    // 현재 시각용 투사체 크기 배율
     private float projectileScaleMultiplier;
 
 
-    // 외부에서 현재 공격력 / 공격속도를 확인할 수 있도록 제공
+    // 외부에서 현재 공격 정보를 확인하기 위한 프로퍼티
     public float CurrentDamage => currentDamage;
     public float CurrentAttackDelay => currentAttackDelay;
+
+    // SquadManager가 공격 주기를 확인할 때 사용
+    public float AttackDelay => currentAttackDelay;
 
 
     private void Awake()
     {
-        // 게임 시작 시 기본 공격 스탯 적용
+        // 시작 시 기본 스탯 적용
         currentDamage = baseDamage;
         currentAttackDelay = baseAttackDelay;
 
-        // 투사체 강화 0레벨 상태 적용
+        // 투사체 강화가 하나도 없는 기본 상태 적용
         ApplyProjectileUpgradeLevel(0);
     }
 
 
-    private void Update()
-    {
-        Attack();
-    }
-
-
     /// <summary>
-    /// 공격 쿨타임을 계산하고,
-    /// 공격 가능한 시간이 되면 Fire()를 호출한다.
+    /// SquadManager에서 호출하는 실제 공격 함수.
     ///
-    /// 현재 게임 방식은 적을 직접 탐색하지 않고
-    /// 적이 없어도 전방으로 계속 자동 사격한다.
+    /// 현재 투사체 개수만큼 공격하며,
+    /// 여러 발일 경우 좌우로 일정 각도만큼 퍼져서 발사한다.
     /// </summary>
-    private void Attack()
+    public void Fire()
     {
-        attackTimer += Time.deltaTime;
-
-        // 아직 공격 쿨타임이 지나지 않았다면 종료
-        if (attackTimer < currentAttackDelay)
-        {
-            return;
-        }
-
-        Fire();
-
-        // 공격 후 타이머 초기화
-        attackTimer = 0f;
-    }
-
-
-    /// <summary>
-    /// 현재 투사체 개수만큼 총알을 생성한다.
-    ///
-    /// 투사체가 여러 개라면
-    /// FirePoint의 forward 방향을 기준으로
-    /// 좌우에 일정한 각도로 퍼지도록 발사한다.
-    /// </summary>
-    private void Fire()
-    {
-        if (bulletPool == null ||
-            firePoint == null ||
+        if (firePoint == null ||
             projectileUpgradeData == null)
         {
             return;
         }
 
+        // 여러 발을 중앙 기준으로 균등하게 퍼뜨리기 위한 시작 각도
+        //
+        // 예: 3발, spreadAngle = 5
+        // -5 / 0 / +5
         float startAngle =
             -projectileUpgradeData.spreadAngle *
             (projectileCount - 1) *
@@ -137,43 +110,108 @@ public class SoldierAttack : MonoBehaviour
 
         for (int i = 0; i < projectileCount; i++)
         {
+            // 현재 투사체의 퍼짐 각도 계산
             float angle =
                 startAngle +
                 projectileUpgradeData.spreadAngle * i;
 
+            // FirePoint 방향에 퍼짐 각도를 적용
             Quaternion rotation =
                 firePoint.rotation *
-                Quaternion.Euler(
-                    0f,
-                    angle,
-                    0f
-                );
+                Quaternion.Euler(0f, angle, 0f);
 
-            // Instantiate 대신 Pool에서 가져오기
-            GameObject bullet =
-                bulletPool.GetBullet(
-                    firePoint.position,
-                    rotation
-                );
+            Vector3 direction =
+                rotation * Vector3.forward;
 
-            // Pool에서 재사용되므로
-            // 크기도 현재 강화값으로 다시 정확히 설정
-            bullet.transform.localScale =
-                Vector3.one *
-                projectileScaleMultiplier;
+            // 실제 데미지 판정
+            FireRay(direction);
 
-            Bullet bulletScript =
-                bullet.GetComponent<Bullet>();
-
-            if (bulletScript != null)
-            {
-                bulletScript.Init(
-                    rotation * Vector3.forward,
-                    currentDamage,
-                    bulletPool
-                );
-            }
+            // 시각용 총알 출력
+            FireVisualBullet(rotation, direction);
         }
+    }
+
+
+    /// <summary>
+    /// Raycast를 이용해 실제 공격 판정을 처리한다.
+    ///
+    /// Bullet Collider를 사용하지 않기 때문에
+    /// 대량의 총알에서 발생하는 Physics 비용을 줄일 수 있다.
+    /// </summary>
+    private void FireRay(Vector3 direction)
+    {
+        Ray ray = new Ray(
+            firePoint.position,
+            direction
+        );
+
+        bool isHit = Physics.Raycast(
+            ray,
+            out RaycastHit hit,
+            attackRange,
+            enemyLayer
+        );
+
+        if (!isHit)
+        {
+            return;
+        }
+
+        Debug.Log(
+            $"{name} : Ray Hit = {hit.collider.name} / Layer = {LayerMask.LayerToName(hit.collider.gameObject.layer)}"
+        );
+
+        EnemyHealth enemy =
+            hit.collider.GetComponentInParent<EnemyHealth>();
+
+        if (enemy == null)
+        {
+            return;
+        }
+
+        enemy.TakeDamage(currentDamage);
+    }
+
+
+    /// <summary>
+    /// 실제 데미지와는 관계없는 시각용 Bullet을 출력한다.
+    ///
+    /// Bullet에는 Collider / Rigidbody가 필요하지 않으며
+    /// 빠르게 앞으로 이동하는 연출만 담당한다.
+    /// </summary>
+    private void FireVisualBullet(
+        Quaternion rotation,
+        Vector3 direction)
+    {
+        if (bulletPool == null)
+        {
+            return;
+        }
+
+        GameObject bullet =
+            bulletPool.GetBullet(
+                firePoint.position,
+                rotation
+            );
+
+        // Object Pool에서 재사용되는 Bullet이므로
+        // 이전 Scale이 남지 않게 항상 직접 설정한다.
+        bullet.transform.localScale =
+            Vector3.one * projectileScaleMultiplier;
+
+        Bullet bulletScript =
+            bullet.GetComponent<Bullet>();
+
+        if (bulletScript == null)
+        {
+            return;
+        }
+
+        bulletScript.InitVisual(
+            direction,
+            visualBulletSpeed,
+            bulletPool
+        );
     }
 
 
@@ -183,7 +221,7 @@ public class SoldierAttack : MonoBehaviour
     /// 예:
     /// baseDamage = 10
     /// multiplier = 1.2
-    /// → 실제 공격력 = 12
+    /// → currentDamage = 12
     /// </summary>
     public void SetDamageMultiplier(float multiplier)
     {
@@ -195,18 +233,16 @@ public class SoldierAttack : MonoBehaviour
     /// <summary>
     /// 공격속도 강화 배율을 적용한다.
     ///
-    /// 공격속도가 증가할수록
-    /// 공격 간격은 짧아져야 하므로
-    /// 기본 공격 간격을 multiplier로 나눈다.
+    /// 공격속도가 증가하면 공격 간격은 감소한다.
     ///
     /// 예:
-    /// baseAttackDelay = 1초
+    /// baseAttackDelay = 1
     /// multiplier = 2
-    /// → 공격 간격 = 0.5초
+    /// → currentAttackDelay = 0.5초
     /// </summary>
     public void SetAttackSpeedMultiplier(float multiplier)
     {
-        // 잘못된 값으로 나누는 상황 방지
+        // 0 이하로 나누는 상황 방지
         if (multiplier <= 0f)
         {
             return;
@@ -215,8 +251,7 @@ public class SoldierAttack : MonoBehaviour
         currentAttackDelay =
             baseAttackDelay / multiplier;
 
-        // 공격속도가 너무 빨라져
-        // 지나치게 많은 총알이 생성되는 것을 방지
+        // 공격속도가 지나치게 빨라지는 것을 방지
         currentAttackDelay =
             Mathf.Max(
                 0.1f,
@@ -226,17 +261,14 @@ public class SoldierAttack : MonoBehaviour
 
 
     /// <summary>
-    /// SquadManager가 관리하고 있는
-    /// 현재 투사체 강화 레벨을 Soldier에게 적용한다.
+    /// SquadManager가 가지고 있는
+    /// 현재 투사체 강화 레벨을 적용한다.
     ///
-    /// 기존 값에 계속 +1 하는 방식이 아니라
-    /// 전달받은 강화 레벨을 기준으로
-    /// 현재 상태를 다시 계산한다.
-    ///
-    /// 따라서 Object Pool에서 병사가 다시 생성되어도
-    /// 현재 강화 상태를 정확하게 재적용할 수 있다.
+    /// Object Pool에서 다시 사용되는 Soldier도
+    /// 현재 강화 상태를 그대로 적용받을 수 있다.
     /// </summary>
-    public void SetProjectileUpgradeLevel(int upgradeLevel)
+    public void SetProjectileUpgradeLevel(
+        int upgradeLevel)
     {
         ApplyProjectileUpgradeLevel(
             upgradeLevel
@@ -245,13 +277,11 @@ public class SoldierAttack : MonoBehaviour
 
 
     /// <summary>
-    /// 투사체 강화 레벨을 기준으로
-    /// 투사체 개수와 크기를 계산한다.
+    /// 투사체 강화 레벨에 따라
+    /// 현재 발사 개수와 크기를 계산한다.
     ///
     /// 예:
-    ///
-    /// BaseCount = 1
-    /// MaxCount = 5
+    /// 기본 1발 / 최대 5발
     ///
     /// Lv.0 → 1발
     /// Lv.1 → 2발
@@ -259,44 +289,32 @@ public class SoldierAttack : MonoBehaviour
     /// Lv.3 → 4발
     /// Lv.4 → 5발
     ///
-    /// 이후:
-    /// Lv.5 → 5발 + 크기 증가
-    /// Lv.6 → 5발 + 크기 추가 증가
+    /// 최대 개수 도달 이후부터는
+    /// 투사체 크기가 증가한다.
     /// </summary>
     private void ApplyProjectileUpgradeLevel(
         int upgradeLevel)
     {
         if (projectileUpgradeData == null)
         {
-            Debug.LogWarning(
-                $"{name} : ProjectileUpgradeData가 연결되지 않았습니다."
-            );
-
             return;
         }
 
-
-        // 음수 레벨 방지
+        // 잘못된 음수 강화 레벨 방지
         upgradeLevel =
-            Mathf.Max(
-                0,
-                upgradeLevel
-            );
+            Mathf.Max(0, upgradeLevel);
 
 
-        // 개수 증가에 사용할 수 있는
-        // 최대 강화 횟수 계산
+        // 투사체 개수를 증가시킬 수 있는 최대 횟수
         //
-        // 예:
-        // 기본 1발 / 최대 5발
-        // → 개수 증가 가능 횟수 = 4
+        // 기본 1 / 최대 5
+        // → 개수 강화 가능 횟수 = 4
         int countUpgradeLimit =
             projectileUpgradeData.maxProjectileCount -
             projectileUpgradeData.baseProjectileCount;
 
 
-        // 현재 강화 레벨 중
-        // 투사체 개수 증가에 사용할 레벨 계산
+        // 현재 강화 중 개수 증가에 사용할 레벨
         int countUpgradeLevel =
             Mathf.Min(
                 upgradeLevel,
@@ -304,19 +322,13 @@ public class SoldierAttack : MonoBehaviour
             );
 
 
-        // 현재 실제 투사체 개수 계산
+        // 실제 현재 투사체 개수
         projectileCount =
             projectileUpgradeData.baseProjectileCount +
             countUpgradeLevel;
 
 
-        // 최대 투사체 개수를 넘어선 이후의
-        // 남는 강화 레벨 계산
-        //
-        // 예:
-        // 최대 개수 도달이 Lv.4인데
-        // 현재 Lv.6이면
-        // 크기 강화 레벨 = 2
+        // 최대 투사체 개수 이후 남은 강화 레벨
         int scaleUpgradeLevel =
             Mathf.Max(
                 0,
@@ -324,7 +336,7 @@ public class SoldierAttack : MonoBehaviour
             );
 
 
-        // 현재 투사체 크기 배율 계산
+        // 실제 현재 투사체 크기
         projectileScaleMultiplier =
             projectileUpgradeData.baseScaleMultiplier +
             scaleUpgradeLevel *
@@ -333,13 +345,19 @@ public class SoldierAttack : MonoBehaviour
 
 #if UNITY_EDITOR
         Debug.Log(
-            $"{name} / Projectile Lv.{upgradeLevel}" +
+            $"{name}" +
+            $" / Projectile Lv.{upgradeLevel}" +
             $" / Count : {projectileCount}" +
             $" / Scale : {projectileScaleMultiplier:F1}"
         );
 #endif
     }
 
+
+    /// <summary>
+    /// SquadManager에서 BulletPool을 전달할 때 사용한다.
+    /// Pool에서 가져온 Soldier에도 다시 연결할 수 있다.
+    /// </summary>
     public void SetBulletPool(BulletPool pool)
     {
         bulletPool = pool;
