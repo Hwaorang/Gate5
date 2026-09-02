@@ -13,6 +13,8 @@ public class PlayerController : MonoBehaviour
     [Header("좌우 이동 범위")]
     [SerializeField] private float xLimit = 4f;
 
+    public float XLimit => xLimit;
+
     private void Update()
     {
         Move();
