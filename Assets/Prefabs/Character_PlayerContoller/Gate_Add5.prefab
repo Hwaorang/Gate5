@@ -81,7 +81,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Gate
   gateType: 0
   value: 5
+  changePerHit: 1
   valueText: {fileID: 4959477804306957796}
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!65 &3939385146109754539
 BoxCollider:
   m_ObjectHideFlags: 0

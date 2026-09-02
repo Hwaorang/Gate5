@@ -25,6 +25,7 @@ public class Gate : MonoBehaviour
     // 게이트 중복 적용 방지
     private bool isUsed;
 
+    [SerializeField] private LayerMask playerLayer;
 
     private void Start()
     {
@@ -95,9 +96,15 @@ public class Gate : MonoBehaviour
             return;
         }
 
-        // PlayerRoot에서 SquadManager 찾기
+        // Player Layer가 아니면 무시
+        if ((playerLayer.value & (1 << other.gameObject.layer)) == 0)
+        {
+            return;
+        }
+
+        // PlayerRoot에 붙어있는 SquadManager 찾기
         SquadManager squadManager =
-            other.GetComponentInParent<SquadManager>();
+            other.GetComponent<SquadManager>();
 
         if (squadManager == null)
         {
