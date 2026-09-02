@@ -19,10 +19,15 @@ MonoBehaviour:
     - goDatas_byGlobalId:
         keys:
         - globalObjectIdString: GlobalObjectId_V1-2-2adbf8d43c2ae7d49a98a0ef979c0692-148714412-0
+        - globalObjectIdString: GlobalObjectId_V1-2-2adbf8d43c2ae7d49a98a0ef979c0692-1333746829-0
         values:
         - colorIndex: 2
           iconNameOrGuid: AvatarMask On Icon
           isIconRecursive: 1
           isColorRecursive: 1
+        - colorIndex: 7
+          iconNameOrGuid: AvatarMask On Icon
+          isIconRecursive: 0
+          isColorRecursive: 0
   bookmarks: []
   bookmarkedScenePaths: []

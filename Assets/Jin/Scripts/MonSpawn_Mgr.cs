@@ -1,6 +1,7 @@
-using NUnit.Framework;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class MonSpawn_Mgr : MonoBehaviour
 {
@@ -11,6 +12,10 @@ public class MonSpawn_Mgr : MonoBehaviour
     Dictionary<string, Queue<GameObject>> pools = new Dictionary<string, Queue<GameObject>>();
 
     int poolSize = 10;
+
+    Vector3 curPos;
+
+    Vector3 targetPos;
     void Awake()
     {
         if (instance == null)
@@ -21,9 +26,15 @@ public class MonSpawn_Mgr : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+
     }
     void Start()
     {
+        curPos = transform.position;
+
+        targetPos = FindFirstObjectByType<PlayerController>().transform.position;
+
         foreach (GameObject obj in objList)
         {
             pools[obj.name] = new Queue<GameObject>();
@@ -72,5 +83,14 @@ public class MonSpawn_Mgr : MonoBehaviour
         }
         go.SetActive(false);
         pools[name].Enqueue(go);
+    }
+
+    IEnumerator SpawnMon()
+    {
+        while (true)
+        {
+
+            yield return null;
+        }
     }
 }
