@@ -308,4 +308,26 @@ public class SquadManager : MonoBehaviour
             }
         }
     }
+
+    /// <summary>
+    /// 현재 병사 중 한 명을 제거한다.
+    /// </summary>
+    public void RemoveOneSoldier()
+    {
+        if (soldiers.Count <= 0)
+        {
+            return;
+        }
+
+        GameObject soldierObject =
+            soldiers[soldiers.Count - 1];
+
+        SoldierUnit soldier =
+            soldierObject.GetComponent<SoldierUnit>();
+
+        if (soldier != null)
+        {
+            RemoveUnit(soldier);
+        }
+    }
 }
