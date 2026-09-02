@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -12,8 +13,10 @@ public class SquadManager : MonoBehaviour
     // 플레이어 기본 스탯 정보
     [SerializeField] private PlayerStats playerStats;
 
+    [Header("대형 설정")]
     // 병사 간격
     [SerializeField] private float spacing = 1.2f;
+    [SerializeField] private int maxColumnCount = 7;
 
     // 현재 사용 중인 병사 목록
     private List<GameObject> soldiers = new List<GameObject>();
@@ -33,10 +36,20 @@ public class SquadManager : MonoBehaviour
     // 0 = 기본 상태
     private int projectileUpgradeLevel = 0;
 
+    //공격타이머
+    [SerializeField] private int shotsPerFrame = 20;
+    private float attackTimer;
+    private bool isFiring;
+    private int fireIndex;
+
     [SerializeField]
     private BulletPool bulletPool;
 
+    private readonly List<SoldierAttack> soldierAttacks = new();
+
     public IReadOnlyList<GameObject> Soldiers => soldiers;
+
+    public event Action<int> OnSoldierCountChanged;
 
     private void Start()
     {
@@ -46,6 +59,9 @@ public class SquadManager : MonoBehaviour
 
     private void Update()
     {
+        HandleAttackTimer();
+        HandleDistributedFire();
+
         // 테스트용 병사 추가
         // 나중에 제거 가능
         if (Keyboard.current.spaceKey.wasPressedThisFrame)
@@ -66,41 +82,41 @@ public class SquadManager : MonoBehaviour
 
             soldiers.Add(soldier);
 
-            // Soldier가 자신을 관리하는 SquadManager를 알도록 설정
-            SoldierUnit soldierUnit =
+            SoldierUnit unit =
                 soldier.GetComponent<SoldierUnit>();
 
-            if (soldierUnit != null)
+            if (unit != null)
             {
-                soldierUnit.Init(this);
+                unit.Init(this);
             }
 
-            // 현재 강화 상태를 새 Soldier에게도 적용
-            SoldierAttack soldierAttack =
+            SoldierAttack attack =
                 soldier.GetComponent<SoldierAttack>();
 
-            if (soldierAttack != null)
+            if (attack != null)
             {
-                soldierAttack.SetDamageMultiplier(
+                attack.SetDamageMultiplier(
                     damageMultiplier
                 );
 
-                soldierAttack.SetAttackSpeedMultiplier(
+                attack.SetAttackSpeedMultiplier(
                     attackSpeedMultiplier
                 );
 
-                soldierAttack.SetProjectileUpgradeLevel(
+                attack.SetProjectileUpgradeLevel(
                     projectileUpgradeLevel
                 );
 
-                // Soldier가 사용할 BulletPool 전달
-                soldierAttack.SetBulletPool(
-                    bulletPool
-                );
+                attack.SetBulletPool(bulletPool);
+
+                // 처음 한 번만 저장
+                soldierAttacks.Add(attack);
             }
         }
 
         UpdateFormation();
+
+        OnSoldierCountChanged?.Invoke(CurrentCount);
     }
 
     /// <summary>
@@ -113,25 +129,30 @@ public class SquadManager : MonoBehaviour
             return;
         }
 
-        GameObject soldierObject = soldier.gameObject;
+        GameObject soldierObject =
+            soldier.gameObject;
 
-        // 리스트에 존재하는 Soldier인지 확인 후 제거
-        bool removed = soldiers.Remove(soldierObject);
+        bool removed =
+            soldiers.Remove(soldierObject);
 
         if (!removed)
         {
-            Debug.LogWarning(
-                $"{soldierObject.name}을 병사 리스트에서 찾지 못했습니다."
-            );
-
             return;
         }
 
-        // Destroy 대신 오브젝트 풀로 반환
+        SoldierAttack attack =
+            soldierObject.GetComponent<SoldierAttack>();
+
+        if (attack != null)
+        {
+            soldierAttacks.Remove(attack);
+        }
+
         soldierPool.ReturnSoldier(soldierObject);
 
-        // 남아있는 병사 재정렬
         UpdateFormation();
+
+        OnSoldierCountChanged?.Invoke(CurrentCount);
 
         CheckGameOver();
     }
@@ -146,30 +167,20 @@ public class SquadManager : MonoBehaviour
             return;
         }
 
-        // 병사 수에 따라 열 개수를 자동 계산
-        // 예: 15명 -> 4열
         int columnCount =
             Mathf.CeilToInt(Mathf.Sqrt(soldiers.Count));
-
-        // 너무 넓어지는 것을 방지하기 위한 최대 열 개수
-        int maxColumnCount = 7;
 
         columnCount =
             Mathf.Min(columnCount, maxColumnCount);
 
         for (int i = 0; i < soldiers.Count; i++)
         {
-            // 현재 병사가 몇 번째 행인지 계산
             int row = i / columnCount;
-
-            // 현재 행에서 몇 번째 위치인지 계산
             int column = i % columnCount;
 
-            // 현재 행의 첫 번째 병사 인덱스
             int rowStartIndex =
                 row * columnCount;
 
-            // 이 행에 실제로 배치될 병사 수
             int remainingSoldiers =
                 soldiers.Count - rowStartIndex;
 
@@ -179,8 +190,6 @@ public class SquadManager : MonoBehaviour
                     remainingSoldiers
                 );
 
-            // 현재 행의 실제 병사 수 기준으로
-            // 가운데 정렬하기 위한 X 오프셋 계산
             float xOffset =
                 (soldiersInThisRow - 1)
                 * spacing
@@ -328,6 +337,70 @@ public class SquadManager : MonoBehaviour
         if (soldier != null)
         {
             RemoveUnit(soldier);
+        }
+    }
+
+    private void HandleAttackTimer()
+    {
+        if (soldierAttacks.Count == 0)
+        {
+            return;
+        }
+
+        // 이미 발사 중이면
+        // 다음 공격 타이머를 시작하지 않음
+        if (isFiring)
+        {
+            return;
+        }
+
+        attackTimer += Time.deltaTime;
+
+        float attackDelay =
+            soldierAttacks[0].AttackDelay;
+
+        if (attackTimer < attackDelay)
+        {
+            return;
+        }
+
+        attackTimer = 0f;
+
+        // 분산 발사 시작
+        isFiring = true;
+        fireIndex = 0;
+    }
+
+    private void HandleDistributedFire()
+    {
+        if (!isFiring)
+        {
+            return;
+        }
+
+        int firedThisFrame = 0;
+
+        while (
+            fireIndex < soldierAttacks.Count &&
+            firedThisFrame < shotsPerFrame
+        )
+        {
+            SoldierAttack attack =
+                soldierAttacks[fireIndex];
+
+            if (attack != null)
+            {
+                attack.Fire();
+            }
+
+            fireIndex++;
+            firedThisFrame++;
+        }
+
+        // 모든 병사가 발사를 끝냈다면
+        if (fireIndex >= soldierAttacks.Count)
+        {
+            isFiring = false;
         }
     }
 }
