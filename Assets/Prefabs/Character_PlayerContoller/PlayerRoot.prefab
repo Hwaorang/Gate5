@@ -47,6 +47,7 @@ GameObject:
   - component: {fileID: 2883009724734663823}
   - component: {fileID: 7110261656882566274}
   - component: {fileID: 2467637567130527127}
+  - component: {fileID: 6172481598011547863}
   m_Layer: 7
   m_Name: PlayerRoot
   m_TagString: Untagged
@@ -100,6 +101,7 @@ MonoBehaviour:
   playerStats: {fileID: 7110261656882566274}
   spacing: 1.2
   maxColumnCount: 7
+  fireLine: {fileID: 0}
   shotsPerFrame: 20
   bulletPool: {fileID: 0}
   bulletFx: {fileID: 0}
@@ -196,3 +198,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerExperience
   upgradeManager: {fileID: 0}
   progressionData: {fileID: 11400000, guid: bfbc52ff924dd994ab0e0a165cbee426, type: 2}
+--- !u!114 &6172481598011547863
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3858501899684243877}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b62a97c6d3bdd0d45b38965f359799b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LobbyUpgradeApplier
+  playerStats: {fileID: 7110261656882566274}
+  squadManager: {fileID: 1788119257003499149}
+  damageIncreasePerLevel: 0.05
+  moveSpeedIncreasePerLevel: 0.05
+  attackSpeedIncreasePerLevel: 0.05
+  useTestData: 1
+  testAttackLevel: 3
+  testMoveSpeedLevel: 2
+  testAttackSpeedLevel: 4
