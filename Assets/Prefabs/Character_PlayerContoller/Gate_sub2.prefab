@@ -44,7 +44,7 @@ GameObject:
   - component: {fileID: 2131615044909063770}
   - component: {fileID: 1379742920027959045}
   m_Layer: 9
-  m_Name: Gate_Multiply2
+  m_Name: Gate_sub2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
