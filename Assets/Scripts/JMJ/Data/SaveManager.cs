@@ -28,17 +28,17 @@ public class SaveManager : MonoBehaviour
         Load();
     }
 
-    // ÀúÀå
+    // ï¿½ï¿½ï¿½ï¿½
     public void Save()
     {
         string json = JsonUtility.ToJson(Data, true);
 
         File.WriteAllText(savePath, json);
 
-        Debug.Log("°ÔÀÓ µ¥ÀÌÅÍ ÀúÀå ¿Ï·á");
+        Debug.Log("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ï·ï¿½");
     }
 
-    // ºÒ·¯¿À±â
+    // ï¿½Ò·ï¿½ï¿½ï¿½ï¿½ï¿½
     public void Load()
     {
         if (File.Exists(savePath))
@@ -47,7 +47,7 @@ public class SaveManager : MonoBehaviour
 
             Data = JsonUtility.FromJson<PlayerData>(json);
 
-            Debug.Log("°ÔÀÓ µ¥ÀÌÅÍ ºÒ·¯¿À±â ¿Ï·á");
+            Debug.Log("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ò·ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ï·ï¿½");
         }
         else
         {
@@ -55,21 +55,21 @@ public class SaveManager : MonoBehaviour
 
             Save();
 
-            Debug.Log("»õ·Î¿î °ÔÀÓ µ¥ÀÌÅÍ »ý¼º");
+            Debug.Log("ï¿½ï¿½ï¿½Î¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
         }
     }
 
-    // ÀúÀå µ¥ÀÌÅÍ »èÁ¦
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     public void ResetData()
     {
         Data = new PlayerData();
 
         Save();
 
-        Debug.Log("ÀúÀå µ¥ÀÌÅÍ ÃÊ±âÈ­");
+        Debug.Log("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­");
     }
 
-    // °ñµå Ãß°¡
+    // ï¿½ï¿½ï¿½ ï¿½ß°ï¿½
     public void AddGold(int amount)
     {
         Data.gold += amount;
@@ -77,7 +77,7 @@ public class SaveManager : MonoBehaviour
         Save();
     }
 
-    // °ñµå »ç¿ë
+    // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
     public bool SpendGold(int amount)
     {
         if (Data.gold < amount)
