@@ -17,5 +17,6 @@ MonoBehaviour:
 
     Damage increases significantly.'
   icon: {fileID: 0}
-  upgradeType: 0
+  upgradeType: 2
   value: 0.5
+  maxLevel: 5

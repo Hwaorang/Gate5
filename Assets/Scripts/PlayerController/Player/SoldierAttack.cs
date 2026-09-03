@@ -203,10 +203,6 @@ public class SoldierAttack : MonoBehaviour
 
         if (bulletFx != null)
         {
-#if UNITY_EDITOR
-            Debug.Log($"Impact FX : {hit.point}");
-#endif
-
             bulletFx.PlayImpact(
                 hit.point,
                 hit.normal

@@ -15,5 +15,6 @@ MonoBehaviour:
   upgradeName: DamageSmall
   description: Damage increases slightly.
   icon: {fileID: 0}
-  upgradeType: 0
+  upgradeType: 2
   value: 0.1
+  maxLevel: 5
