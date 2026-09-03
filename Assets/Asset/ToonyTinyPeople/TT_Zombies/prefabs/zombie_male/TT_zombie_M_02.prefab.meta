@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: e9ba2677fd8e8c74aa0b91971286ab13
+timeCreated: 1505607498
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 100508
+  packageName: Toony Tiny Zombies pack
+  packageVersion: 1.2
+  assetPath: Assets/ToonyTinyPeople/TT_Zombies/prefabs/zombie_male/TT_zombie_M_02.prefab
+  uploadId: 980952

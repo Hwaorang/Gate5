@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: c46dab8975bfc754e8c67c54b6e0e1e2
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 247241
+  packageName: Modular 3D Text - In-Game 3D UI System
+  packageVersion: 4.9.2
+  assetPath: Assets/Plugins/Tiny Giant Studio/Modular 3D Text/Scripts/Sample Scene/MText_SampleScene_Announcement.cs
+  uploadId: 877966

@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 9a2c76f58cbcee94ba836cc95788869a
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {fileID: 2800000, guid: 08799c2d4ac203d4abfea66f06ee0b33, type: 3}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 247241
+  packageName: Modular 3D Text - In-Game 3D UI System
+  packageVersion: 4.9.2
+  assetPath: Assets/Plugins/Tiny Giant Studio/Modular 3D Text/Scripts/Input/ButtonInputProcessor.cs
+  uploadId: 877966

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 5e3965b8b40359e4b8e8deeb37de176a
+timeCreated: 1505622586
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 100508
+  packageName: Toony Tiny Zombies pack
+  packageVersion: 1.2
+  assetPath: Assets/ToonyTinyPeople/TT_Zombies/model/materials/TT_Zombies_E.mat
+  uploadId: 980952

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: ebb30f916d75f8e43add69628ba7f4da
+timeCreated: 1505609558
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 100508
+  packageName: Toony Tiny Zombies pack
+  packageVersion: 1.2
+  assetPath: Assets/ToonyTinyPeople/TT_Zombies/prefabs/zombie_female/TT_zombie_F_13_nurse.prefab
+  uploadId: 980952

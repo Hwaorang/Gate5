@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 1ce7604532dbce04e812a36937c3b5d4
+timeCreated: 1505607521
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 100508
+  packageName: Toony Tiny Zombies pack
+  packageVersion: 1.2
+  assetPath: Assets/ToonyTinyPeople/TT_Zombies/prefabs/zombie_male/TT_zombie_M_11_farmer.prefab
+  uploadId: 980952

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 23b26bb3ce7a6be4881c1c75c979fa8e
+timeCreated: 1505607544
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 100508
+  packageName: Toony Tiny Zombies pack
+  packageVersion: 1.2
+  assetPath: Assets/ToonyTinyPeople/TT_Zombies/prefabs/zombie_male/TT_zombie_M_18_doctor.prefab
+  uploadId: 980952
