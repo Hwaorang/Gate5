@@ -1,4 +1,5 @@
 using UnityEngine;
+using GptAsset.HyperCasualBulletFX;
 
 /// <summary>
 /// 병사의 공격 기능을 담당한다.
@@ -52,6 +53,9 @@ public class SoldierAttack : MonoBehaviour
     // 크기 증가량 등을 가지고 있는 ScriptableObject
     [SerializeField] private ProjectileUpgradeData projectileUpgradeData;
 
+    [Header("총알 FX")]
+    [SerializeField] private HyperCasualBulletFx bulletFx;
+
 
     // 현재 적용 중인 실제 공격력
     private float currentDamage;
@@ -64,6 +68,9 @@ public class SoldierAttack : MonoBehaviour
 
     // 현재 시각용 투사체 크기 배율
     private float projectileScaleMultiplier;
+
+    // Squad 전체가 사용할 앞쪽 발사 기준점
+    private Transform fireLine;
 
 
     // 외부에서 현재 공격 정보를 확인하기 위한 프로퍼티
@@ -127,8 +134,28 @@ public class SoldierAttack : MonoBehaviour
             FireRay(direction);
 
             // 시각용 총알 출력
-            FireVisualBullet(rotation, direction);
+            PlayBulletFx(direction);
         }
+    }
+
+    /// <summary>
+    /// 실제 판정과 별개로
+    /// 총알이 날아가는 시각 효과를 재생한다.
+    /// </summary>
+    private void PlayBulletFx(Vector3 direction)
+    {
+        if (bulletFx == null)
+        {
+            return;
+        }
+
+        Vector3 fireOrigin = GetFireOrigin();
+
+        bulletFx.Play(
+            fireOrigin,
+            direction,
+            attackRange
+        );
     }
 
 
@@ -140,13 +167,16 @@ public class SoldierAttack : MonoBehaviour
     /// </summary>
     private void FireRay(Vector3 direction)
     {
+        Vector3 fireOrigin = GetFireOrigin();
+
         Ray ray = new Ray(
-            firePoint.position,
+            fireOrigin,
             direction
         );
 
         bool isHit = Physics.Raycast(
-            ray,
+            fireOrigin,
+            direction,
             out RaycastHit hit,
             attackRange,
             enemyLayer
@@ -170,6 +200,18 @@ public class SoldierAttack : MonoBehaviour
         }
 
         enemy.TakeDamage(currentDamage);
+
+        if (bulletFx != null)
+        {
+#if UNITY_EDITOR
+            Debug.Log($"Impact FX : {hit.point}");
+#endif
+
+            bulletFx.PlayImpact(
+                hit.point,
+                hit.normal
+            );
+        }
     }
 
 
@@ -361,5 +403,39 @@ public class SoldierAttack : MonoBehaviour
     public void SetBulletPool(BulletPool pool)
     {
         bulletPool = pool;
+    }
+
+    public void SetBulletFx(
+    HyperCasualBulletFx fx)
+    {
+        bulletFx = fx;
+    }
+
+    /// <summary>
+    /// Squad의 앞쪽 발사 기준점을 설정한다.
+    /// </summary>
+    public void SetFireLine(Transform line)
+    {
+        fireLine = line;
+    }
+
+    /// <summary>
+    /// 병사의 X 위치는 유지하면서
+    /// Z 위치는 Squad의 앞쪽 FireLine을 사용한다.
+    /// </summary>
+    private Vector3 GetFireOrigin()
+    {
+        // FireLine이 연결되지 않았다면
+        // 기존 FirePoint 사용
+        if (fireLine == null)
+        {
+            return firePoint.position;
+        }
+
+        return new Vector3(
+            firePoint.position.x,
+            fireLine.position.y,
+            fireLine.position.z
+        );
     }
 }
