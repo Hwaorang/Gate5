@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 78d2bde9b0117084fa694e4487b894e2
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 247241
+  packageName: Modular 3D Text - In-Game 3D UI System
+  packageVersion: 4.9.2
+  assetPath: Assets/Plugins/Tiny Giant Studio/Modular 3D Text/Fonts/League Gothic
+    Italic Regular.asset
+  uploadId: 877966

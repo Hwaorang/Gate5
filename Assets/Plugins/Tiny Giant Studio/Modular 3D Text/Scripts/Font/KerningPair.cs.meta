@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: ea2e2b8a270c0004ab23acd10d2e94fa
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {fileID: 2800000, guid: 71a3aa7acb042be428e37e7c6720ac87, type: 3}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 247241
+  packageName: Modular 3D Text - In-Game 3D UI System
+  packageVersion: 4.9.2
+  assetPath: Assets/Plugins/Tiny Giant Studio/Modular 3D Text/Scripts/Font/KerningPair.cs
+  uploadId: 877966

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 991492433da449c42a7af48bf42e686a
+timeCreated: 1505609555
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 100508
+  packageName: Toony Tiny Zombies pack
+  packageVersion: 1.2
+  assetPath: Assets/ToonyTinyPeople/TT_Zombies/prefabs/zombie_female/TT_zombie_F_12_doctor.prefab
+  uploadId: 980952

@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: fff1552ebc8128e4d82fefc737d93066
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 247241
+  packageName: Modular 3D Text - In-Game 3D UI System
+  packageVersion: 4.9.2
+  assetPath: Assets/Plugins/Tiny Giant Studio/Modular 3D Text/Utility/M3D Editor
+    Settings.asset
+  uploadId: 877966

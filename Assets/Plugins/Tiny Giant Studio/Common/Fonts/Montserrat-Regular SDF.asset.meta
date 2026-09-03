@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 5f7aecc8015b29a4fa747b92096f9790
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 247241
+  packageName: Modular 3D Text - In-Game 3D UI System
+  packageVersion: 4.9.2
+  assetPath: Assets/Plugins/Tiny Giant Studio/Common/Fonts/Montserrat-Regular SDF.asset
+  uploadId: 877966
