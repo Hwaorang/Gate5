@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.gptasset.hypercasual-bullet-fx": "file:E:/GPT_Asset/HyperCasualBulletFX",
     "com.unity.ai.navigation": "2.0.12",
     "com.unity.collab-proxy": "2.12.4",
     "com.unity.ide.rider": "3.0.40",

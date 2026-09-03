@@ -53,7 +53,7 @@ public class Mon_Ctrl : MonoBehaviour
 
         if (targetPos != null)
         {
-            Debug.Log("target_Set");
+            //Debug.Log("target_Set");
             targetPos = new Vector3(this.transform.position.x, target.position.y, target.position.z);
         }
     }
@@ -78,6 +78,8 @@ public class Mon_Ctrl : MonoBehaviour
         {
             arrive = true;
             //Damage 
+            Debug.Log("Damage Call");
+            //
             MonSpawn_Mgr.instance.ReturnObject(objname, this.gameObject);
         }
     }
