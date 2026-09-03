@@ -17,5 +17,6 @@ MonoBehaviour:
 
     Soldier attack power increases by 10%.'
   icon: {fileID: 0}
-  upgradeType: 0
+  upgradeType: 2
   value: 0.1
+  maxLevel: 5
