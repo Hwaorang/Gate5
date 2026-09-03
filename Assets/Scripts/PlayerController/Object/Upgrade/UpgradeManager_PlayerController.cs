@@ -103,10 +103,24 @@ public class UpgradeManager_PlayerController : MonoBehaviour
 
     public void SelectUpgrade(UpgradeData data)
     {
+#if UNITY_EDITOR
+
+        Debug.Log("[SelectUpgrade 호출됨]");
+#endif
+
         if (data == null)
         {
             return;
         }
+
+#if UNITY_EDITOR
+        Debug.Log(
+            $"[선택 데이터] " +
+            $"Name={data.upgradeName}, " +
+            $"Type={data.upgradeType}, " +
+            $"Value={data.value}"
+        );
+#endif
 
         int currentLevel = GetUpgradeLevel(data.upgradeType);
 
@@ -127,6 +141,15 @@ public class UpgradeManager_PlayerController : MonoBehaviour
         {
             return;
         }
+
+#if UNITY_EDITOR
+        Debug.Log(
+            $"[강화 선택 확인] " +
+            $"Name : {data.upgradeName} / " +
+            $"Type : {data.upgradeType} / " +
+            $"Value : {data.value}"
+        );
+#endif
 
         // 강화 적용
         strategy.Apply(data.value);

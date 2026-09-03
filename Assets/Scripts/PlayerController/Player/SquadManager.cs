@@ -30,11 +30,25 @@ public class SquadManager : MonoBehaviour
 
     // 현재 공격력 배율
     // 1.0 = 기본 공격력
-    private float damageMultiplier = 1f;
+    // 로비에서 적용되는 영구 강화 배율
+    private float lobbyDamageMultiplier = 1f;
+
+    // 인게임 EXP 강화 배율
+    private float inGameDamageMultiplier = 1f;
+
+    //최종 공격력 배율
+    private float FinalDamageMultiplier =>
+    lobbyDamageMultiplier * inGameDamageMultiplier;
 
     // 현재 공격속도 배율
     // 1.0 = 기본 공격속도
-    private float attackSpeedMultiplier = 1f;
+    private float lobbyAttackSpeedMultiplier = 1f;
+    private float inGameAttackSpeedMultiplier = 1f;
+
+    //최종 공격속도 배율
+    private float FinalAttackSpeedMultiplier =>
+        lobbyAttackSpeedMultiplier *
+        inGameAttackSpeedMultiplier;
 
     // 현재 투사체 강화 단계
     // 0 = 기본 상태
@@ -103,11 +117,11 @@ public class SquadManager : MonoBehaviour
             if (attack != null)
             {
                 attack.SetDamageMultiplier(
-                    damageMultiplier
+                    FinalDamageMultiplier
                 );
 
                 attack.SetAttackSpeedMultiplier(
-                    attackSpeedMultiplier
+                    FinalAttackSpeedMultiplier
                 );
 
                 attack.SetProjectileUpgradeLevel(
@@ -122,6 +136,12 @@ public class SquadManager : MonoBehaviour
 
                 // 처음 한 번만 저장
                 soldierAttacks.Add(attack);
+
+#if UNITY_EDITOR
+                Debug.Log(
+                    $"Soldier Damage : {attack.CurrentDamage}"
+                );
+#endif
             }
         }
 
@@ -234,29 +254,71 @@ public class SquadManager : MonoBehaviour
     /// <summary>
     /// 모든 병사의 공격력을 증가시킨다.
     /// </summary>
+    /// <summary>
+    /// 인게임에서 획득한 공격력 강화를 적용한다.
+    /// </summary>
     public void UpgradeAllSoldierDamage(float percent)
     {
-        // 예:
-        // 10% 증가
-        // 1.0 -> 1.1 -> 1.2
-        damageMultiplier += percent;
+#if UNITY_EDITOR
+        Debug.Log(
+            $"[Damage 강화 진입] percent : {percent}"
+        );
+#endif
 
-        foreach (GameObject soldierObject in soldiers)
-        {
-            SoldierAttack soldierAttack =
-                soldierObject.GetComponent<SoldierAttack>();
+        inGameDamageMultiplier += percent;
 
-            if (soldierAttack != null)
-            {
-                soldierAttack.SetDamageMultiplier(
-                    damageMultiplier
-                );
-            }
-        }
+#if UNITY_EDITOR
 
         Debug.Log(
-            $"현재 공격력 배율 : {damageMultiplier}"
+            $"Lobby x{lobbyDamageMultiplier:F2} / " +
+            $"InGame x{inGameDamageMultiplier:F2} / " +
+            $"Final x{FinalDamageMultiplier:F2}"
         );
+#endif
+
+        ApplyDamageMultiplierToAllSoldiers();
+    }
+
+    /// <summary>
+    /// 현재 로비 배율과 인게임 배율을 합쳐
+    /// 모든 병사에게 적용한다.
+    /// </summary>
+    private void ApplyDamageMultiplierToAllSoldiers()
+    {
+        float finalMultiplier =
+            FinalDamageMultiplier;
+#if UNITY_EDITOR
+        Debug.Log(
+            $"[Damage 배율] " +
+            $"Lobby x{lobbyDamageMultiplier:F2} / " +
+            $"InGame x{inGameDamageMultiplier:F2} / " +
+            $"Final x{finalMultiplier:F2}"
+        );
+#endif
+
+        for (int i = 0;
+             i < soldierAttacks.Count;
+             i++)
+        {
+            SoldierAttack attack =
+                soldierAttacks[i];
+
+            if (attack == null)
+            {
+                continue;
+            }
+
+            attack.SetDamageMultiplier(
+                finalMultiplier
+            );
+#if UNITY_EDITOR
+                Debug.Log(
+                     $"[Damage 적용 완료] " +
+                     $"{attack.CurrentDamage}"
+                 );
+#endif
+
+        }
     }
 
     /// <summary>
@@ -264,25 +326,64 @@ public class SquadManager : MonoBehaviour
     /// </summary>
     public void UpgradeAllSoldierAttackSpeed(float percent)
     {
-        attackSpeedMultiplier += percent;
-
-        foreach (GameObject soldierObject in soldiers)
-        {
-            SoldierAttack soldierAttack =
-                soldierObject.GetComponent<SoldierAttack>();
-
-            if (soldierAttack != null)
-            {
-                soldierAttack.SetAttackSpeedMultiplier(
-                    attackSpeedMultiplier
-                );
-            }
-        }
 #if UNITY_EDITOR
+
         Debug.Log(
-            $"현재 공격속도 배율 : {attackSpeedMultiplier}"
+            $"[AttackSpeed 강화 진입] percent = {percent}"
         );
 #endif
+
+        inGameAttackSpeedMultiplier += percent;
+
+#if UNITY_EDITOR
+        Debug.Log(
+            $"Lobby x{lobbyAttackSpeedMultiplier:F2} / " +
+            $"InGame x{inGameAttackSpeedMultiplier:F2} / " +
+            $"Final x{FinalAttackSpeedMultiplier:F2}"
+        );
+#endif
+
+        ApplyAttackSpeedMultiplierToAllSoldiers();
+    }
+
+    public void SetLobbyAttackSpeedMultiplier(
+    float multiplier)
+    {
+        lobbyAttackSpeedMultiplier =
+            Mathf.Max(1f, multiplier);
+
+        ApplyAttackSpeedMultiplierToAllSoldiers();
+    }
+
+    private void ApplyAttackSpeedMultiplierToAllSoldiers()
+    {
+        float finalMultiplier =
+            FinalAttackSpeedMultiplier;
+
+        for (int i = 0;
+             i < soldierAttacks.Count;
+             i++)
+        {
+            SoldierAttack attack =
+                soldierAttacks[i];
+
+            if (attack == null)
+            {
+                continue;
+            }
+
+            attack.SetAttackSpeedMultiplier(
+                finalMultiplier
+            );
+
+#if UNITY_EDITOR
+            Debug.Log(
+            $"[AttackSpeed 적용 완료] " +
+            $"AttackDelay = {attack.AttackDelay:F3}"
+        );
+#endif
+
+        }
     }
 
     public void UpgradeAllSoldierProjectile()
@@ -413,5 +514,16 @@ public class SquadManager : MonoBehaviour
         {
             isFiring = false;
         }
+    }
+
+    /// <summary>
+    /// 로비에서 저장된 영구 공격력 강화 배율을 설정한다.
+    /// </summary>
+    public void SetLobbyDamageMultiplier(float multiplier)
+    {
+        lobbyDamageMultiplier =
+            Mathf.Max(1f, multiplier);
+
+        ApplyDamageMultiplierToAllSoldiers();
     }
 }

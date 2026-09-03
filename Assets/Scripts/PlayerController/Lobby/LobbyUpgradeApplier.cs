@@ -10,13 +10,11 @@ public class LobbyUpgradeApplier : MonoBehaviour
     [SerializeField] private PlayerStats playerStats;
     [SerializeField] private SquadManager squadManager;
 
-    [Header("레벨당 강화량")]
-    [SerializeField] private float damageIncreasePerLevel = 0.05f;
-    [SerializeField] private float moveSpeedIncreasePerLevel = 0.05f;
-    [SerializeField] private float attackSpeedIncreasePerLevel = 0.05f;
+    [Header("로비 강화 데이터")]
+    [SerializeField] private LobbyUpgradeData upgradeData;
 
     [Header("테스트용 값")]
-    [SerializeField] private bool useTestData = true;
+    [SerializeField] private bool useTestData = false;
     [SerializeField] private int testAttackLevel = 2;
     [SerializeField] private int testMoveSpeedLevel = 1;
     [SerializeField] private int testAttackSpeedLevel = 3;
@@ -28,12 +26,21 @@ public class LobbyUpgradeApplier : MonoBehaviour
 
     private void ApplyLobbyUpgrades()
     {
+        if (upgradeData == null)
+        {
+            Debug.LogWarning(
+                "[LobbyUpgradeApplier] LobbyUpgradeData가 연결되지 않았습니다."
+            );
+            return;
+        }
+
         int attackLevel;
         int moveSpeedLevel;
         int attackSpeedLevel;
 
         PlayerData data = null;
 
+        // 테스트 데이터를 사용할 경우
         if (useTestData)
         {
             attackLevel = testAttackLevel;
@@ -47,7 +54,6 @@ public class LobbyUpgradeApplier : MonoBehaviour
                 Debug.LogWarning(
                     "[LobbyUpgradeApplier] SaveManager가 없습니다."
                 );
-
                 return;
             }
 
@@ -58,51 +64,51 @@ public class LobbyUpgradeApplier : MonoBehaviour
             attackSpeedLevel = data.attackSpeedLevel;
         }
 
-        float damageBonus =
-            attackLevel * damageIncreasePerLevel;
+        // 로비 강화 레벨을 실제 배율로 변환
+        float damageMultiplier =
+            1f +
+            attackLevel *
+            upgradeData.damageIncreasePerLevel;
 
-        float moveSpeedBonus =
-            moveSpeedLevel * moveSpeedIncreasePerLevel;
+        float moveSpeedMultiplier =
+            1f +
+            moveSpeedLevel *
+            upgradeData.moveSpeedIncreasePerLevel;
 
-        float attackSpeedBonus =
-            attackSpeedLevel * attackSpeedIncreasePerLevel;
+        float attackSpeedMultiplier =
+            1f +
+            attackSpeedLevel *
+            upgradeData.attackSpeedIncreasePerLevel;
 
-        squadManager?.UpgradeAllSoldierDamage(
-            damageBonus
+        // 로비 전용 배율 적용
+        squadManager?.SetLobbyDamageMultiplier(
+            damageMultiplier
         );
 
-        squadManager?.UpgradeAllSoldierAttackSpeed(
-            attackSpeedBonus
+        squadManager?.SetLobbyAttackSpeedMultiplier(
+            attackSpeedMultiplier
         );
 
-        playerStats?.UpgradeMoveSpeed(
-            moveSpeedBonus
+        playerStats?.SetLobbyMoveSpeedMultiplier(
+            moveSpeedMultiplier
         );
 
 #if UNITY_EDITOR
         Debug.Log(
-            $"Lobby Upgrade Test / " +
-            $"Attack Lv.{attackLevel} / " +
-            $"MoveSpeed Lv.{moveSpeedLevel} / " +
-            $"AttackSpeed Lv.{attackSpeedLevel}"
+            $"[Lobby 강화 적용] " +
+            $"Damage x{damageMultiplier:F2} / " +
+            $"MoveSpeed x{moveSpeedMultiplier:F2} / " +
+            $"AttackSpeed x{attackSpeedMultiplier:F2}"
         );
 
-        // 실제 SaveManager 데이터를 사용하는 경우에만 출력
         if (!useTestData && data != null)
         {
             Debug.Log(
-                $"[Lobby 적용] " +
-                $"공격력 Lv.{data.attackLevel} / " +
-                $"이동속도 Lv.{data.speedLevel} / " +
-                $"공격속도 Lv.{data.attackSpeedLevel} / " +
+                $"저장 데이터 / " +
+                $"Attack Lv.{data.attackLevel} / " +
+                $"MoveSpeed Lv.{data.speedLevel} / " +
+                $"AttackSpeed Lv.{data.attackSpeedLevel} / " +
                 $"난이도 {data.selectedDifficulty}"
-            );
-        }
-
-        if (playerStats != null)
-        {
-            Debug.Log(
-                $"실제 MoveSpeed : {playerStats.MoveSpeed}"
             );
         }
 #endif
