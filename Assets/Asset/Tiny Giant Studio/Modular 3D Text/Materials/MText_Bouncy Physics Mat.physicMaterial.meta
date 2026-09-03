@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 744b2e219365ca6488f2d013cf79a7c4
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 13400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 247241
+  packageName: Modular 3D Text - In-Game 3D UI System
+  packageVersion: 4.9.2
+  assetPath: Assets/Tiny Giant Studio/Modular 3D Text/Materials/MText_Bouncy Physics
+    Mat.physicMaterial
+  uploadId: 877966

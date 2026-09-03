@@ -1,0 +1,20 @@
+fileFormatVersion: 2
+guid: a3f943abd34f2e24ca32c7288453530f
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - buttonPrefab: {fileID: 8377934228991207282, guid: 814da704eb23f254dbc9f81107012e02,
+      type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 247241
+  packageName: Modular 3D Text - In-Game 3D UI System
+  packageVersion: 4.9.2
+  assetPath: Assets/Plugins/Tiny Giant Studio/Modular 3D Text/Scripts/Utilities/MenuItem.cs
+  uploadId: 877966

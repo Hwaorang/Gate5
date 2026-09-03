@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: d9bd481ba81ab5644a1cde6ab92e1056
+timeCreated: 1505609562
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 100508
+  packageName: Toony Tiny Zombies pack
+  packageVersion: 1.2
+  assetPath: Assets/ToonyTinyPeople/TT_Zombies/prefabs/zombie_female/TT_zombie_F_15_punk.prefab
+  uploadId: 980952
