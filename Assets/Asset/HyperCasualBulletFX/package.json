@@ -1,0 +1,23 @@
+{
+  "name": "com.gptasset.hypercasual-bullet-fx",
+  "version": "1.1.0",
+  "displayName": "Hyper Casual Bullet FX",
+  "description": "Pooled, visual-only multi-tracer gunfire with independent muzzle, tracer, and impact effects.",
+  "unity": "6000.3",
+  "author": {
+    "name": "GPT Asset"
+  },
+  "keywords": [
+    "bullet",
+    "tracer",
+    "vfx",
+    "hypercasual"
+  ],
+  "samples": [
+    {
+      "displayName": "Quick Start",
+      "description": "A small input adapter demonstrating the visual-only fire and impact API.",
+      "path": "Samples~/QuickStart"
+    }
+  ]
+}

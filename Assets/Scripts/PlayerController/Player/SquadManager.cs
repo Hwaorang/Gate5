@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using GptAsset.HyperCasualBulletFX;
 
 public class SquadManager : MonoBehaviour
 {
@@ -17,6 +18,9 @@ public class SquadManager : MonoBehaviour
     // 병사 간격
     [SerializeField] private float spacing = 1.2f;
     [SerializeField] private int maxColumnCount = 7;
+
+    [Header("공격 기준점")]
+    [SerializeField] private Transform fireLine;
 
     // 현재 사용 중인 병사 목록
     private List<GameObject> soldiers = new List<GameObject>();
@@ -44,6 +48,9 @@ public class SquadManager : MonoBehaviour
 
     [SerializeField]
     private BulletPool bulletPool;
+
+    [SerializeField]
+    private HyperCasualBulletFx bulletFx;
 
     private readonly List<SoldierAttack> soldierAttacks = new();
 
@@ -108,6 +115,10 @@ public class SquadManager : MonoBehaviour
                 );
 
                 attack.SetBulletPool(bulletPool);
+
+                attack.SetBulletFx(bulletFx);
+
+                attack.SetFireLine(fireLine);
 
                 // 처음 한 번만 저장
                 soldierAttacks.Add(attack);
