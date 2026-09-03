@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 3a40488a97cd92844beda3fe433e78f2
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - settings: {fileID: 11400000, guid: 7a64f8f739022fd45b6c0af2d6729473, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 247241
+  packageName: Modular 3D Text - In-Game 3D UI System
+  packageVersion: 4.9.2
+  assetPath: Assets/Plugins/Tiny Giant Studio/Modular 3D Text/Scripts/Editor/InputFieldEditor.cs
+  uploadId: 877966

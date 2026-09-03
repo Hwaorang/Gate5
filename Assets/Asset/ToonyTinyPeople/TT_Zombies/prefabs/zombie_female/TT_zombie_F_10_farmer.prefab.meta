@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 90cad25c702ebdb48b42a67396f57304
+timeCreated: 1505609548
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 100508
+  packageName: Toony Tiny Zombies pack
+  packageVersion: 1.2
+  assetPath: Assets/ToonyTinyPeople/TT_Zombies/prefabs/zombie_female/TT_zombie_F_10_farmer.prefab
+  uploadId: 980952

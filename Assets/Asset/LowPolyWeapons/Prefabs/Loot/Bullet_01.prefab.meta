@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: c5da8a6bda77ba94d8f0a20fe25cc05b
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 188037
+  packageName: Low Poly FPS Weapons Pack
+  packageVersion: 1.12
+  assetPath: Assets/LowPolyWeapons/Prefabs/Loot/Bullet_01.prefab
+  uploadId: 565888

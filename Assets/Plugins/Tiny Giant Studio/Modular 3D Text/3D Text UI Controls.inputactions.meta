@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 40bc6dd3dcc19c743a66ce4527683ead
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 2
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: 8404be70184654265930450def6a9037, type: 3}
+  generateWrapperCode: 0
+  wrapperCodePath: 
+  wrapperClassName: MText_UI_Control
+  wrapperCodeNamespace: TinyGiantStudio.Text
+AssetOrigin:
+  serializedVersion: 1
+  productId: 247241
+  packageName: Modular 3D Text - In-Game 3D UI System
+  packageVersion: 4.9.2
+  assetPath: Assets/Plugins/Tiny Giant Studio/Modular 3D Text/3D Text UI Controls.inputactions
+  uploadId: 877966

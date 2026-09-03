@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 074f927dda347474eb50e9a33b1e2775
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 247241
+  packageName: Modular 3D Text - In-Game 3D UI System
+  packageVersion: 4.9.2
+  assetPath: Assets/Plugins/Tiny Giant Studio/Modules/Scripts/ModuleContainer.cs
+  uploadId: 877966

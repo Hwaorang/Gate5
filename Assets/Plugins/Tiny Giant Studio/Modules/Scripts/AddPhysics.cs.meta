@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 6b6a20c10e9bdbb4498a43fdd9960739
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {fileID: 2800000, guid: 357398909940d3149be0d4878c0a2fee, type: 3}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 247241
+  packageName: Modular 3D Text - In-Game 3D UI System
+  packageVersion: 4.9.2
+  assetPath: Assets/Plugins/Tiny Giant Studio/Modules/Scripts/AddPhysics.cs
+  uploadId: 877966
