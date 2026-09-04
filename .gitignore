@@ -107,3 +107,5 @@ InitTestScene*.unity*
 
 # Asset Folder
 /[Aa]ssets/[Aa]sset/[Dd]ownload/
+/[Aa]ssets/Plugins/Tiny Giant Studio/
+/[Aa]ssets/Plugins/Tiny Giant Studio.meta
