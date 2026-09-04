@@ -81,23 +81,6 @@ public class SoldierAttack : MonoBehaviour
     public float AttackDelay => currentAttackDelay;
 
 
-    private void Awake()
-    {
-        // 시작 시 기본 스탯 적용
-        currentDamage = baseDamage;
-        currentAttackDelay = baseAttackDelay;
-
-        // 투사체 강화가 하나도 없는 기본 상태 적용
-        ApplyProjectileUpgradeLevel(0);
-    }
-
-
-    /// <summary>
-    /// SquadManager에서 호출하는 실제 공격 함수.
-    ///
-    /// 현재 투사체 개수만큼 공격하며,
-    /// 여러 발일 경우 좌우로 일정 각도만큼 퍼져서 발사한다.
-    /// </summary>
     public void Fire()
     {
         if (firePoint == null ||
@@ -106,10 +89,8 @@ public class SoldierAttack : MonoBehaviour
             return;
         }
 
-        // 여러 발을 중앙 기준으로 균등하게 퍼뜨리기 위한 시작 각도
-        //
-        // 예: 3발, spreadAngle = 5
-        // -5 / 0 / +5
+        Vector3 fireOrigin = GetFireOrigin();
+
         float startAngle =
             -projectileUpgradeData.spreadAngle *
             (projectileCount - 1) *
@@ -117,12 +98,10 @@ public class SoldierAttack : MonoBehaviour
 
         for (int i = 0; i < projectileCount; i++)
         {
-            // 현재 투사체의 퍼짐 각도 계산
             float angle =
                 startAngle +
                 projectileUpgradeData.spreadAngle * i;
 
-            // FirePoint 방향에 퍼짐 각도를 적용
             Quaternion rotation =
                 firePoint.rotation *
                 Quaternion.Euler(0f, angle, 0f);
@@ -130,10 +109,11 @@ public class SoldierAttack : MonoBehaviour
             Vector3 direction =
                 rotation * Vector3.forward;
 
-            // 실제 데미지 판정
-            FireRay(direction);
+            FireRay(
+                fireOrigin,
+                direction
+            );
 
-            // 시각용 총알 출력
             PlayBulletFx(direction);
         }
     }
@@ -165,48 +145,44 @@ public class SoldierAttack : MonoBehaviour
     /// Bullet Collider를 사용하지 않기 때문에
     /// 대량의 총알에서 발생하는 Physics 비용을 줄일 수 있다.
     /// </summary>
-    private void FireRay(Vector3 direction)
+    private void FireRay(Vector3 origin, Vector3 direction)
     {
-        Vector3 fireOrigin = GetFireOrigin();
+        Ray ray = new Ray(origin, direction);
 
-        Ray ray = new Ray(
-            fireOrigin,
-            direction
-        );
-
-        bool isHit = Physics.Raycast(
-            fireOrigin,
-            direction,
+        if (Physics.Raycast(
+            ray,
             out RaycastHit hit,
             attackRange,
-            enemyLayer
-        );
-
-        if (!isHit)
+            enemyLayer,
+            QueryTriggerInteraction.Collide))
         {
-            return;
-        }
+            // 기존 내 Enemy 시스템
+            EnemyHealth enemyHealth =
+                hit.collider.GetComponentInParent<EnemyHealth>();
 
-        Debug.Log(
-            $"{name} : Ray Hit = {hit.collider.name} / Layer = {LayerMask.LayerToName(hit.collider.gameObject.layer)}"
-        );
+            if (enemyHealth != null)
+            {
+                enemyHealth.TakeDamage(currentDamage);
+            }
+            else
+            {
+                // 팀원 Enemy 시스템
+                Mon_Ctrl monCtrl =
+                    hit.collider.GetComponentInParent<Mon_Ctrl>();
 
-        EnemyHealth enemy =
-            hit.collider.GetComponentInParent<EnemyHealth>();
+                if (monCtrl != null)
+                {
+                    monCtrl.TakeDamage(currentDamage);
+                }
+            }
 
-        if (enemy == null)
-        {
-            return;
-        }
-
-        enemy.TakeDamage(currentDamage);
-
-        if (bulletFx != null)
-        {
-            bulletFx.PlayImpact(
-                hit.point,
-                hit.normal
-            );
+            if (bulletFx != null)
+            {
+                bulletFx.PlayImpact(
+                    hit.point + hit.normal * 0.1f,
+                    hit.normal
+                );
+            }
         }
     }
 

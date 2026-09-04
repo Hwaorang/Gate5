@@ -74,8 +74,9 @@ public class SquadManager : MonoBehaviour
 
     private void Start()
     {
-        // PlayerStats에 설정된 시작 병사 수만큼 생성
+
         AddUnit(playerStats.StartSoldierCount);
+
     }
 
     private void Update()
