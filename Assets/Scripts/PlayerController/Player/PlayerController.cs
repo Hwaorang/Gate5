@@ -15,6 +15,14 @@ public class PlayerController : MonoBehaviour
 
     public float XLimit => xLimit;
 
+    private void Awake()
+    {
+        if (playerStats == null)
+        {
+            playerStats = GetComponent<PlayerStats>();
+        }
+    }
+
     private void Update()
     {
         Move();

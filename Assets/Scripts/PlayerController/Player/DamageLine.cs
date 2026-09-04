@@ -53,23 +53,17 @@ public class DamageLine : MonoBehaviour
     /// </summary>
     private void OnTriggerEnter(Collider other)
     {
-        EnemyHealth enemy =
-            other.GetComponentInParent<EnemyHealth>();
+        Mon_Ctrl enemy =
+            other.GetComponentInParent<Mon_Ctrl>();
 
         if (enemy == null)
         {
             return;
         }
 
-        Debug.Log("[DamageLine] 몬스터 방어선 통과");
-
-        // 병사 한 명 감소
         if (squadManager != null)
         {
             squadManager.RemoveOneSoldier();
         }
-
-        // 몬스터 제거는 임시 처리
-        enemy.gameObject.SetActive(false);
     }
 }
