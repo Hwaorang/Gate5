@@ -90,7 +90,6 @@ public class Mon_Ctrl : MonoBehaviour
 
         if(hp < 0)
         {
-            Debug.Log(name + "mon dead");
             MonSpawn_Mgr.instance.ReturnObject(objname, this.gameObject);
         }
     }
