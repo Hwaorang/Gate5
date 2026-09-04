@@ -104,3 +104,8 @@ InitTestScene*.unity*
 
 # Auto-generated cache in Assets folder
 /[Aa]ssets/[Ss]ceneDependencyCache*
+
+# Asset Folder
+/[Aa]ssets/[Aa]sset/[Dd]ownload/
+/[Aa]ssets/Plugins/Tiny Giant Studio/
+/[Aa]ssets/Plugins/Tiny Giant Studio.meta
