@@ -61,7 +61,7 @@ public class MonSpawn_Mgr : MonoBehaviour
 
         fieldSize = field.bounds.size.x;
         float fieldSizeZ = field.bounds.size.z;
-        this.transform.position = new Vector3(-(fieldSize / 2)+0.5f, 2.5f, -(fieldSizeZ/2)+5);
+        this.transform.position = new Vector3((fieldSize / 2)+0.5f, 2.5f, (fieldSizeZ/2)+5);
         Debug.Log("field" + fieldSize);
         StartCoroutine(SpawnMon(0));
     }
