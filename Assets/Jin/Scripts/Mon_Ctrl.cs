@@ -4,25 +4,37 @@ using UnityEngine.AI;
 
 public class Mon_Ctrl : MonoBehaviour
 {
-    Mon_Data data;
+    [SerializeField] Mon_Data data;
     Transform targetPos;
-    [SerializeField] Transform testTargetPos;
+    //[SerializeField] Transform testTargetPos;
     //State Machine
 
     NavMeshAgent agent;
     bool arrive = false;
 
     string objname;
+    float curHP;
+    float damage;
     void Start()
     {
-        agent = GetComponent<NavMeshAgent>();        
+               
     }
 
+    void SetState()
+    {
+        curHP = data.maxHp;
+        agent.speed = data.walkSpeed;
+        damage = data.damage;
+        objname = data.monName;
+    }
     private void OnEnable()
     {
-        SetTarget();
+        agent = GetComponent<NavMeshAgent>(); 
+        SetState();
 
-        if (targetPos != null || testTargetPos != null)
+        SetTarget();
+        
+        if (targetPos != null)
         {
             StartCoroutine(Move());   
         }
@@ -34,7 +46,7 @@ public class Mon_Ctrl : MonoBehaviour
         if (targetPos != null)
         {
             Debug.Log("target_Set");
-            targetPos.position = new Vector3(targetPos.position.x, targetPos.position.y, this.transform.position.z);
+            targetPos.position = new Vector3(this.transform.position.x, targetPos.position.y, targetPos.position.z);
         }
     }
 
@@ -42,8 +54,8 @@ public class Mon_Ctrl : MonoBehaviour
     {
         while(true)
         {
-            //agent.SetDestination(targetPos.position);
-            agent.SetDestination(testTargetPos.position);
+            agent.SetDestination(targetPos.position);
+            //agent.SetDestination(testTargetPos.position);
 
             if(arrive)
                 yield break;
@@ -58,6 +70,16 @@ public class Mon_Ctrl : MonoBehaviour
         {
             arrive = true;
             //Damage 
+            MonSpawn_Mgr.instance.ReturnObject(objname, this.gameObject);
+        }
+    }
+
+    public void TakeDamage(float _damage)
+    {
+        curHP -= _damage;
+
+        if (curHP <= 0)
+        {
             MonSpawn_Mgr.instance.ReturnObject(objname, this.gameObject);
         }
     }
