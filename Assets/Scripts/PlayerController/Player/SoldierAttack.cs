@@ -156,20 +156,24 @@ public class SoldierAttack : MonoBehaviour
             enemyLayer,
             QueryTriggerInteraction.Collide))
         {
-#if UNITY_EDITOR
-            Debug.Log($"[Ray Hit] {hit.collider.name}");
-#endif
-            Mon_Ctrl monCtrl =
-                hit.collider.GetComponentInParent<Mon_Ctrl>();
+            // 기존 내 Enemy 시스템
+            EnemyHealth enemyHealth =
+                hit.collider.GetComponentInParent<EnemyHealth>();
 
-            if (monCtrl != null)
+            if (enemyHealth != null)
             {
-#if UNITY_EDITOR
-                Debug.Log(
-                    $"[Enemy 연결 성공] {monCtrl.name}"
-                );
-#endif
-                monCtrl.TakeDamage(currentDamage);
+                enemyHealth.TakeDamage(currentDamage);
+            }
+            else
+            {
+                // 팀원 Enemy 시스템
+                Mon_Ctrl monCtrl =
+                    hit.collider.GetComponentInParent<Mon_Ctrl>();
+
+                if (monCtrl != null)
+                {
+                    monCtrl.TakeDamage(currentDamage);
+                }
             }
 
             if (bulletFx != null)
