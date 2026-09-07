@@ -273,6 +273,13 @@ public class UpgradeManager_PlayerController : MonoBehaviour
 
         // 강화 선택 완료 후 게임 재개
         CloseUpgradePanel();
+
+        // 남은 EXP가 다음 레벨 조건까지 충족했다면
+        // 다음 강화창을 다시 연다.
+        if (playerExperience != null)
+        {
+            playerExperience.CheckPendingLevelUp();
+        }
     }
 
 
