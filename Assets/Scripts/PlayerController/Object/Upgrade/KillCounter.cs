@@ -53,10 +53,6 @@ public class KillCounter : MonoBehaviour
             requiredKills
         );
 
-        Debug.Log(
-            $"Kill Count : {totalKills} / {requiredKills}"
-        );
-
         // 누적 처치 수가 현재 강화 조건에 도달했는지 확인
         if (totalKills >= requiredKills)
         {
@@ -76,10 +72,6 @@ public class KillCounter : MonoBehaviour
         }
 
         isWaitingForUpgrade = true;
-
-        Debug.Log(
-            $"[KillCounter] {upgradeIndex + 1}번째 강화 조건 달성"
-        );
 
         if (upgradeManager == null)
         {
@@ -115,11 +107,6 @@ public class KillCounter : MonoBehaviour
         // 다시 킬 카운트 가능
         isWaitingForUpgrade = false;
 
-#if UNITY_EDITOR
-        Debug.Log(
-            $"[KillCounter] 강화 선택 완료 / 다음 단계 : {upgradeIndex}"
-        );
-#endif
         OnKillProgressChanged?.Invoke(
             totalKills,
             GetRequiredKills()

@@ -698,12 +698,6 @@ public class SquadManager : MonoBehaviour
     /// </summary>
     public void RemoveOneSoldier()
     {
-#if UNITY_EDITOR
-        Debug.Log(
-            $"[RemoveOneSoldier 진입] soldiers.Count = {soldiers.Count}"
-        );
-#endif
-
         if (soldiers.Count <= 0)
         {
             return;

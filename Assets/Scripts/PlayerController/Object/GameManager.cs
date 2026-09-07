@@ -38,9 +38,7 @@ public class GameManager : MonoBehaviour
         }
 
         isGameOver = true;
-#if UNITY_EDITOR
-        Debug.Log("Game Over");
-#endif
+
         if (gameOverPanel != null)
         {
             gameOverPanel.SetActive(true);

@@ -41,8 +41,6 @@ public class EnemyHealth : MonoBehaviour
         if (playerExperience != null)
         {
             playerExperience.AddExp(expReward);
-
-            Debug.Log($"EXP +{expReward}");
         }
 #if UNITY_EDITOR
         else

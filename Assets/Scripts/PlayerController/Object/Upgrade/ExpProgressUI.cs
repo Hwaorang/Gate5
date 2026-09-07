@@ -2,24 +2,47 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// PlayerExperience의 EXP와 Level 정보를
+/// 화면 UI에 표시한다.
+///
+/// 주요 역할
+/// - 현재 EXP / 필요 EXP 표시
+/// - 현재 Level 표시
+/// - EXP Slider 갱신
+/// - 모든 강화 완료 시 MAX 표시
+///
+/// PlayerExperience의 OnExpChanged 이벤트를 구독해서
+/// EXP가 변경될 때마다 자동으로 UI를 갱신한다.
+/// </summary>
 public class ExpProgressUI : MonoBehaviour
 {
-    // 플레이어의 경험치 정보를 가져오기 위한 참조
+    [Header("참조")]
+
+    // 현재 EXP, 필요 EXP, Level 등의 정보를 제공하는 PlayerExperience
     [SerializeField] private PlayerExperience playerExperience;
 
+
     [Header("UI")]
-    // 현재 경험치 / 필요 경험치를 표시하는 텍스트
+
+    // 현재 EXP / 필요 EXP 표시
+    //
+    // 예:
+    // 5 / 10
     [SerializeField] private TMP_Text progressText;
-    //현재 레벨을 표시하는 텍스트
+
+    // 현재 Level 표시
+    //
+    // PlayerExperience 내부 Level은 0부터 시작하므로
+    // 화면에서는 +1 해서 표시한다.
     [SerializeField] private TMP_Text levelText;
 
-    // 경험치 진행도를 표시하는 슬라이더
+    // 현재 EXP 진행도를 0~1 사이 값으로 표시하는 Slider
     [SerializeField] private Slider expSlider;
 
-    private void Start()
+
+    private void OnEnable()
     {
-        // PlayerExperience가 연결되지 않았다면
-        // 경험치 정보를 가져올 수 없으므로 종료
         if (playerExperience == null)
         {
             Debug.LogWarning(
@@ -29,46 +52,72 @@ public class ExpProgressUI : MonoBehaviour
             return;
         }
 
-        // 경험치가 변경될 때마다 UpdateUI가 호출되도록 이벤트 등록
-        playerExperience.OnExpChanged += UpdateUI;
+        // EXP 변경 이벤트 구독
+        playerExperience.OnExpChanged +=
+            UpdateUI;
 
-        // 게임 시작 시 현재 경험치 상태를 한 번 표시
+        // UI가 활성화될 때
+        // 현재 EXP 상태를 즉시 한 번 표시한다.
         UpdateUI(
             playerExperience.CurrentExp,
             playerExperience.RequiredExp
         );
     }
 
+
+    private void OnDisable()
+    {
+        // UI가 비활성화될 때 이벤트 구독 해제
+        if (playerExperience != null)
+        {
+            playerExperience.OnExpChanged -=
+                UpdateUI;
+        }
+    }
+
+
     /// <summary>
-    /// 경험치 텍스트와 슬라이더를 갱신한다.
+    /// 현재 EXP / Level / Slider 상태를 갱신한다.
     /// </summary>
     private void UpdateUI(
-    int currentExp,
-    int requiredExp)
+        int currentExp,
+        int requiredExp)
     {
         if (playerExperience == null)
         {
             return;
         }
 
-        // 현재 레벨 표시
+
+        // =========================
+        // Level 표시
+        // =========================
+
         if (levelText != null)
         {
+            // 내부 Level은 0부터 시작하므로
+            // 사용자에게는 Lv.1부터 보이도록 +1
             levelText.text =
                 $"Lv. {playerExperience.Level + 1}";
         }
 
-        // 모든 강화가 완료된 상태
+
+        // =========================
+        // 모든 강화 완료
+        // =========================
+
         if (playerExperience.IsAllUpgradesCompleted)
         {
             if (progressText != null)
             {
-                progressText.text = "MAX";
+                progressText.text =
+                    "MAX";
             }
 
             if (expSlider != null)
             {
-                expSlider.value = 1f;
+                expSlider.value =
+                    1f;
             }
 
             if (levelText != null)
@@ -80,35 +129,41 @@ public class ExpProgressUI : MonoBehaviour
             return;
         }
 
-        // 경험치 텍스트
+
+        // =========================
+        // EXP Text
+        // =========================
+
         if (progressText != null)
         {
             progressText.text =
                 $"{currentExp} / {requiredExp}";
         }
 
-        // 경험치 슬라이더
+
+        // =========================
+        // EXP Slider
+        // =========================
+
         if (expSlider != null)
         {
+            // 잘못된 필요 EXP 값 방어
             if (requiredExp <= 0)
             {
-                expSlider.value = 0f;
+                expSlider.value =
+                    0f;
             }
             else
             {
-                expSlider.value =
-                    (float)currentExp / requiredExp;
-            }
-        }
-    }
+                float progress =
+                    (float)currentExp /
+                    requiredExp;
 
-    private void OnDestroy()
-    {
-        // 이 오브젝트가 제거될 때 이벤트 등록 해제
-        // 해제하지 않으면 삭제된 UI를 계속 호출하는 문제가 생길 수 있음
-        if (playerExperience != null)
-        {
-            playerExperience.OnExpChanged -= UpdateUI;
+                // EXP가 필요 EXP를 초과해도
+                // Slider 값은 0~1 사이로 유지
+                expSlider.value =
+                    Mathf.Clamp01(progress);
+            }
         }
     }
 }
