@@ -28,17 +28,16 @@ public class SaveManager : MonoBehaviour
         Load();
     }
 
-    // ����
+    
     public void Save()
     {
         string json = JsonUtility.ToJson(Data, true);
 
         File.WriteAllText(savePath, json);
 
-        Debug.Log("���� ������ ���� �Ϸ�");
+        Debug.Log("Save");
     }
 
-    // �ҷ�����
     public void Load()
     {
         if (File.Exists(savePath))
@@ -47,7 +46,7 @@ public class SaveManager : MonoBehaviour
 
             Data = JsonUtility.FromJson<PlayerData>(json);
 
-            Debug.Log("���� ������ �ҷ����� �Ϸ�");
+            Debug.Log("Load");
         }
         else
         {
@@ -55,21 +54,20 @@ public class SaveManager : MonoBehaviour
 
             Save();
 
-            Debug.Log("���ο� ���� ������ ����");
+            Debug.Log("Save");
         }
     }
 
-    // ���� ������ ����
+
     public void ResetData()
     {
         Data = new PlayerData();
 
         Save();
 
-        Debug.Log("���� ������ �ʱ�ȭ");
+        Debug.Log("Reset");
     }
 
-    // ��� �߰�
     public void AddGold(int amount)
     {
         Data.gold += amount;
@@ -77,7 +75,7 @@ public class SaveManager : MonoBehaviour
         Save();
     }
 
-    // ��� ���
+   
     public bool SpendGold(int amount)
     {
         if (Data.gold < amount)

@@ -107,6 +107,11 @@ public class SoldierAttack : MonoBehaviour
     // Squad 전체가 공유하는 앞쪽 발사 기준점
     private Transform fireLine;
 
+    [SerializeField]
+    private SoldierAnimationController animationController;
+
+    [SerializeField]
+    private SoldierUnit soldierUnit;
 
     /// <summary>
     /// 현재 최종 공격력.
@@ -131,6 +136,12 @@ public class SoldierAttack : MonoBehaviour
 
     private void Awake()
     {
+        if (soldierUnit == null)
+        {
+            soldierUnit =
+                GetComponent<SoldierUnit>();
+        }
+
         // SquadManager에서 강화 배율을 전달받기 전에도
         // 기본 공격값을 정상적으로 가지고 있도록 초기화한다.
         currentDamage =
@@ -160,6 +171,14 @@ public class SoldierAttack : MonoBehaviour
     /// </summary>
     public void Fire()
     {
+        // 병사가 살아있는 상태가 아니라면
+        // 공격하지 않는다.
+        if (soldierUnit != null &&
+            !soldierUnit.CanAttack)
+        {
+            return;
+        }
+
         // 발사 위치 또는 투사체 데이터가 없으면
         // 정상적인 공격 계산이 불가능하므로 종료한다.
         if (firePoint == null ||
@@ -167,6 +186,12 @@ public class SoldierAttack : MonoBehaviour
         {
             return;
         }
+
+        //// 사격 애니메이션 재생
+        //if (animationController != null)
+        //{
+        //    animationController.PlayShoot();
+        //}
 
 
         // 실제 공격 시작 위치 계산
