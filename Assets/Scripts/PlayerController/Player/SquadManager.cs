@@ -676,48 +676,79 @@ public class SquadManager : MonoBehaviour
 
 
     /// <summary>
-    /// 지정한 수만큼 병사를 제거한다.
+    /// 지정한 수만큼 병사를 사망 처리한다.
     ///
-    /// 실제 병사 수보다 큰 값이 들어와도
-    /// 현재 존재하는 병사까지만 제거한다.
+    /// 병사를 즉시 RemoveUnit() 하지 않고
+    /// SoldierUnit.Die()를 호출하여
+    /// Death 애니메이션이 끝난 뒤 제거되도록 한다.
     ///
     /// Gate의 감소 기능 등에 사용한다.
     /// </summary>
     public void RemoveUnits(int amount)
     {
+        if (amount <= 0 ||
+            soldiers.Count <= 0)
+        {
+            return;
+        }
+
+        // 현재 존재하는 병사 수보다
+        // 더 많이 제거하려는 경우를 방지한다.
         int removeCount =
             Mathf.Min(
                 amount,
                 soldiers.Count
             );
 
+        // =========================
+        // 뒤쪽 병사부터 사망 처리
+        // =========================
+        //
+        // Die()를 호출해도 즉시 soldiers 리스트에서
+        // 제거되는 것이 아니라 deathDelay 이후 제거된다.
+        //
+        // 따라서 매 반복마다
+        // soldiers.Count - 1만 가져오면
+        // 같은 병사를 계속 선택하게 될 수 있다.
+        //
+        // 그래서 뒤에서부터 서로 다른 인덱스를 사용한다.
         for (int i = 0;
              i < removeCount;
              i++)
         {
-            // 대형의 가장 마지막 병사를 선택
+            int index =
+                soldiers.Count - 1 - i;
+
             GameObject soldierObject =
-                soldiers[
-                    soldiers.Count - 1
-                ];
+                soldiers[index];
+
+            if (soldierObject == null)
+            {
+                continue;
+            }
 
             SoldierUnit soldier =
-                soldierObject
-                    .GetComponent<SoldierUnit>();
+                soldierObject.GetComponent<SoldierUnit>();
 
             if (soldier != null)
             {
-                RemoveUnit(soldier);
+                // 즉시 제거하지 않고
+                // SoldierUnit에서 Death 애니메이션을 먼저 재생한다.
+                soldier.Die();
             }
         }
     }
 
 
     /// <summary>
-    /// 현재 분대의 마지막 병사 한 명을 제거한다.
+    /// 현재 분대의 마지막 병사 한 명을 사망 처리한다.
     ///
     /// DamageLine을 Enemy가 통과했을 때
-    /// 병사 1명 감소 처리에 사용한다.
+    /// 병사 한 명을 줄이는 용도로 사용한다.
+    ///
+    /// 즉시 RemoveUnit() 하지 않고
+    /// SoldierUnit.Die()를 호출하여
+    /// Death 애니메이션 이후 Pool로 반환되게 한다.
     /// </summary>
     public void RemoveOneSoldier()
     {
@@ -731,13 +762,20 @@ public class SquadManager : MonoBehaviour
                 soldiers.Count - 1
             ];
 
+        if (soldierObject == null)
+        {
+            return;
+        }
+
         SoldierUnit soldier =
-            soldierObject
-                .GetComponent<SoldierUnit>();
+            soldierObject.GetComponent<SoldierUnit>();
 
         if (soldier != null)
         {
-            RemoveUnit(soldier);
+            // Death Animation
+            // → deathDelay
+            // → RemoveUnit
+            soldier.Die();
         }
     }
 
