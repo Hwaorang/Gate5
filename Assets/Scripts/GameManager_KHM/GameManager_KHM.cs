@@ -10,6 +10,9 @@ public class GameManager_KHM : MonoBehaviour
     [Header("Enemy Scaling")]
     public float enemyHpMultiplier = 1f;
 
+    // 외부에서는 게임 시간을 읽기만 가능
+    public float GameTime => gameTime;
+
     private void Awake()
     {
         if (Instance == null)

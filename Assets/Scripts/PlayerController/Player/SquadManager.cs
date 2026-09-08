@@ -180,6 +180,16 @@ public class SquadManager : MonoBehaviour
     /// </summary>
     public event Action<int> OnSoldierCountChanged;
 
+    /// <summary>
+    /// 모든 병사가 사라져 GameOver가 발생했음을
+    /// 다른 시스템에 알리는 이벤트.
+    ///
+    /// Observer Pattern
+    /// SquadManager는 결과 UI가 무엇인지 알 필요가 없고,
+    /// GameOver 발생 사실만 외부에 전달한다.
+    /// </summary>
+    public event Action OnGameOver;
+
 
     private void Start()
     {
@@ -462,17 +472,30 @@ public class SquadManager : MonoBehaviour
 
     /// <summary>
     /// 현재 병사가 한 명도 남아있지 않으면
-    /// GameManager의 GameOver를 호출한다.
+    /// GameOver 이벤트를 발생시키고
+    /// 기존 GameManager의 GameOver를 호출한다.
     /// </summary>
     private void CheckGameOver()
     {
-        // 아직 병사가 남아있으면 종료
+        // 아직 병사가 남아있으면 GameOver가 아니다.
         if (soldiers.Count > 0)
         {
             return;
         }
 
-        // GameManager가 존재하는 경우에만 GameOver 호출
+        // =========================
+        // Observer Pattern
+        // =========================
+        //
+        // 결과 UI, 통계 시스템 등은
+        // 이 이벤트를 구독해서 각자 필요한 처리를 한다.
+        //
+        // SquadManager가 특정 UI를 직접 참조하지 않기 때문에
+        // GameOver 화면 디자인이 바뀌어도
+        // SquadManager를 수정할 필요가 없다.
+        OnGameOver?.Invoke();
+
+        // 기존 프로젝트의 GameOver 처리 유지
         if (GameManager.Instance != null)
         {
             GameManager.Instance.GameOver();

@@ -85,6 +85,14 @@ public class PlayerExperience : MonoBehaviour
     public int Level =>
         level;
 
+    /// <summary>
+    /// UI에서 사용할 현재 플레이어 레벨.
+    ///
+    /// 내부 level이 0부터 시작하므로
+    /// 실제 표시 레벨은 +1 한다.
+    /// </summary>
+    public int CurrentLevel => level + 1;
+
 
     /// <summary>
     /// EXP가 변경됐을 때 UI에 전달하는 이벤트.
