@@ -633,18 +633,20 @@ public class SoldierAttack : MonoBehaviour
     /// </summary>
     private Vector3 GetFireOrigin()
     {
-        // FireLine이 연결되어 있지 않다면
-        // Soldier 자신의 FirePoint를 사용한다.
-        if (fireLine == null)
+        if (firePoint == null)
         {
-            return firePoint.position;
+            return transform.position;
         }
 
+        Vector3 origin = firePoint.position;
 
-        return new Vector3(
-            firePoint.position.x,
-            fireLine.position.y,
-            fireLine.position.z
-        );
+        // 공통 사격선의 Z 위치만 사용하고
+        // X / Y는 실제 병사의 FirePoint 위치를 유지한다.
+        if (fireLine != null)
+        {
+            origin.z = fireLine.position.z;
+        }
+
+        return origin;
     }
 }
