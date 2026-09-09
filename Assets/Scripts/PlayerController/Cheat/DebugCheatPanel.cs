@@ -31,6 +31,23 @@ public class DebugCheatPanel : MonoBehaviour
     [SerializeField]
     private UpgradeManager_PlayerController upgradeManager;
 
+    private bool isInitialized;
+
+    /// <summary>
+    /// DebugCanvas가 런타임에 생성된 뒤
+    /// Scene에 존재하는 실제 게임 시스템들을 전달받는다.
+    /// </summary>
+    public void Initialize(
+        SquadManager squad,
+        PlayerExperience experience,
+        UpgradeManager_PlayerController upgrade)
+    {
+        squadManager = squad;
+        playerExperience = experience;
+        upgradeManager = upgrade;
+
+        CreateDebugButtons();
+    }
 
     /// <summary>
     /// 버튼 하나에 필요한 정보를 묶는다.
@@ -49,24 +66,24 @@ public class DebugCheatPanel : MonoBehaviour
         }
     }
 
-
-    private void Start()
-    {
-        CreateDebugButtons();
-    }
-
-
     /// <summary>
     /// 사용할 Debug 기능 목록을 만든 뒤
     /// 버튼 Prefab을 동적으로 생성한다.
     /// </summary>
     private void CreateDebugButtons()
     {
+        if (isInitialized)
+        {
+            return;
+        }
+
         if (content == null ||
             buttonPrefab == null)
         {
             return;
         }
+
+        isInitialized = true;
 
         List<DebugAction> actions =
             new List<DebugAction>

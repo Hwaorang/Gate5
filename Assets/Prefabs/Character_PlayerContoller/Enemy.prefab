@@ -139,7 +139,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
   maxHp: 100
-  expReward: 0
+  expReward: 1
 --- !u!136 &-5176741565110565220
 CapsuleCollider:
   m_ObjectHideFlags: 0
