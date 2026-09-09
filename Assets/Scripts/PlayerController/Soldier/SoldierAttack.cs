@@ -1,5 +1,6 @@
-using UnityEngine;
 using GptAsset.HyperCasualBulletFX;
+using System.Collections.Generic;
+using UnityEngine;
 
 /// <summary>
 /// 병사 한 명의 공격 기능을 담당한다.
@@ -61,6 +62,32 @@ public class SoldierAttack : MonoBehaviour
     //
     // 값이 작을수록 더 빠르게 공격한다.
     [SerializeField] private float baseAttackDelay = 1f;
+
+    // =========================
+    // 시각용 사격 병사
+    // =========================
+
+    // 실제 공격은 모든 병사가 수행하지만,
+    // Bullet Tracer / Muzzle Flash 같은 FX는
+    // 이 목록에 등록된 병사만 표시한다.
+    //
+    // HashSet을 사용하면 Contains() 확인이 빠르다.
+    private readonly HashSet<SoldierAttack>
+        visualShooters = new();
+
+
+    [Header("사격 FX 최적화")]
+
+    // FX를 보여줄 최대 병사 수
+    [SerializeField]
+    private int maxVisualShooters = 30;
+
+    // 앞쪽 몇 줄을 시각용 사격 후보로 사용할지
+    //
+    // 현재 대형은 row 0이 가장 앞쪽이고,
+    // 뒤로 갈수록 -Z 방향으로 배치된다.
+    [SerializeField]
+    private int visualFrontRows = 3;
 
 
     [Header("투사체 강화 데이터")]
@@ -133,6 +160,13 @@ public class SoldierAttack : MonoBehaviour
     public float AttackDelay =>
         currentAttackDelay;
 
+    /// <summary>
+    /// 현재 이 병사가 공격 가능한 상태인지 반환한다.
+    /// </summary>
+    public bool CanAttack =>
+        soldierUnit == null ||
+        soldierUnit.CanAttack;
+
 
     private void Awake()
     {
@@ -161,72 +195,80 @@ public class SoldierAttack : MonoBehaviour
 
 
     /// <summary>
-    /// 한 번의 공격을 실행한다.
+    /// 병사 한 명의 일반 공격.
     ///
-    /// 현재 projectileCount만큼 반복하며,
-    /// 각 투사체의 퍼짐 각도를 계산한다.
-    ///
-    /// 실제 데미지는 FireRay(),
-    /// 시각 효과는 PlayBulletFx()가 담당한다.
+    /// 현재는 호환을 위해 유지한다.
     /// </summary>
-    public void Fire()
+    public void Fire(bool playVisual)
     {
-        // 병사가 살아있는 상태가 아니라면
-        // 공격하지 않는다.
+        // 개별 병사 한 명의 공격이므로
+        // 대표 병사 수 = 1
+        // Batch 크기 = 1
+        FireGroup(
+            1,
+            1,
+            playVisual
+        );
+    }
+
+    /// <summary>
+    /// 같은 Column 병사들의 공격을
+    /// 일정 수의 Batch로 나누어 처리한다.
+    ///
+    /// 예:
+    /// representedSoldierCount = 57
+    /// soldiersPerBatch = 5
+    ///
+    /// → 5명 / 5명 / 5명 ... / 마지막 2명
+    ///
+    /// 하나의 Enemy에게 전체 데미지가 한 번에 몰리는 것을 줄이고,
+    /// 앞 Enemy가 죽으면 다음 Batch가 뒤 Enemy를 공격할 수 있게 한다.
+    /// </summary>
+    public void FireGroup(
+        int representedSoldierCount,
+        int soldiersPerBatch,
+        bool playVisual)
+    {
         if (soldierUnit != null &&
             !soldierUnit.CanAttack)
         {
             return;
         }
 
-        // 발사 위치 또는 투사체 데이터가 없으면
-        // 정상적인 공격 계산이 불가능하므로 종료한다.
+        if (representedSoldierCount <= 0 ||
+            soldiersPerBatch <= 0)
+        {
+            return;
+        }
+
         if (firePoint == null ||
             projectileUpgradeData == null)
         {
             return;
         }
 
-        //// 사격 애니메이션 재생
-        //if (animationController != null)
-        //{
-        //    animationController.PlayShoot();
-        //}
-
-
-        // 실제 공격 시작 위치 계산
         Vector3 fireOrigin =
             GetFireOrigin();
 
-
-        // 여러 투사체가 중앙을 기준으로
-        // 좌우 대칭으로 퍼지도록 첫 번째 발사 각도를 계산한다.
-        //
-        // 예:
-        // projectileCount = 3
-        // spreadAngle = 10
-        //
-        // 결과:
-        // -10도 / 0도 / +10도
         float startAngle =
             -projectileUpgradeData.spreadAngle *
             (projectileCount - 1) *
             0.5f;
 
 
-        for (int i = 0;
-             i < projectileCount;
-             i++)
+        // =========================
+        // 각 투사체 방향 처리
+        // =========================
+
+        for (int projectileIndex = 0;
+             projectileIndex < projectileCount;
+             projectileIndex++)
         {
-            // 현재 투사체가 사용할 각도
             float angle =
                 startAngle +
                 projectileUpgradeData.spreadAngle *
-                i;
+                projectileIndex;
 
-
-            // FirePoint의 현재 방향을 기준으로
-            // Y축 회전을 추가한다.
             Quaternion rotation =
                 firePoint.rotation *
                 Quaternion.Euler(
@@ -235,32 +277,195 @@ public class SoldierAttack : MonoBehaviour
                     0f
                 );
 
-
-            // 실제 Raycast가 날아갈 방향
             Vector3 direction =
-                rotation *
-                Vector3.forward;
+                rotation * Vector3.forward;
 
 
-            // 실제 Raycast 피격 판정 수행
-            //
-            // Enemy에 맞으면 실제 hit.distance,
-            // 아무것도 맞지 않으면 attackRange를 반환한다.
+            // 이 Projectile에서 아직 처리하지 않은 병사 수
+            int remainingSoldiers =
+                representedSoldierCount;
+
+            // FX의 Tracer 길이에 사용할 거리
             float visualDistance =
-                FireRay(
+                attackRange;
+
+            // 하나의 Projectile에 대해서
+            // FX는 한 번만 표시하기 위한 변수
+            bool firstBatch = true;
+
+
+            // =========================
+            // Batch Damage 처리
+            // =========================
+
+            while (remainingSoldiers > 0)
+            {
+                // 이번 Batch에 포함될 병사 수
+                int batchSoldierCount =
+                    Mathf.Min(
+                        soldiersPerBatch,
+                        remainingSoldiers
+                    );
+
+                // 이번 Batch의 실제 데미지
+                float batchDamage =
+                    currentDamage *
+                    batchSoldierCount;
+
+
+
+                // 같은 방향으로 다시 Raycast한다.
+                //
+                // 앞 Enemy가 이전 Batch에서 죽었다면
+                // 이번 Raycast는 그 뒤의 Enemy를 찾게 된다.
+                bool hitEnemy =
+                    FireBatchRay(
+                        fireOrigin,
+                        direction,
+                        batchDamage,
+                        firstBatch && playVisual,
+                        out float hitDistance
+                    );
+
+
+                // 첫 Batch의 거리를
+                // 시각용 Bullet FX에 사용
+                if (firstBatch)
+                {
+                    visualDistance =
+                        hitDistance;
+
+                    firstBatch = false;
+                }
+
+
+                // 같은 방향에 Enemy 자체가 없다면
+                // 남은 Batch도 전부 빗나갈 것이므로 종료한다.
+                if (!hitEnemy)
+                {
+                    break;
+                }
+
+
+                remainingSoldiers -=
+                    batchSoldierCount;
+            }
+
+
+            // =========================
+            // Bullet FX
+            // =========================
+            //
+            // 실제 Batch가 여러 번 처리되어도
+            // Tracer / Muzzle Flash는 한 번만 보여준다.
+            //
+            // 따라서 데미지 Batch 수가 증가해도
+            // FX가 과도하게 발생하지 않는다.
+
+            if (playVisual)
+            {
+                PlayBulletFx(
                     fireOrigin,
-                    direction
+                    direction,
+                    visualDistance
                 );
-
-
-            // 실제 Raycast 거리와 동일한 거리만큼
-            // 총알 FX를 재생한다.
-            PlayBulletFx(
-                fireOrigin,
-                direction,
-                visualDistance
-            );
+            }
         }
+    }
+
+    /// <summary>
+    /// Batch 단위의 실제 공격 판정을 수행한다.
+    ///
+    /// hit 여부를 반환하기 때문에,
+    /// 같은 방향에 더 이상 Enemy가 없다면
+    /// 남은 Batch 처리를 중단할 수 있다.
+    /// </summary>
+    private bool FireBatchRay(
+        Vector3 origin,
+        Vector3 direction,
+        float damage,
+        bool playImpact,
+        out float hitDistance)
+    {
+        Ray ray =
+            new Ray(
+                origin,
+                direction
+            );
+
+        if (Physics.Raycast(
+            ray,
+            out RaycastHit hit,
+            attackRange,
+            enemyLayer,
+            QueryTriggerInteraction.Collide))
+        {
+
+            hitDistance =
+                hit.distance;
+
+
+            // =========================
+            // EnemyHealth
+            // =========================
+
+            EnemyHealth enemyHealth =
+                hit.collider
+                    .GetComponentInParent<EnemyHealth>();
+
+            if (enemyHealth != null)
+            {
+                enemyHealth.TakeDamage(
+                    damage
+                );
+            }
+            else
+            {
+                // =========================
+                // Team Enemy - Mon_Ctrl
+                // =========================
+
+                Mon_Ctrl monCtrl =
+                    hit.collider
+                        .GetComponentInParent<Mon_Ctrl>();
+
+                if (monCtrl != null)
+                {
+                    monCtrl.TakeDamage(
+                        damage
+                    );
+                }
+            }
+
+
+            // =========================
+            // Impact FX
+            // =========================
+            //
+            // Batch마다 Impact를 생성하면
+            // 같은 위치에서 FX가 수십 번 겹칠 수 있으므로
+            // 대표 Batch에서만 표시한다.
+
+            if (playImpact &&
+                bulletFx != null)
+            {
+                bulletFx.PlayImpact(
+                    hit.point +
+                    hit.normal * 0.1f,
+                    hit.normal
+                );
+            }
+
+
+            return true;
+        }
+
+
+        // Enemy를 맞히지 못한 경우
+        hitDistance =
+            attackRange;
+
+        return false;
     }
 
 
@@ -300,15 +505,15 @@ public class SoldierAttack : MonoBehaviour
     /// 아무것도 맞지 않으면 최대 공격 거리(attackRange)를 반환한다.
     /// </summary>
     private float FireRay(
-        Vector3 origin,
-        Vector3 direction)
+    Vector3 origin,
+    Vector3 direction,
+    float damage)
     {
         Ray ray =
             new Ray(
                 origin,
                 direction
             );
-
 
         if (Physics.Raycast(
             ray,
@@ -317,55 +522,42 @@ public class SoldierAttack : MonoBehaviour
             enemyLayer,
             QueryTriggerInteraction.Collide))
         {
-            // 기존 테스트 Enemy 시스템
             EnemyHealth enemyHealth =
                 hit.collider
                     .GetComponentInParent<EnemyHealth>();
 
-
             if (enemyHealth != null)
             {
                 enemyHealth.TakeDamage(
-                    currentDamage
+                    damage
                 );
             }
             else
             {
-                // 팀 프로젝트에서 사용하는 Enemy 시스템
                 Mon_Ctrl monCtrl =
                     hit.collider
                         .GetComponentInParent<Mon_Ctrl>();
 
-
                 if (monCtrl != null)
                 {
                     monCtrl.TakeDamage(
-                        currentDamage
+                        damage
                     );
                 }
             }
 
-
-            // 실제 피격 위치에 Impact FX 출력
             if (bulletFx != null)
             {
                 bulletFx.PlayImpact(
                     hit.point +
                     hit.normal * 0.1f,
-
                     hit.normal
                 );
             }
 
-
-            // 총알 FX가 Enemy를 지나가지 않도록
-            // 실제 명중 거리 반환
             return hit.distance;
         }
 
-
-        // 아무것도 맞지 않았다면
-        // 최대 공격 거리까지 총알 FX 재생
         return attackRange;
     }
 
