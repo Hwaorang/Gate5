@@ -60,6 +60,51 @@ public class DebugUIBootstrapper : MonoBehaviour
 #endif
     }
 
+    /// <summary>
+    /// 동적으로 생성된 Player의 시스템을 전달받는다.
+    /// </summary>
+    public void Initialize(PlayerContext context)
+    {
+        if (context == null)
+        {
+            Debug.LogWarning(
+                "[DebugUIBootstrapper] PlayerContext가 없습니다."
+            );
+
+            return;
+        }
+
+        squadManager =
+            context.SquadManager;
+
+        playerExperience =
+            context.PlayerExperience;
+
+
+        // DebugCanvas가 아직 생성되지 않았다면 생성
+        if (debugCanvasInstance == null)
+        {
+            CreateDebugUI();
+        }
+
+
+        // 생성된 DebugCheatPanel에
+        // 새로운 Player 참조 전달
+        DebugCheatPanel cheatPanel =
+            debugCanvasInstance != null
+                ? debugCanvasInstance.GetComponent<DebugCheatPanel>()
+                : null;
+
+        if (cheatPanel != null)
+        {
+            cheatPanel.Initialize(
+                squadManager,
+                playerExperience,
+                upgradeManager
+            );
+        }
+    }
+
 
     /// <summary>
     /// DebugCanvas Prefab을 생성하고
@@ -134,6 +179,12 @@ public class DebugUIBootstrapper : MonoBehaviour
                 upgradeManager
             );
         }
+
+        cheatPanel.Initialize(
+            squadManager,
+            playerExperience,
+            upgradeManager
+        );
     }
 
 
