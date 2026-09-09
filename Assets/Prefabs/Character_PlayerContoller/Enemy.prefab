@@ -138,8 +138,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b3edcc16380ee04a8361b1d1ac61fe1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
-  maxHp: 30
-  expReward: 5
+  maxHp: 100
+  expReward: 0
 --- !u!136 &-5176741565110565220
 CapsuleCollider:
   m_ObjectHideFlags: 0

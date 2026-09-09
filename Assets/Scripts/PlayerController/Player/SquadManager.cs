@@ -81,6 +81,40 @@ public class SquadManager : MonoBehaviour
     // 병사를 생성할 때 한 번만 찾아서 저장한다.
     private readonly List<SoldierAttack> soldierAttacks = new();
 
+    /// <summary>
+    /// SquadAttackResolver에서 현재 병사들의
+    /// 공격 컴포넌트를 읽기 전용으로 확인하기 위해 제공한다.
+    ///
+    /// 외부에서 Add / Remove는 할 수 없다.
+    /// </summary>
+    public IReadOnlyList<SoldierAttack> SoldierAttacks =>
+        soldierAttacks;
+
+    /// <summary>
+    /// 현재 병사 대형의 열 개수를 반환한다.
+    ///
+    /// UpdateFormation()에서 사용하는 계산과 동일하다.
+    /// </summary>
+    public int CurrentColumnCount
+    {
+        get
+        {
+            if (soldiers.Count <= 0)
+            {
+                return 0;
+            }
+
+            int columnCount =
+                Mathf.CeilToInt(
+                    Mathf.Sqrt(soldiers.Count)
+                );
+
+            return Mathf.Min(
+                columnCount,
+                maxColumnCount
+            );
+        }
+    }
 
     // =========================
     // 공격력 강화 상태
@@ -129,12 +163,28 @@ public class SquadManager : MonoBehaviour
     // 이번 분산 사격에서 다음으로 공격할 SoldierAttack 인덱스
     private int fireIndex;
 
+    //전방병사만 총쏘는 이펙트가 나오기위해 만든 병사 목록
+    private readonly HashSet<SoldierAttack>
+    visualShooters = new();
 
     /// <summary>
     /// 현재 보유 중인 병사 수.
     /// UI나 다른 시스템에서 병사 수를 확인할 때 사용한다.
     /// </summary>
     public int CurrentCount => soldiers.Count;
+
+    [Header("사격 FX 최적화")]
+
+    [Tooltip(
+        "병사가 많을 때 Bullet FX를 보여줄 최대 병사 수"
+    )]
+    [SerializeField]
+    //한 번에 FX를 보여줄 최대 병사 수
+    private int maxVisualShooters = 40;
+
+    //visualFrontRows
+    [SerializeField]
+    private int visualFrontRows = 3;
 
 
     /// <summary>
@@ -207,18 +257,6 @@ public class SquadManager : MonoBehaviour
         // PlayerStats에 설정된 시작 병사 수만큼 생성한다.
         AddUnit(playerStats.StartSoldierCount);
     }
-
-
-    private void Update()
-    {
-        // 전체 병사의 공격 주기를 한 곳에서 계산한다.
-        HandleAttackTimer();
-
-        // 공격 시간이 되었을 경우
-        // shotsPerFrame 수만큼 병사를 나누어 Fire()시킨다.
-        HandleDistributedFire();
-    }
-
 
     /// <summary>
     /// 지정한 수만큼 병사를 분대에 추가한다.
@@ -319,6 +357,7 @@ public class SquadManager : MonoBehaviour
 
         // 병사 수가 바뀌었으므로 현재 인원에 맞게 다시 정렬
         UpdateFormation();
+        UpdateVisualShooters();
 
         // SoldierCountUI 등에게 현재 병사 수 전달
         OnSoldierCountChanged?.Invoke(
@@ -375,6 +414,7 @@ public class SquadManager : MonoBehaviour
 
         // 남은 병사들 기준으로 다시 대형 배치
         UpdateFormation();
+        UpdateVisualShooters();
 
         // UI에 현재 병사 수 전달
         OnSoldierCountChanged?.Invoke(
@@ -466,6 +506,121 @@ public class SquadManager : MonoBehaviour
                     0f,
                     z
                 );
+        }
+    }
+
+    /// <summary>
+    /// Bullet FX를 표시할 병사들을 다시 선정한다.
+    ///
+    /// 실제 공격 판정은 전체 병사가 수행하지만,
+    /// 시각적인 총알 FX는 전방 병사들만 담당한다.
+    ///
+    /// 이렇게 하면 병사가 수백 명까지 늘어나도
+    /// 뒤쪽에서 총알이 출발하는 어색함과
+    /// 과도한 FX 생성을 줄일 수 있다.
+    /// </summary>
+    private void UpdateVisualShooters()
+    {
+        visualShooters.Clear();
+
+        if (soldierAttacks.Count == 0)
+        {
+            return;
+        }
+
+        // 설정값 방어
+        if (maxVisualShooters <= 0 ||
+            visualFrontRows <= 0)
+        {
+            return;
+        }
+
+
+        // =========================
+        // 병사가 적으면 전부 표시
+        // =========================
+
+        if (soldierAttacks.Count <= maxVisualShooters)
+        {
+            for (int i = 0;
+                 i < soldierAttacks.Count;
+                 i++)
+            {
+                SoldierAttack attack =
+                    soldierAttacks[i];
+
+                if (attack != null)
+                {
+                    visualShooters.Add(attack);
+                }
+            }
+
+            return;
+        }
+
+
+        // =========================
+        // 앞쪽 줄만 후보로 사용
+        // =========================
+        //
+        // 예:
+        // maxColumnCount = 7
+        // visualFrontRows = 3
+        //
+        // 최대 7 × 3 = 21명의 앞쪽 병사를
+        // FX 담당 후보로 사용한다.
+
+        int frontCandidateCount =
+            Mathf.Min(
+                soldierAttacks.Count,
+                maxColumnCount * visualFrontRows
+            );
+
+        int visualCount =
+            Mathf.Min(
+                maxVisualShooters,
+                frontCandidateCount
+            );
+
+        if (visualCount <= 0)
+        {
+            return;
+        }
+
+
+        // =========================
+        // 후보 전체에서 골고루 선택
+        // =========================
+        //
+        // 단순히 왼쪽 몇 명만 선택하지 않고
+        // 후보 범위의 처음부터 끝까지 골고루 뽑는다.
+        //
+        // 따라서 좌측 / 중앙 / 우측 병사들의
+        // 사격 FX가 모두 보이게 된다.
+
+        for (int i = 0;
+             i < visualCount;
+             i++)
+        {
+            float t =
+                visualCount == 1
+                    ? 0f
+                    : (float)i /
+                      (visualCount - 1);
+
+            int index =
+                Mathf.RoundToInt(
+                    t *
+                    (frontCandidateCount - 1)
+                );
+
+            SoldierAttack attack =
+                soldierAttacks[index];
+
+            if (attack != null)
+            {
+                visualShooters.Add(attack);
+            }
         }
     }
 
@@ -832,20 +987,13 @@ public class SquadManager : MonoBehaviour
 
 
     /// <summary>
-    /// 병사들의 Fire() 호출을 여러 프레임에 분산한다.
+    /// 전체 병사의 실제 공격을 여러 프레임에 나누어 실행한다.
     ///
-    /// 예:
-    /// 병사 100명
-    /// shotsPerFrame = 20
-    ///
-    /// → 약 5프레임에 걸쳐 100명이 사격한다.
-    ///
-    /// 이를 통해 한 프레임에 Raycast와 FX 호출이
-    /// 몰리는 현상을 완화한다.
+    /// Raycast 공격은 모든 병사가 수행하지만,
+    /// Bullet FX는 visualShooters에 포함된 병사만 표시한다.
     /// </summary>
     private void HandleDistributedFire()
     {
-        // 현재 공격 시간이 아니라면 처리하지 않는다.
         if (!isFiring)
         {
             return;
@@ -853,32 +1001,33 @@ public class SquadManager : MonoBehaviour
 
         int firedThisFrame = 0;
 
-        // 아직 공격하지 않은 병사가 남아 있고
-        // 이번 프레임의 최대 사격 수를 넘지 않은 동안 반복
         while (
-            fireIndex <
-            soldierAttacks.Count &&
-            firedThisFrame <
-            shotsPerFrame)
+            fireIndex < soldierAttacks.Count &&
+            firedThisFrame < shotsPerFrame)
         {
             SoldierAttack attack =
                 soldierAttacks[fireIndex];
 
             if (attack != null)
             {
-                // SoldierAttack은
-                // 실제 Raycast 판정과 시각 FX 실행만 담당한다.
-                attack.Fire();
+                // 이 병사가 시각 FX 담당인지 확인
+                bool playVisual =
+                    visualShooters.Contains(
+                        attack
+                    );
+
+                // 실제 공격은 항상 수행.
+                // playVisual은 FX 표시 여부만 결정한다.
+                attack.Fire(
+                    playVisual
+                );
             }
 
             fireIndex++;
             firedThisFrame++;
         }
 
-        // 모든 병사가 이번 공격을 완료했다면
-        // 분산 사격 상태 종료
-        if (fireIndex >=
-            soldierAttacks.Count)
+        if (fireIndex >= soldierAttacks.Count)
         {
             isFiring = false;
         }
