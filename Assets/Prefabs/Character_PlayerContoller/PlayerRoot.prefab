@@ -48,6 +48,7 @@ GameObject:
   - component: {fileID: 7110261656882566274}
   - component: {fileID: 2467637567130527127}
   - component: {fileID: 6172481598011547863}
+  - component: {fileID: 6332842898400522407}
   m_Layer: 7
   m_Name: PlayerRoot
   m_TagString: Untagged
@@ -102,9 +103,11 @@ MonoBehaviour:
   spacing: 1.2
   maxColumnCount: 7
   fireLine: {fileID: 0}
-  shotsPerFrame: 20
   bulletPool: {fileID: 0}
   bulletFx: {fileID: 0}
+  shotsPerFrame: 20
+  maxVisualShooters: 40
+  visualFrontRows: 3
 --- !u!114 &5340773646937143775
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -183,7 +186,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be53d6ff744d2db4e93c1806b80511fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStats
-  baseData: {fileID: 11400000, guid: 3c9af345a7857ab4a8170ae06c5ad77d, type: 2}
+  baseMoveSpeed: 5
+  startSoldierCount: 1
 --- !u!114 &2467637567130527127
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -212,10 +216,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LobbyUpgradeApplier
   playerStats: {fileID: 7110261656882566274}
   squadManager: {fileID: 1788119257003499149}
-  damageIncreasePerLevel: 0.05
-  moveSpeedIncreasePerLevel: 0.05
-  attackSpeedIncreasePerLevel: 0.05
+  upgradeData: {fileID: 0}
   useTestData: 1
   testAttackLevel: 3
   testMoveSpeedLevel: 2
   testAttackSpeedLevel: 4
+--- !u!114 &6332842898400522407
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3858501899684243877}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06152b6868b79cc4bb691528a174000b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerContext
+  playerController: {fileID: 3696898093733037751}
+  playerStats: {fileID: 7110261656882566274}
+  playerExperience: {fileID: 2467637567130527127}
+  squadManager: {fileID: 1788119257003499149}

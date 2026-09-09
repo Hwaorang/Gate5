@@ -84,8 +84,71 @@ public class UpgradeManager_PlayerController : MonoBehaviour
 
     private void Awake()
     {
-        // SquadManager와 PlayerStats를 전달해서
-        // 각 UpgradeStrategy가 필요한 시스템에 접근할 수 있도록 한다.
+        CreateStrategyFactory();
+    }
+
+    /// <summary>
+    /// 동적으로 생성된 PlayerRoot의 시스템들을 전달받는다.
+    ///
+    /// 기존 Inspector 참조 대신
+    /// PlayerContext 내부의 실제 Player 컴포넌트를 사용한다.
+    /// </summary>
+    public void Initialize(
+        PlayerContext context)
+    {
+        if (context == null)
+        {
+            Debug.LogWarning(
+                "[UpgradeManager] PlayerContext가 없습니다."
+            );
+
+            return;
+        }
+
+        // =========================
+        // 새로운 Player 참조 적용
+        // =========================
+
+        squadManager =
+            context.SquadManager;
+
+        playerStats =
+            context.PlayerStats;
+
+        playerExperience =
+            context.PlayerExperience;
+
+
+        // =========================
+        // StrategyFactory 재생성
+        // =========================
+
+        // 기존 Factory는 이전 Player 참조를 가지고 있을 수 있으므로
+        // 새로운 Player 기준으로 다시 만든다.
+        CreateStrategyFactory();
+    }
+
+    /// <summary>
+    /// 현재 연결되어 있는 Player 시스템을 사용해서
+    /// UpgradeStrategyFactory를 생성한다.
+    ///
+    /// Player가 동적으로 교체되었을 경우에도
+    /// 다시 호출해서 새로운 Player를 기준으로
+    /// Strategy를 생성할 수 있다.
+    /// </summary>
+    private void CreateStrategyFactory()
+    {
+        if (squadManager == null ||
+            playerStats == null)
+        {
+            // 동적 Player 생성 방식에서는
+            // Awake 시점에 아직 참조가 없을 수도 있으므로
+            // 바로 에러 처리하지 않고 Factory 생성을 미룬다.
+            strategyFactory = null;
+
+            return;
+        }
+
         strategyFactory =
             new UpgradeStrategyFactory(
                 squadManager,

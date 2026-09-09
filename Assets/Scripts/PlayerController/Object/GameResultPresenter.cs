@@ -5,6 +5,7 @@ using UnityEngine;
 /// GameResultUI에 전달하는 중간 관리자.
 ///
 /// 역할:
+///
 /// SquadManager
 ///     → GameOver 발생 알림
 ///
@@ -14,14 +15,16 @@ using UnityEngine;
 /// GameResultUI
 ///     → 화면에 표시
 ///
-/// Observer Pattern을 사용하여
-/// SquadManager와 결과 UI 사이의 직접적인 의존성을 줄인다.
+/// 현재는 Inspector 참조를 사용할 수 있고,
+/// 이후 PlayerRoot가 동적으로 생성되면
+/// PlayerContext를 통해 Player 관련 참조를 전달받는다.
 /// </summary>
 public class GameResultPresenter : MonoBehaviour
 {
     [Header("GameOver 감지")]
 
     // GameOver 이벤트를 발생시키는 SquadManager
+    // 현재 단계에서는 기존 Inspector 연결도 유지한다.
     [SerializeField]
     private SquadManager squadManager;
 
@@ -29,10 +32,11 @@ public class GameResultPresenter : MonoBehaviour
     [Header("결과 데이터")]
 
     // 플레이 시간을 가지고 있는 GameManager
+    // PlayerRoot와 관계없는 Scene 시스템이므로 그대로 유지
     [SerializeField]
     private GameManager_KHM gameManager;
 
-    // 현재 레벨을 가지고 있는 PlayerExperience
+    // 현재 Player의 레벨 정보
     [SerializeField]
     private PlayerExperience playerExperience;
 
@@ -44,35 +48,94 @@ public class GameResultPresenter : MonoBehaviour
     private GameResultUI gameResultUI;
 
 
-    /// <summary>
-    /// 오브젝트가 활성화될 때
-    /// SquadManager의 GameOver 이벤트를 구독한다.
-    /// </summary>
     private void OnEnable()
     {
-        if (squadManager != null)
+        SubscribeGameOver();
+    }
+
+
+    private void OnDisable()
+    {
+        UnsubscribeGameOver();
+    }
+
+
+    /// <summary>
+    /// 동적으로 생성된 Player의 정보를 전달받는다.
+    /// </summary>
+    public void Initialize(
+        PlayerContext context)
+    {
+        if (context == null)
         {
-            squadManager.OnGameOver +=
-                HandleGameOver;
+            Debug.LogWarning(
+                "[GameResultPresenter] PlayerContext가 없습니다."
+            );
+
+            return;
+        }
+
+
+        // =========================
+        // 기존 SquadManager 이벤트 해제
+        // =========================
+
+        UnsubscribeGameOver();
+
+
+        // =========================
+        // 새로운 Player 참조 적용
+        // =========================
+
+        squadManager =
+            context.SquadManager;
+
+        playerExperience =
+            context.PlayerExperience;
+
+
+        // =========================
+        // 새로운 SquadManager 이벤트 연결
+        // =========================
+
+        if (isActiveAndEnabled)
+        {
+            SubscribeGameOver();
         }
     }
 
 
     /// <summary>
-    /// 오브젝트가 비활성화되거나 제거될 때
-    /// 이벤트 구독을 해제한다.
-    ///
-    /// 구독 해제를 하지 않으면
-    /// 오브젝트가 사라진 뒤에도 이벤트가 호출되는 등의
-    /// 문제가 발생할 수 있다.
+    /// SquadManager의 GameOver 이벤트를 구독한다.
     /// </summary>
-    private void OnDisable()
+    private void SubscribeGameOver()
     {
-        if (squadManager != null)
+        if (squadManager == null)
         {
-            squadManager.OnGameOver -=
-                HandleGameOver;
+            return;
         }
+
+        // 중복 구독 방지
+        squadManager.OnGameOver -=
+            HandleGameOver;
+
+        squadManager.OnGameOver +=
+            HandleGameOver;
+    }
+
+
+    /// <summary>
+    /// 현재 SquadManager의 GameOver 이벤트 구독을 해제한다.
+    /// </summary>
+    private void UnsubscribeGameOver()
+    {
+        if (squadManager == null)
+        {
+            return;
+        }
+
+        squadManager.OnGameOver -=
+            HandleGameOver;
     }
 
 
@@ -85,20 +148,35 @@ public class GameResultPresenter : MonoBehaviour
     /// </summary>
     private void HandleGameOver()
     {
+        // =========================
+        // Level
+        // =========================
+
         int level = 1;
 
         if (playerExperience != null)
         {
-            level = playerExperience.CurrentLevel;
+            level =
+                playerExperience.CurrentLevel;
         }
 
-        // GameManager 담당자가 GameTime 프로퍼티 추가 후 연결
+
+        // =========================
+        // Survival Time
+        // =========================
+
         float survivalTime = 0f;
 
         if (gameManager != null)
         {
-            survivalTime = gameManager.GameTime;
+            survivalTime =
+                gameManager.GameTime;
         }
+
+
+        // =========================
+        // Result Data 생성
+        // =========================
 
         GameResultData resultData =
             new GameResultData(
@@ -106,9 +184,16 @@ public class GameResultPresenter : MonoBehaviour
                 level
             );
 
+
+        // =========================
+        // UI 표시
+        // =========================
+
         if (gameResultUI != null)
         {
-            gameResultUI.Show(resultData);
+            gameResultUI.Show(
+                resultData
+            );
         }
     }
 }
