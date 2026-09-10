@@ -27,22 +27,12 @@ public class SoldierVisualController : MonoBehaviour
         if (SaveManager.Instance == null ||
             SaveManager.Instance.Data == null)
         {
-#if UNITY_EDITOR
-            Debug.Log("[Skin] SaveManager 없음 → 기본 스킨 0 적용");
-#endif
-
             ApplySkin(0);
             return;
         }
 
         int selectedSkin =
             SaveManager.Instance.Data.selectedSkin;
-
-#if UNITY_EDITOR
-        Debug.Log(
-            $"[Skin] 저장된 selectedSkin = {selectedSkin}"
-        );
-#endif
 
         ApplySkin(selectedSkin);
     }

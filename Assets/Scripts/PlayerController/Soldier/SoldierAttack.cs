@@ -1,5 +1,4 @@
 using GptAsset.HyperCasualBulletFX;
-using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -63,33 +62,6 @@ public class SoldierAttack : MonoBehaviour
     // 값이 작을수록 더 빠르게 공격한다.
     [SerializeField] private float baseAttackDelay = 1f;
 
-    // =========================
-    // 시각용 사격 병사
-    // =========================
-
-    // 실제 공격은 모든 병사가 수행하지만,
-    // Bullet Tracer / Muzzle Flash 같은 FX는
-    // 이 목록에 등록된 병사만 표시한다.
-    //
-    // HashSet을 사용하면 Contains() 확인이 빠르다.
-    private readonly HashSet<SoldierAttack>
-        visualShooters = new();
-
-
-    [Header("사격 FX 최적화")]
-
-    // FX를 보여줄 최대 병사 수
-    [SerializeField]
-    private int maxVisualShooters = 30;
-
-    // 앞쪽 몇 줄을 시각용 사격 후보로 사용할지
-    //
-    // 현재 대형은 row 0이 가장 앞쪽이고,
-    // 뒤로 갈수록 -Z 방향으로 배치된다.
-    [SerializeField]
-    private int visualFrontRows = 3;
-
-
     [Header("투사체 강화 데이터")]
 
     // 투사체 관련 설정값을 가지고 있는 ScriptableObject
@@ -133,9 +105,6 @@ public class SoldierAttack : MonoBehaviour
 
     // Squad 전체가 공유하는 앞쪽 발사 기준점
     private Transform fireLine;
-
-    [SerializeField]
-    private SoldierAnimationController animationController;
 
     [SerializeField]
     private SoldierUnit soldierUnit;
@@ -492,75 +461,6 @@ public class SoldierAttack : MonoBehaviour
             distance
         );
     }
-
-
-    /// <summary>
-    /// Raycast를 사용해 실제 Enemy 피격을 처리한다.
-    ///
-    /// Bullet Collider를 대량으로 생성하지 않고
-    /// Raycast로 즉시 피격을 계산하기 때문에
-    /// 병사 수가 많아졌을 때 Physics 비용을 줄일 수 있다.
-    ///
-    /// Enemy에 명중하면 실제 명중 거리(hit.distance)를 반환하고,
-    /// 아무것도 맞지 않으면 최대 공격 거리(attackRange)를 반환한다.
-    /// </summary>
-    private float FireRay(
-    Vector3 origin,
-    Vector3 direction,
-    float damage)
-    {
-        Ray ray =
-            new Ray(
-                origin,
-                direction
-            );
-
-        if (Physics.Raycast(
-            ray,
-            out RaycastHit hit,
-            attackRange,
-            enemyLayer,
-            QueryTriggerInteraction.Collide))
-        {
-            EnemyHealth enemyHealth =
-                hit.collider
-                    .GetComponentInParent<EnemyHealth>();
-
-            if (enemyHealth != null)
-            {
-                enemyHealth.TakeDamage(
-                    damage
-                );
-            }
-            else
-            {
-                Mon_Ctrl monCtrl =
-                    hit.collider
-                        .GetComponentInParent<Mon_Ctrl>();
-
-                if (monCtrl != null)
-                {
-                    monCtrl.TakeDamage(
-                        damage
-                    );
-                }
-            }
-
-            if (bulletFx != null)
-            {
-                bulletFx.PlayImpact(
-                    hit.point +
-                    hit.normal * 0.1f,
-                    hit.normal
-                );
-            }
-
-            return hit.distance;
-        }
-
-        return attackRange;
-    }
-
 
     /// <summary>
     /// 기존 시각용 Bullet GameObject를 출력한다.
