@@ -789,19 +789,6 @@ public class SoldierAttack : MonoBehaviour
             pool;
     }
 
-
-    /// <summary>
-    /// SquadManager에서 관리하는
-    /// Hyper Casual Bullet FX를 전달받는다.
-    /// </summary>
-    public void SetBulletFx(
-        HyperCasualBulletFx fx)
-    {
-        bulletFx =
-            fx;
-    }
-
-
     /// <summary>
     /// Squad 전체가 공유하는
     /// 앞쪽 발사 기준점을 설정한다.
@@ -840,5 +827,11 @@ public class SoldierAttack : MonoBehaviour
         }
 
         return origin;
+    }
+
+    public void SetBulletFx(
+    GptAsset.HyperCasualBulletFX.HyperCasualBulletFx fx)
+    {
+        bulletFx = fx;
     }
 }

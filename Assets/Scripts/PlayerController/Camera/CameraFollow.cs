@@ -31,4 +31,13 @@ public class CameraFollow : MonoBehaviour
         // 플레이어 쪽을 바라보게 한다.
         transform.LookAt(target);
     }
+
+    /// <summary>
+    /// 동적으로 생성된 Player를
+    /// 새로운 추적 대상으로 설정한다.
+    /// </summary>
+    public void SetTarget(Transform newTarget)
+    {
+        target = newTarget;
+    }
 }

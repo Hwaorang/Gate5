@@ -1,4 +1,5 @@
 using UnityEngine;
+using GptAsset.HyperCasualBulletFX;
 
 /// <summary>
 /// PlayerRoot Prefab을 런타임에 생성하는 역할을 담당한다.
@@ -46,6 +47,17 @@ public class PlayerBootstrapper : MonoBehaviour
     [SerializeField]
     private DebugUIBootstrapper debugUIBootstrapper;
 
+    [SerializeField]
+    private CameraViewController cameraViewController;
+
+    [SerializeField]
+    private HyperCasualBulletFx bulletFx;
+
+    [Header("Scene References")]
+
+    [SerializeField]
+    private SoldierPool soldierPool;
+
     /// <summary>
     /// 생성된 PlayerRoot를 외부에서 확인할 수 있도록 제공한다.
     /// </summary>
@@ -56,6 +68,11 @@ public class PlayerBootstrapper : MonoBehaviour
 
     public PlayerContext PlayerContext =>
         playerContext;
+
+    private void Start()
+    {
+        SpawnPlayer();
+    }
 
     /// <summary>
     /// PlayerRoot Prefab을 생성한다.
@@ -116,6 +133,23 @@ public class PlayerBootstrapper : MonoBehaviour
             );
         }
 
+        // =========================
+        // Scene 시스템 주입
+        // =========================
+
+        if (soldierPool != null)
+        {
+            playerContext.SquadManager.SetSoldierPool(
+                soldierPool
+            );
+        }
+        else
+        {
+            Debug.LogWarning(
+                "[PlayerBootstrapper] SoldierPool이 연결되지 않았습니다."
+            );
+        }
+
         if (damageLine != null)
         {
             damageLine.Initialize(
@@ -146,6 +180,34 @@ public class PlayerBootstrapper : MonoBehaviour
         {
             debugUIBootstrapper.Initialize(
                 playerContext
+            );
+        }
+
+        if (cameraViewController != null)
+        {
+            cameraViewController.Initialize(
+                playerContext
+            );
+        }
+
+        if (bulletFx != null)
+        {
+            playerContext.SquadManager.SetBulletFx(
+                bulletFx
+            );
+        }
+
+        if (upgradeManager != null)
+        {
+            // UpgradeManager가 새 Player 정보를 받음
+            upgradeManager.Initialize(
+                playerContext
+            );
+
+            // 새 PlayerExperience도
+            // Scene의 UpgradeManager를 받음
+            playerContext.PlayerExperience.SetUpgradeManager(
+                upgradeManager
             );
         }
 

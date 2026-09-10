@@ -38,10 +38,11 @@ public class DebugCheatPanel : MonoBehaviour
     /// Scene에 존재하는 실제 게임 시스템들을 전달받는다.
     /// </summary>
     public void Initialize(
-        SquadManager squad,
-        PlayerExperience experience,
-        UpgradeManager_PlayerController upgrade)
+    SquadManager squad,
+    PlayerExperience experience,
+    UpgradeManager_PlayerController upgrade)
     {
+        // 참조는 매번 갱신
         squadManager = squad;
         playerExperience = experience;
         upgradeManager = upgrade;

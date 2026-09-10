@@ -25,6 +25,26 @@ public class DamageLine : MonoBehaviour
     [SerializeField]
     private SquadManager squadManager;
 
+    [Header("위치 설정")]
+
+    // Player보다 얼마나 앞에 DamageLine을 둘지
+    [SerializeField]
+    private float forwardOffset = 3f;
+
+    // 동적으로 생성된 PlayerRoot
+    private Transform playerTransform;
+
+    // DamageLine의 원래 X / Y 위치
+    private float fixedX;
+    private float fixedY;
+
+    private void Awake()
+    {
+        // DamageLine은 좌우로 움직이지 않도록
+        // 현재 Scene 위치의 X / Y를 기억한다.
+        fixedX = transform.position.x;
+        fixedY = transform.position.y;
+    }
 
     /// <summary>
     /// 런타임에 생성된 Player의 정보를 전달받는다.
@@ -49,9 +69,47 @@ public class DamageLine : MonoBehaviour
         squadManager =
             context.SquadManager;
 
+        // 동적으로 생성된 PlayerRoot 위치
+        playerTransform =
+            context.transform;
+
         // Player 정보를 받은 뒤
         // 실제 이동 범위에 맞춰 DamageLine 크기를 계산한다.
         UpdateLineWidth();
+
+        // 처음 연결되는 순간에도 위치 즉시 적용
+        UpdateLinePosition();
+    }
+
+    /// <summary>
+    /// DamageLine을 Player보다 일정 거리 앞에 배치한다.
+    ///
+    /// Player의 좌우 이동(X)은 따라가지 않고,
+    /// 전후 위치(Z)만 Player 기준으로 계산한다.
+    /// </summary>
+    private void UpdateLinePosition()
+    {
+        if (playerTransform == null)
+        {
+            return;
+        }
+
+        Vector3 position =
+            transform.position;
+
+        // 좌우 중앙 위치는 고정
+        position.x = fixedX;
+
+        // 높이도 기존 값 유지
+        position.y = fixedY;
+
+        // Player보다 일정 거리 앞
+        position.z =
+            playerTransform.position.z +
+            forwardOffset;
+
+        transform.position =
+            position;
     }
 
 
@@ -107,5 +165,10 @@ public class DamageLine : MonoBehaviour
         }
 
         squadManager.RemoveOneSoldier();
+    }
+
+    private void LateUpdate()
+    {
+        UpdateLinePosition();
     }
 }
