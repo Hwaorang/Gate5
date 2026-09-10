@@ -41,6 +41,8 @@ public class DebugUIBootstrapper : MonoBehaviour
     // 생성된 DebugCheatPanel
     private DebugCheatPanel debugCheatPanel;
 
+    private DebugPerformanceUI debugPerformanceUI;
+
 
     private void Start()
     {
@@ -164,6 +166,10 @@ public class DebugUIBootstrapper : MonoBehaviour
             debugCanvasInstance
                 .GetComponent<DebugCheatPanel>();
 
+        debugPerformanceUI =
+            debugCanvasInstance
+                .GetComponent<DebugPerformanceUI>();
+
 
         // 현재 가지고 있는 Player 참조 전달
         ApplyPlayerReferences();
@@ -185,6 +191,18 @@ public class DebugUIBootstrapper : MonoBehaviour
             playerExperience,
             upgradeManager
         );
+
+        // =========================
+        // Performance UI
+        // =========================
+
+        if (debugPerformanceUI != null)
+        {
+            debugPerformanceUI.Initialize(
+                squadManager,
+                playerExperience
+            );
+        }
     }
 
 
