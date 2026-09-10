@@ -49,6 +49,7 @@ GameObject:
   - component: {fileID: 2467637567130527127}
   - component: {fileID: 6172481598011547863}
   - component: {fileID: 6332842898400522407}
+  - component: {fileID: 908975879532057778}
   m_Layer: 7
   m_Name: PlayerRoot
   m_TagString: Untagged
@@ -102,7 +103,7 @@ MonoBehaviour:
   playerStats: {fileID: 7110261656882566274}
   spacing: 1.2
   maxColumnCount: 7
-  fireLine: {fileID: 0}
+  fireLine: {fileID: 1401601078157791423}
   bulletPool: {fileID: 0}
   bulletFx: {fileID: 0}
   shotsPerFrame: 20
@@ -216,7 +217,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LobbyUpgradeApplier
   playerStats: {fileID: 7110261656882566274}
   squadManager: {fileID: 1788119257003499149}
-  upgradeData: {fileID: 0}
+  upgradeData: {fileID: 11400000, guid: 4a98803411932d945b1e8a18ac2542f3, type: 2}
   useTestData: 1
   testAttackLevel: 3
   testMoveSpeedLevel: 2
@@ -237,3 +238,17 @@ MonoBehaviour:
   playerStats: {fileID: 7110261656882566274}
   playerExperience: {fileID: 2467637567130527127}
   squadManager: {fileID: 1788119257003499149}
+--- !u!114 &908975879532057778
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3858501899684243877}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 592207663bf4f6b489f53449ea5e4411, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SquadAttackResolver
+  squadManager: {fileID: 1788119257003499149}
+  soldiersPerDamageBatch: 5

@@ -2,11 +2,11 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 /// <summary>
-/// 개발용 Debug UI를 런타임에 생성하고
-/// F12 키로 DebugPanel을 표시/숨김 처리한다.
+/// DebugCanvas를 런타임에 생성하고
+/// F12로 DebugPanel을 열고 닫는다.
 ///
-/// Scene에 DebugCanvas를 직접 배치하지 않고
-/// Prefab을 실행 시 생성한다.
+/// PlayerRoot가 동적으로 생성될 경우
+/// PlayerContext를 통해 실제 Player 시스템의 참조를 전달받는다.
 /// </summary>
 public class DebugUIBootstrapper : MonoBehaviour
 {
@@ -19,12 +19,15 @@ public class DebugUIBootstrapper : MonoBehaviour
 
     [Header("게임 시스템 참조")]
 
+    // 현재 단계에서는 기존 Inspector 참조도 유지한다.
     [SerializeField]
     private SquadManager squadManager;
 
     [SerializeField]
     private PlayerExperience playerExperience;
 
+    // UpgradeManager는 Scene 시스템이므로
+    // PlayerContext가 아니라 Inspector에서 계속 받는다.
     [SerializeField]
     private UpgradeManager_PlayerController upgradeManager;
 
@@ -32,8 +35,11 @@ public class DebugUIBootstrapper : MonoBehaviour
     // 생성된 DebugCanvas
     private GameObject debugCanvasInstance;
 
-    // 실제로 켰다 끌 DebugPanel
+    // F12로 표시/숨김할 DebugPanel
     private GameObject debugPanel;
+
+    // 생성된 DebugCheatPanel
+    private DebugCheatPanel debugCheatPanel;
 
 
     private void Start()
@@ -52,7 +58,6 @@ public class DebugUIBootstrapper : MonoBehaviour
             return;
         }
 
-        // F12로 DebugPanel 열기 / 닫기
         if (Keyboard.current.f12Key.wasPressedThisFrame)
         {
             ToggleDebugPanel();
@@ -60,10 +65,12 @@ public class DebugUIBootstrapper : MonoBehaviour
 #endif
     }
 
+
     /// <summary>
-    /// 동적으로 생성된 Player의 시스템을 전달받는다.
+    /// 동적으로 생성된 Player의 참조를 전달받는다.
     /// </summary>
-    public void Initialize(PlayerContext context)
+    public void Initialize(
+        PlayerContext context)
     {
         if (context == null)
         {
@@ -74,6 +81,7 @@ public class DebugUIBootstrapper : MonoBehaviour
             return;
         }
 
+        // 새로운 Player 시스템으로 참조 교체
         squadManager =
             context.SquadManager;
 
@@ -81,37 +89,30 @@ public class DebugUIBootstrapper : MonoBehaviour
             context.PlayerExperience;
 
 
-        // DebugCanvas가 아직 생성되지 않았다면 생성
+        // 아직 DebugCanvas가 생성되지 않았다면 생성
         if (debugCanvasInstance == null)
         {
             CreateDebugUI();
         }
 
 
-        // 생성된 DebugCheatPanel에
+        // 생성되어 있는 Debug UI에
         // 새로운 Player 참조 전달
-        DebugCheatPanel cheatPanel =
-            debugCanvasInstance != null
-                ? debugCanvasInstance.GetComponent<DebugCheatPanel>()
-                : null;
-
-        if (cheatPanel != null)
-        {
-            cheatPanel.Initialize(
-                squadManager,
-                playerExperience,
-                upgradeManager
-            );
-        }
+        ApplyPlayerReferences();
     }
 
 
     /// <summary>
-    /// DebugCanvas Prefab을 생성하고
-    /// 필요한 시스템 참조를 전달한다.
+    /// DebugCanvas Prefab을 런타임에 생성한다.
     /// </summary>
     private void CreateDebugUI()
     {
+        // 중복 생성 방지
+        if (debugCanvasInstance != null)
+        {
+            return;
+        }
+
         if (debugCanvasPrefab == null)
         {
             Debug.LogWarning(
@@ -121,21 +122,13 @@ public class DebugUIBootstrapper : MonoBehaviour
             return;
         }
 
-        // 중복 생성 방지
-        if (debugCanvasInstance != null)
-        {
-            return;
-        }
-
 
         // =========================
         // DebugCanvas 생성
         // =========================
 
         debugCanvasInstance =
-            Instantiate(
-                debugCanvasPrefab
-            );
+            Instantiate(debugCanvasPrefab);
 
 
         // =========================
@@ -152,7 +145,7 @@ public class DebugUIBootstrapper : MonoBehaviour
             debugPanel =
                 panelTransform.gameObject;
 
-            // 처음에는 숨긴다.
+            // 게임 시작 시 DebugPanel은 숨김
             debugPanel.SetActive(false);
         }
         else
@@ -164,23 +157,30 @@ public class DebugUIBootstrapper : MonoBehaviour
 
 
         // =========================
-        // DebugCheatPanel 초기화
+        // DebugCheatPanel 찾기
         // =========================
 
-        DebugCheatPanel cheatPanel =
+        debugCheatPanel =
             debugCanvasInstance
                 .GetComponent<DebugCheatPanel>();
 
-        if (cheatPanel != null)
+
+        // 현재 가지고 있는 Player 참조 전달
+        ApplyPlayerReferences();
+    }
+
+
+    /// <summary>
+    /// DebugCheatPanel에 현재 Player 시스템 참조를 전달한다.
+    /// </summary>
+    private void ApplyPlayerReferences()
+    {
+        if (debugCheatPanel == null)
         {
-            cheatPanel.Initialize(
-                squadManager,
-                playerExperience,
-                upgradeManager
-            );
+            return;
         }
 
-        cheatPanel.Initialize(
+        debugCheatPanel.Initialize(
             squadManager,
             playerExperience,
             upgradeManager
@@ -189,10 +189,7 @@ public class DebugUIBootstrapper : MonoBehaviour
 
 
     /// <summary>
-    /// DebugPanel만 표시/숨김 처리한다.
-    ///
-    /// DebugCanvas 자체는 계속 활성화 상태이므로
-    /// Debug 시스템 초기화 상태가 유지된다.
+    /// DebugPanel을 표시하거나 숨긴다.
     /// </summary>
     public void ToggleDebugPanel()
     {

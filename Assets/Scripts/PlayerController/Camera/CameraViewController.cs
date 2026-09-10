@@ -290,20 +290,34 @@ public class CameraViewController : MonoBehaviour
     /// 이후 PlayerRoot 동적 생성 시
     /// PlayerContext를 통해 실제 PlayerController를 받을 수 있다.
     /// </summary>
-    public void Initialize(
-        PlayerContext context)
+    public void Initialize(PlayerContext context)
     {
         if (context == null)
         {
+            Debug.LogWarning(
+                "[CameraViewController] PlayerContext가 없습니다."
+            );
+
             return;
         }
 
+        // 새 PlayerController 연결
         playerController =
             context.PlayerController;
+
+        // Follow 카메라도 새 PlayerRoot를 추적하도록 변경
+        if (cameraFollow != null)
+        {
+            cameraFollow.SetTarget(
+                context.transform
+            );
+        }
 
         lastXLimit =
             playerController.XLimit;
 
+        // 현재 대각선 시점이라면
+        // 새 이동 범위를 기준으로 다시 계산
         if (currentView ==
             CameraViewType.Diagonal)
         {

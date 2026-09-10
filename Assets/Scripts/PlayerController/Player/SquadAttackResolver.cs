@@ -36,6 +36,15 @@ public class SquadAttackResolver : MonoBehaviour
     [Min(1)]
     private int soldiersPerDamageBatch = 5;
 
+    private void Awake()
+    {
+        if (squadManager == null)
+        {
+            squadManager =
+                GetComponent<SquadManager>();
+        }
+    }
+
 
     private void Update()
     {

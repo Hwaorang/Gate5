@@ -37,6 +37,9 @@ public class EnemyHealth : MonoBehaviour
 
     private void Die()
     {
+        PlayerExperience experience =
+        GetPlayerExperience();
+
         // 적을 처치했을 때 경험치 지급
         if (playerExperience != null)
         {
@@ -54,5 +57,20 @@ public class EnemyHealth : MonoBehaviour
         // 현재는 테스트용
         // ObjectPool 구현 후 풀 반환으로 변경 예정
         Destroy(gameObject);
+    }
+
+    private PlayerExperience GetPlayerExperience()
+    {
+        // 이미 찾았다면 다시 검색하지 않는다.
+        if (playerExperience != null)
+        {
+            return playerExperience;
+        }
+
+        // PlayerRoot(Clone) 안의 PlayerExperience 검색
+        playerExperience =
+            FindFirstObjectByType<PlayerExperience>();
+
+        return playerExperience;
     }
 }
