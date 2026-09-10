@@ -1032,4 +1032,41 @@ public class SquadManager : MonoBehaviour
             isFiring = false;
         }
     }
+
+    /// <summary>
+    /// 동적으로 생성된 PlayerRoot에
+    /// Scene의 SoldierPool을 전달한다.
+    /// </summary>
+    public void SetSoldierPool(
+        SoldierPool newSoldierPool)
+    {
+        soldierPool = newSoldierPool;
+    }
+
+    /// <summary>
+    /// Scene에 존재하는 BulletFX를
+    /// 동적으로 생성된 PlayerRoot의 SquadManager에 전달한다.
+    /// 
+    /// 이미 생성되어 있는 SoldierAttack에도
+    /// 새로운 BulletFX 참조를 적용한다.
+    /// </summary>
+    public void SetBulletFx(
+        HyperCasualBulletFx fx)
+    {
+        bulletFx = fx;
+
+        // 이미 생성된 병사가 있다면
+        // 해당 SoldierAttack에도 즉시 적용
+        foreach (SoldierAttack attack in soldierAttacks)
+        {
+            if (attack == null)
+            {
+                continue;
+            }
+
+            attack.SetBulletFx(
+                bulletFx
+            );
+        }
+    }
 }

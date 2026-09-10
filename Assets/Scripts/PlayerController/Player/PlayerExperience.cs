@@ -305,4 +305,14 @@ public class PlayerExperience : MonoBehaviour
 
         CheckLevelUp();
     }
+
+    /// <summary>
+    /// 동적으로 생성된 PlayerExperience에
+    /// Scene의 UpgradeManager를 전달한다.
+    /// </summary>
+    public void SetUpgradeManager(
+        UpgradeManager_PlayerController manager)
+    {
+        upgradeManager = manager;
+    }
 }
