@@ -3534,52 +3534,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 102732210836751233, guid: 6d2a3978fb5e71c47bf226d2311f881c, type: 3}
   m_PrefabInstance: {fileID: 31001885}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1075438196
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1075438198}
-  - component: {fileID: 1075438197}
-  m_Layer: 0
-  m_Name: BulletPool
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1075438197
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1075438196}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a46fe5b1f1fab4642b35888c62801a9e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BulletPool
-  bulletPrefab: {fileID: 8307298274136730328, guid: 3e6c8290ee920094da57b89b1822705e, type: 3}
-  initialSize: 100
---- !u!4 &1075438198
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1075438196}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1660465847}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1076113360
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5866,8 +5820,9 @@ MonoBehaviour:
   upgradeManager: {fileID: 423982820}
   gameResultPresenter: {fileID: 1750785712}
   debugUIBootstrapper: {fileID: 1087072429}
-  cameraViewController: {fileID: 0}
-  soldierPool: {fileID: 0}
+  cameraViewController: {fileID: 1528404176}
+  soldierPool: {fileID: 1469399342}
+  bulletFx: {fileID: 1187066092}
 --- !u!4 &1650192986
 Transform:
   m_ObjectHideFlags: 0
@@ -5913,7 +5868,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1469399343}
-  - {fileID: 1075438198}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1685589211 stripped
@@ -7100,7 +7054,7 @@ PrefabInstance:
     - target: {fileID: 1788119257003499149, guid: 2f2d989179f6c274eaebeb9b916edf0f, type: 3}
       propertyPath: bulletPool
       value: 
-      objectReference: {fileID: 1075438197}
+      objectReference: {fileID: 0}
     - target: {fileID: 1788119257003499149, guid: 2f2d989179f6c274eaebeb9b916edf0f, type: 3}
       propertyPath: soldierPool
       value: 
