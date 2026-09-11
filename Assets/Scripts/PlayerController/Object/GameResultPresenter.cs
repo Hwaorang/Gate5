@@ -34,7 +34,10 @@ public class GameResultPresenter : MonoBehaviour
     // 플레이 시간을 가지고 있는 GameManager
     // PlayerRoot와 관계없는 Scene 시스템이므로 그대로 유지
     [SerializeField]
-    private GameManager_KHM gameManager;
+    private GameManager_KHM gameManager_KHM;
+
+    [SerializeField]
+    private GameManager gameManager;
 
     // 현재 Player의 레벨 정보
     [SerializeField]
@@ -47,24 +50,48 @@ public class GameResultPresenter : MonoBehaviour
     [SerializeField]
     private GameResultUI gameResultUI;
 
+    private void Awake()
+    {
+        ResolveSceneReferences();
+    }
 
     private void OnEnable()
     {
-        SubscribeGameOver();
+        if (gameResultUI != null)
+        {
+            gameResultUI.OnRetryClicked +=
+                HandleRetryClicked;
+        }
     }
 
 
     private void OnDisable()
     {
-        UnsubscribeGameOver();
+        if (gameResultUI != null)
+        {
+            gameResultUI.OnRetryClicked -=
+                HandleRetryClicked;
+        }
     }
 
+    private void HandleRetryClicked()
+    {
+        if (gameManager == null)
+        {
+            Debug.LogWarning(
+                "[GameResultPresenter] GameManager가 없습니다."
+            );
+
+            return;
+        }
+
+        gameManager.Retry();
+    }
 
     /// <summary>
     /// 동적으로 생성된 Player의 정보를 전달받는다.
     /// </summary>
-    public void Initialize(
-        PlayerContext context)
+    public void Initialize(PlayerContext context)
     {
         if (context == null)
         {
@@ -77,14 +104,17 @@ public class GameResultPresenter : MonoBehaviour
 
 
         // =========================
-        // 기존 SquadManager 이벤트 해제
+        // 기존 Player 이벤트 해제
         // =========================
 
-        UnsubscribeGameOver();
+        if (squadManager != null)
+        {
+            squadManager.OnGameOver -= HandleGameOver;
+        }
 
 
         // =========================
-        // 새로운 Player 참조 적용
+        // 새 Runtime Player 연결
         // =========================
 
         squadManager =
@@ -95,14 +125,22 @@ public class GameResultPresenter : MonoBehaviour
 
 
         // =========================
-        // 새로운 SquadManager 이벤트 연결
+        // 새 Player 이벤트 등록
         // =========================
 
-        if (isActiveAndEnabled)
+        if (squadManager != null)
         {
-            SubscribeGameOver();
+            squadManager.OnGameOver -= HandleGameOver;
+            squadManager.OnGameOver += HandleGameOver;
+        }
+        else
+        {
+            Debug.LogWarning(
+                "[GameResultPresenter] SquadManager를 찾지 못했습니다."
+            );
         }
     }
+
 
 
     /// <summary>
@@ -167,12 +205,11 @@ public class GameResultPresenter : MonoBehaviour
 
         float survivalTime = 0f;
 
-        if (gameManager != null)
+        if (gameManager_KHM != null)
         {
             survivalTime =
-                gameManager.GameTime;
+                gameManager_KHM.GameTime;
         }
-
 
         // =========================
         // Result Data 생성
@@ -194,6 +231,23 @@ public class GameResultPresenter : MonoBehaviour
             gameResultUI.Show(
                 resultData
             );
+        }
+    }
+
+    private void ResolveSceneReferences()
+    {
+        // 생존 시간 담당
+        if (gameManager_KHM == null)
+        {
+            gameManager_KHM =
+                FindFirstObjectByType<GameManager_KHM>();
+        }
+
+        // Retry 담당
+        if (gameManager == null)
+        {
+            gameManager =
+                FindFirstObjectByType<GameManager>();
         }
     }
 }

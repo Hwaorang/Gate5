@@ -53,6 +53,9 @@ public class PlayerBootstrapper : MonoBehaviour
     [SerializeField]
     private CameraViewController cameraViewController;
 
+    [SerializeField]
+    private GameUIRoot gameUIRoot;
+
 
     // =========================
     // Scene References
@@ -85,6 +88,9 @@ public class PlayerBootstrapper : MonoBehaviour
 
     private void Start()
     {
+        // Scene 외부 시스템 탐색
+        ResolveSceneReferences();
+
         // 게임 시작 전에 필수 참조 검사
         if (!ValidateReferences())
         {
@@ -393,14 +399,6 @@ public class PlayerBootstrapper : MonoBehaviour
             );
         }
 
-
-        if (isValid)
-        {
-            Debug.Log(
-                "[PlayerBootstrapper] Reference Validation Success"
-            );
-        }
-
         return isValid;
     }
 
@@ -585,6 +583,62 @@ public class PlayerBootstrapper : MonoBehaviour
             cameraViewController.Initialize(
                 playerContext
             );
+        }
+    }
+
+    /// <summary>
+    /// PlayerSystem 밖에 존재하는 Scene 전용 시스템을 찾는다.
+    /// Inspector에 직접 연결되어 있다면 기존 참조를 우선 사용한다.
+    /// </summary>
+    private void ResolveSceneReferences()
+    {
+        // =========================
+        // Game UI
+        // =========================
+
+        if (gameUIRoot == null)
+        {
+            gameUIRoot =
+                FindFirstObjectByType<GameUIRoot>();
+        }
+
+
+        if (gameUIRoot != null)
+        {
+            if (upgradeManager == null)
+            {
+                upgradeManager =
+                    gameUIRoot.UpgradeManager;
+            }
+
+            if (gameResultPresenter == null)
+            {
+                gameResultPresenter =
+                    gameUIRoot.GameResultPresenter;
+            }
+
+            if (soldierCountUI == null)
+            {
+                soldierCountUI =
+                    gameUIRoot.SoldierCountUI;
+            }
+
+            if (expProgressUI == null)
+            {
+                expProgressUI =
+                    gameUIRoot.ExpProgressUI;
+            }
+        }
+
+
+        // =========================
+        // Camera
+        // =========================
+
+        if (cameraViewController == null)
+        {
+            cameraViewController =
+                FindFirstObjectByType<CameraViewController>();
         }
     }
 }

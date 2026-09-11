@@ -64,6 +64,10 @@ public class CameraViewController : MonoBehaviour
     [SerializeField]
     private float maxDistanceScale = 2f;
 
+    // DiagonalFocusPoint에서 DiagonalView까지의
+    // 기본 거리와 방향을 저장한다.
+    private Vector3 baseDiagonalOffset;
+
 
     [Header("현재 시점")]
 
@@ -76,6 +80,23 @@ public class CameraViewController : MonoBehaviour
     // 마지막으로 확인한 이동 범위
     private float lastXLimit;
 
+    [SerializeField] private Transform cameraRig;
+
+    private void Awake()
+    {
+        ResolveReferences();
+
+        if (diagonalView != null &&
+            diagonalFocusPoint != null)
+        {
+            // FocusPoint를 기준으로
+            // 카메라가 얼마나 떨어져 있는지 저장
+            baseDiagonalOffset =
+                diagonalView.localPosition -
+                diagonalFocusPoint.localPosition;
+        }
+    }
+
 
     private void Start()
     {
@@ -85,7 +106,7 @@ public class CameraViewController : MonoBehaviour
                 playerController.XLimit;
         }
 
-        ApplyView(currentView);
+        ResolveReferences();
     }
 
 
@@ -184,71 +205,71 @@ public class CameraViewController : MonoBehaviour
             diagonalFocusPoint == null)
         {
             Debug.LogWarning(
-                "[CameraViewController] Diagonal 기준점이 연결되지 않았습니다."
+                "[CameraViewController] Diagonal 기준점이 없습니다."
             );
 
             return;
         }
 
 
-        // =========================
-        // 현재 이동 범위 확인
-        // =========================
-
-        float currentXLimit =
-            referenceXLimit;
-
-        if (playerController != null)
+        if (cameraFollow != null)
         {
-            currentXLimit =
-                playerController.XLimit;
+            cameraFollow.enabled = false;
         }
 
 
         // =========================
-        // 이동 범위에 따른 거리 배율 계산
+        // XLimit에 따른 거리 계산
         // =========================
 
-        float distanceScale =
-            currentXLimit /
-            referenceXLimit;
+        float distanceScale = 1f;
 
-        distanceScale =
-            Mathf.Clamp(
-                distanceScale,
-                minDistanceScale,
-                maxDistanceScale
-            );
+        if (playerController != null &&
+            referenceXLimit > 0f)
+        {
+            distanceScale =
+                playerController.XLimit /
+                referenceXLimit;
+
+            distanceScale =
+                Mathf.Clamp(
+                    distanceScale,
+                    minDistanceScale,
+                    maxDistanceScale
+                );
+        }
 
 
         // =========================
-        // 기준 카메라 Offset 계산
+        // DiagonalView 위치 조정
         // =========================
 
-        Vector3 baseOffset =
-            diagonalView.position -
-            diagonalFocusPoint.position;
+        // FocusPoint는 그대로 두고
+        // 카메라와 FocusPoint 사이 거리만 조절한다.
+        diagonalView.localPosition =
+            diagonalFocusPoint.localPosition +
+            baseDiagonalOffset *
+            distanceScale;
 
 
-        // XLimit이 넓어질수록
-        // 같은 각도를 유지하면서 카메라를 멀리 보낸다.
-        Vector3 cameraPosition =
-            diagonalFocusPoint.position +
-            baseOffset * distanceScale;
-
+        // =========================
+        // 실제 Camera 적용
+        // =========================
 
         transform.position =
-            cameraPosition;
+            diagonalView.position;
 
-
-        // 항상 플레이 영역 중앙을 바라본다.
         transform.LookAt(
             diagonalFocusPoint.position
         );
 
 
-        lastXLimit =
-            currentXLimit;
+        // 현재 XLimit 저장
+        if (playerController != null)
+        {
+            lastXLimit =
+                playerController.XLimit;
+        }
     }
 
 
@@ -294,18 +315,30 @@ public class CameraViewController : MonoBehaviour
     {
         if (context == null)
         {
-            Debug.LogWarning(
-                "[CameraViewController] PlayerContext가 없습니다."
-            );
-
             return;
         }
 
-        // 새 PlayerController 연결
         playerController =
             context.PlayerController;
 
-        // Follow 카메라도 새 PlayerRoot를 추적하도록 변경
+        // =========================
+        // CameraRig 기준 위치 설정
+        // =========================
+
+        if (cameraRig != null)
+        {
+            Vector3 playerPosition =
+                context.transform.position;
+
+            cameraRig.position =
+                playerPosition;
+        }
+
+
+        // =========================
+        // Follow Target 연결
+        // =========================
+
         if (cameraFollow != null)
         {
             cameraFollow.SetTarget(
@@ -313,15 +346,58 @@ public class CameraViewController : MonoBehaviour
             );
         }
 
-        lastXLimit =
-            playerController.XLimit;
 
-        // 현재 대각선 시점이라면
-        // 새 이동 범위를 기준으로 다시 계산
-        if (currentView ==
-            CameraViewType.Diagonal)
+        ApplyView(
+            CameraViewType.Diagonal
+        );
+    }
+
+    /// <summary>
+    /// CameraRig 내부에서 필요한 참조를 자동으로 찾는다.
+    /// Inspector 연결이 있으면 기존 값을 우선 사용한다.
+    /// </summary>
+    private void ResolveReferences()
+    {
+        // =========================
+        // CameraRig
+        // =========================
+
+        if (cameraRig == null)
         {
-            ApplyDiagonalView();
+            cameraRig =
+                transform.root;
+        }
+
+
+        // =========================
+        // CameraFollow
+        // =========================
+
+        if (cameraFollow == null)
+        {
+            cameraFollow =
+                GetComponent<CameraFollow>();
+        }
+
+
+        // =========================
+        // Camera 기준점
+        // =========================
+
+        if (diagonalView == null)
+        {
+            diagonalView =
+                cameraRig.Find(
+                    "CameraViews/DiagonalView"
+                );
+        }
+
+        if (diagonalFocusPoint == null)
+        {
+            diagonalFocusPoint =
+                cameraRig.Find(
+                    "CameraViews/DiagonalFocusPoint"
+                );
         }
     }
 }
