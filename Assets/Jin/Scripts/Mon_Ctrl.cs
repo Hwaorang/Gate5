@@ -5,7 +5,8 @@ using UnityEngine.AI;
 public class Mon_Ctrl : MonoBehaviour
 {
     [SerializeField] Mon_Data data;
-    Transform targetPos;
+    Transform target;
+    Vector3 targetPos;
     //[SerializeField] Transform testTargetPos;
     //State Machine
 
@@ -39,21 +40,23 @@ public class Mon_Ctrl : MonoBehaviour
         agent = GetComponent<NavMeshAgent>(); 
         SetState();
 
-        SetTarget();
+        //SetTarget();
         
-        if (targetPos != null)
+        if (!isDead)
         {
             StartCoroutine(Move());   
         }
     }
-    public void SetTarget()
+    public void SetTarget(Transform _target)
     {
-        targetPos = FindFirstObjectByType<PlayerController>().transform;
+        //target = FindFirstObjectByType<PlayerController>().transform;
 
-        if (targetPos != null)
+        if (_target != null)
         {
-            Debug.Log("target_Set");
-            targetPos.position = new Vector3(this.transform.position.x, targetPos.position.y, targetPos.position.z);
+            //targetPos = _target.position;
+            
+            targetPos = new Vector3(this.transform.position.x, _target.position.y, _target.position.z);
+            Debug.Log("target_Set : " + targetPos);
         }
     }
 
@@ -61,7 +64,7 @@ public class Mon_Ctrl : MonoBehaviour
     {
         while(true)
         {
-            agent.SetDestination(targetPos.position);
+            agent.SetDestination(targetPos);
             //agent.SetDestination(testTargetPos.position);
 
             if(arrive)
@@ -84,7 +87,7 @@ public class Mon_Ctrl : MonoBehaviour
     public void TakeDamage(float _damage)
     {
         curHP -= _damage;
-
+        Debug.Log("Take Damage");
         if (curHP <= 0 && !isDead)
         {
             if(!isDead)
