@@ -15,6 +15,7 @@ public class Mon_Ctrl : MonoBehaviour
     string objname;
     float curHP;
     float damage;
+    bool die;
     void Start()
     {
                
@@ -80,6 +81,8 @@ public class Mon_Ctrl : MonoBehaviour
 
         if (curHP <= 0)
         {
+            if(!die)
+                die = true;
             MonSpawn_Mgr.instance.ReturnObject(objname, this.gameObject);
         }
     }
