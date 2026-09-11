@@ -600,7 +600,6 @@ public class SquadManager : MonoBehaviour
             return;
         }
 
-
         // Observer Pattern
         OnGameOver?.Invoke();
 
