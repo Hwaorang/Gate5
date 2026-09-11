@@ -24,7 +24,7 @@ public class MonSpawn_Mgr : MonoBehaviour
 
     float spawnNum;
 
-    
+    PlayerExperience playerExp;
     void Awake()
     {
         if (instance == null)
@@ -63,6 +63,8 @@ public class MonSpawn_Mgr : MonoBehaviour
         float fieldSizeZ = field.bounds.size.z;
         this.transform.position = new Vector3((fieldSize / 2)+0.5f, 2.5f, (fieldSizeZ/2)+5);
         Debug.Log("field" + fieldSize);
+
+        playerExp = FindFirstObjectByType<PlayerExperience>();
         StartCoroutine(SpawnMon(0));
     }
 
@@ -93,9 +95,10 @@ public class MonSpawn_Mgr : MonoBehaviour
         
     }
 
-    public void ReturnObject(string name, GameObject go)
+    public void ReturnObject(string name, GameObject go, int _exp)
     {
         Debug.Log("Return");
+        playerExp.AddExp(_exp);
         if (!pools.ContainsKey(name))
         {
             Destroy(go);

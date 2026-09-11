@@ -15,7 +15,11 @@ public class Mon_Ctrl : MonoBehaviour
     string objname;
     float curHP;
     float damage;
-    bool die;
+    int exp;
+
+    bool isDead = false;
+
+    
     void Start()
     {
                
@@ -27,6 +31,8 @@ public class Mon_Ctrl : MonoBehaviour
         agent.speed = data.walkSpeed;
         damage = data.damage;
         objname = data.monName;
+        exp = data.exp;
+        isDead = false;
     }
     private void OnEnable()
     {
@@ -71,7 +77,7 @@ public class Mon_Ctrl : MonoBehaviour
         {
             arrive = true;
             //Damage 
-            MonSpawn_Mgr.instance.ReturnObject(objname, this.gameObject);
+            MonSpawn_Mgr.instance.ReturnObject(objname, this.gameObject, 0);
         }
     }
 
@@ -79,11 +85,11 @@ public class Mon_Ctrl : MonoBehaviour
     {
         curHP -= _damage;
 
-        if (curHP <= 0)
+        if (curHP <= 0 && !isDead)
         {
-            if(!die)
-                die = true;
-            MonSpawn_Mgr.instance.ReturnObject(objname, this.gameObject);
+            if(!isDead)
+                isDead = true;
+            MonSpawn_Mgr.instance.ReturnObject(objname, this.gameObject, exp);
         }
     }
 }
