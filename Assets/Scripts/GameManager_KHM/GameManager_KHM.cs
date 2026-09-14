@@ -4,19 +4,6 @@ public class GameManager_KHM : MonoBehaviour
 {
     public static GameManager_KHM Instance { get; private set; }
 
-<<<<<<< Updated upstream
-    [Header("Game Time")]
-    public float gameTime;
-
-    [Header("Enemy Scaling")]
-    public float enemyHpMultiplier = 1f;
-
-    // 외부에서는 게임 시간을 읽기만 가능
-    public float GameTime => gameTime;
-
-    private void Awake()
-    {
-=======
     // 현재 게임 상태
     public enum GameState
     {
@@ -40,7 +27,6 @@ public class GameManager_KHM : MonoBehaviour
     private void Awake()
     {
         // Singleton
->>>>>>> Stashed changes
         if (Instance == null)
         {
             Instance = this;
@@ -48,26 +34,12 @@ public class GameManager_KHM : MonoBehaviour
         else
         {
             Destroy(gameObject);
-<<<<<<< Updated upstream
-=======
             return;
->>>>>>> Stashed changes
         }
     }
 
     private void Update()
     {
-<<<<<<< Updated upstream
-        gameTime += Time.deltaTime;
-
-        UpdateEnemyHpMultiplier();
-    }
-
-    private void UpdateEnemyHpMultiplier()
-    {
-        // 1분마다 HP 20% 증가
-        enemyHpMultiplier = 1f + Mathf.Floor(gameTime / 60f) * 0.2f;
-=======
         // 게임 중일 때만 시간 흐름
         if (CurrentState == GameState.Playing)
         {
@@ -120,6 +92,5 @@ public class GameManager_KHM : MonoBehaviour
     public void ResumeGame()
     {
         CurrentState = GameState.Playing;
->>>>>>> Stashed changes
     }
 }
