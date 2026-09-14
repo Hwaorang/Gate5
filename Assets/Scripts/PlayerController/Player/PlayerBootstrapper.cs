@@ -85,6 +85,11 @@ public class PlayerBootstrapper : MonoBehaviour
     public PlayerContext PlayerContext =>
         playerContext;
 
+    [SerializeField]
+    private GameHUDPresenter gameHUDPresenter;
+
+    public GameHUDPresenter GameHUDPresenter =>
+        gameHUDPresenter;
 
     private void Start()
     {
@@ -584,6 +589,21 @@ public class PlayerBootstrapper : MonoBehaviour
                 playerContext
             );
         }
+
+        // =========================
+        // Game HUD
+        // =========================
+
+        if (gameHUDPresenter != null)
+        {
+            gameHUDPresenter.Initialize(
+                playerContext
+            );
+
+            gameHUDPresenter.SetUpgradeManager(
+                upgradeManager
+            );
+        }
     }
 
     /// <summary>
@@ -627,6 +647,12 @@ public class PlayerBootstrapper : MonoBehaviour
             {
                 expProgressUI =
                     gameUIRoot.ExpProgressUI;
+            }
+
+            if (gameHUDPresenter == null)
+            {
+                gameHUDPresenter =
+                    gameUIRoot.GameHUDPresenter;
             }
         }
 
