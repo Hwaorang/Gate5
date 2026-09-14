@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 /// <summary>
 /// 플레이 중 레벨업 시 표시되는 강화 선택 UI와
@@ -30,6 +31,7 @@ public class UpgradeManager_PlayerController : MonoBehaviour
     // 강화 버튼 Prefab
     [SerializeField] private UpgradeButton upgradeButtonPrefab;
 
+    [SerializeField] private TMP_Text upgradeTitleText;
 
     [Header("Upgrade Data")]
 
@@ -199,6 +201,9 @@ public class UpgradeManager_PlayerController : MonoBehaviour
 
             return;
         }
+
+        // 현재 Player Level을 제목에 표시
+        RefreshUpgradeTitle();
 
         // 현재 선택 가능한 강화 버튼 생성
         CreateUpgradeButtons();
@@ -560,5 +565,59 @@ public class UpgradeManager_PlayerController : MonoBehaviour
             type,
             upgradeLevels[type]
         );
+    }
+
+    private void ResolveUpgradeTitleText()
+    {
+        if (upgradeTitleText != null)
+        {
+            return;
+        }
+
+        if (upgradePanel == null)
+        {
+            return;
+        }
+
+        Transform titleTransform =
+            upgradePanel.transform.Find(
+                "UpgradeFrame/TitleBar/TitleText"
+            );
+
+        if (titleTransform == null)
+        {
+            Debug.LogWarning(
+                "[UpgradeManager] Upgrade TitleText를 찾을 수 없습니다."
+            );
+
+            return;
+        }
+
+        upgradeTitleText =
+            titleTransform.GetComponent<TMP_Text>();
+    }
+
+    private void RefreshUpgradeTitle()
+    {
+        ResolveUpgradeTitleText();
+
+        if (upgradeTitleText == null)
+        {
+            return;
+        }
+
+        if (playerExperience == null)
+        {
+            upgradeTitleText.text =
+                "SELECT UPGRADE";
+
+            return;
+        }
+
+        int level =
+            playerExperience.CurrentLevel;
+
+        upgradeTitleText.text =
+            $"SELECT UPGRADE  Lv.{level}";
     }
 }

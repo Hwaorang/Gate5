@@ -210,6 +210,11 @@ public static class GameHUDBuilder
                 Cream
             );
 
+        levelBox.type = Image.Type.Simple;
+
+        levelBox.preserveAspect =
+            true;
+
         AddLayoutElement(
             levelBox.gameObject,
             100f
@@ -242,6 +247,11 @@ public static class GameHUDBuilder
                 header,
                 Cream
             );
+
+        timerBox.type = Image.Type.Simple;
+
+        timerBox.preserveAspect =
+            true;
 
         AddLayoutElement(
             timerBox.gameObject,
