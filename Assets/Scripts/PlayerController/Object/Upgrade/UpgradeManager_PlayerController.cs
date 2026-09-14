@@ -81,6 +81,8 @@ public class UpgradeManager_PlayerController : MonoBehaviour
     private readonly List<UpgradeButton> createdButtons =
         new List<UpgradeButton>();
 
+    public event System.Action<UpgradeType, int>
+    OnUpgradeApplied;
 
     private void Awake()
     {
@@ -322,8 +324,9 @@ public class UpgradeManager_PlayerController : MonoBehaviour
 
 
         // 해당 UpgradeType의 현재 강화 단계 증가
-        upgradeLevels[data.upgradeType] =
-            currentLevel + 1;
+        NotifyUpgradeApplied(
+            data.upgradeType
+        );
 
 
         // EXP 시스템에
@@ -541,5 +544,21 @@ public class UpgradeManager_PlayerController : MonoBehaviour
 
 
         return false;
+    }
+
+    private void NotifyUpgradeApplied(
+    UpgradeType type)
+    {
+        if (!upgradeLevels.ContainsKey(type))
+        {
+            upgradeLevels[type] = 0;
+        }
+
+        upgradeLevels[type]++;
+
+        OnUpgradeApplied?.Invoke(
+            type,
+            upgradeLevels[type]
+        );
     }
 }
