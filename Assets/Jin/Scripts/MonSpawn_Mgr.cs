@@ -134,7 +134,7 @@ public class MonSpawn_Mgr : MonoBehaviour
         {
             yield return wait;
 
-            Debug.Log("why2" + spawnCount);
+            //Debug.Log("why2" + spawnCount);
             for (int i = 0; i < spawnCount; i++)
             {
                 Vector3 spawnPos = new Vector3(curPos.x + i * (monSize * 1.5f),curPos.y,curPos.z);
