@@ -25,6 +25,6 @@ public class LobbyUI : MonoBehaviour
         int gold =
             SaveManager.Instance.Data.gold;
 
-        goldText.text = "?? " + gold.ToString() + " G";
+        goldText.text = "Gold " + gold.ToString() + " G";
     }
 }
