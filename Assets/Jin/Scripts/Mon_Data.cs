@@ -8,4 +8,5 @@ public class Mon_Data : ScriptableObject
     public float maxHp;
     public float damage;
     public float walkSpeed;
+    public int exp;
 }

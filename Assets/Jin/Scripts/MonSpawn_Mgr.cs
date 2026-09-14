@@ -24,7 +24,10 @@ public class MonSpawn_Mgr : MonoBehaviour
 
     float spawnNum;
 
-    
+    PlayerExperience playerExp;
+
+
+    Transform target;
     void Awake()
     {
         if (instance == null)
@@ -42,6 +45,11 @@ public class MonSpawn_Mgr : MonoBehaviour
     {
         curPos = transform.position;
 
+        target = FindFirstObjectByType<PlayerController>().transform;
+        if (target == null)
+        {
+            Debug.Log("TargetNull");
+        }
         targetPos = FindFirstObjectByType<PlayerController>().transform.position;
 
         foreach (GameObject obj in objList)
@@ -63,6 +71,8 @@ public class MonSpawn_Mgr : MonoBehaviour
         float fieldSizeZ = field.bounds.size.z;
         this.transform.position = new Vector3((fieldSize / 2)+0.5f, 2.5f, (fieldSizeZ/2)+5);
         Debug.Log("field" + fieldSize);
+
+        playerExp = FindFirstObjectByType<PlayerExperience>();
         StartCoroutine(SpawnMon(0));
     }
 
@@ -81,21 +91,24 @@ public class MonSpawn_Mgr : MonoBehaviour
 
             go.transform.position = _pos;
             go.SetActive(true);
+            go.GetComponent<Mon_Ctrl>().SetTarget(target);
             return go;
         }
         else
         {
             GameObject go = Instantiate(objList.Find(obj => obj.name == name));
             go.transform.position = _pos;
+            go.GetComponent<Mon_Ctrl>().SetTarget(target);
             return go;
         }
 
         
     }
 
-    public void ReturnObject(string name, GameObject go)
+    public void ReturnObject(string name, GameObject go, int _exp)
     {
         Debug.Log("Return");
+        playerExp.AddExp(_exp);
         if (!pools.ContainsKey(name))
         {
             Destroy(go);

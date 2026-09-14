@@ -5,7 +5,8 @@ using UnityEngine.AI;
 public class Mon_Ctrl : MonoBehaviour
 {
     [SerializeField] Mon_Data data;
-    Transform targetPos;
+    Transform target;
+    Vector3 targetPos;
     //[SerializeField] Transform testTargetPos;
     //State Machine
 
@@ -15,6 +16,11 @@ public class Mon_Ctrl : MonoBehaviour
     string objname;
     float curHP;
     float damage;
+    int exp;
+
+    bool isDead = false;
+
+    
     void Start()
     {
                
@@ -26,27 +32,31 @@ public class Mon_Ctrl : MonoBehaviour
         agent.speed = data.walkSpeed;
         damage = data.damage;
         objname = data.monName;
+        exp = data.exp;
+        isDead = false;
     }
     private void OnEnable()
     {
         agent = GetComponent<NavMeshAgent>(); 
         SetState();
 
-        SetTarget();
+        //SetTarget();
         
-        if (targetPos != null)
+        if (!isDead)
         {
             StartCoroutine(Move());   
         }
     }
-    public void SetTarget()
+    public void SetTarget(Transform _target)
     {
-        targetPos = FindFirstObjectByType<PlayerController>().transform;
+        //target = FindFirstObjectByType<PlayerController>().transform;
 
-        if (targetPos != null)
+        if (_target != null)
         {
-            Debug.Log("target_Set");
-            targetPos.position = new Vector3(this.transform.position.x, targetPos.position.y, targetPos.position.z);
+            //targetPos = _target.position;
+            
+            targetPos = new Vector3(this.transform.position.x, _target.position.y, _target.position.z);
+            Debug.Log("target_Set : " + targetPos);
         }
     }
 
@@ -54,7 +64,7 @@ public class Mon_Ctrl : MonoBehaviour
     {
         while(true)
         {
-            agent.SetDestination(targetPos.position);
+            agent.SetDestination(targetPos);
             //agent.SetDestination(testTargetPos.position);
 
             if(arrive)
@@ -70,17 +80,19 @@ public class Mon_Ctrl : MonoBehaviour
         {
             arrive = true;
             //Damage 
-            MonSpawn_Mgr.instance.ReturnObject(objname, this.gameObject);
+            MonSpawn_Mgr.instance.ReturnObject(objname, this.gameObject, 0);
         }
     }
 
     public void TakeDamage(float _damage)
     {
         curHP -= _damage;
-
-        if (curHP <= 0)
+        Debug.Log("Take Damage");
+        if (curHP <= 0 && !isDead)
         {
-            MonSpawn_Mgr.instance.ReturnObject(objname, this.gameObject);
+            if(!isDead)
+                isDead = true;
+            MonSpawn_Mgr.instance.ReturnObject(objname, this.gameObject, exp);
         }
     }
 }
