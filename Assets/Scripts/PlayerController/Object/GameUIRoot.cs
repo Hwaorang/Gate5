@@ -1,24 +1,19 @@
 using UnityEngine;
 
-/// <summary>
-/// 게임 UI 모듈의 진입점.
-///
-/// PlayerBootstrapper가 UI 내부 구조를 직접 찾아다니지 않고
-/// GameUIRoot 하나를 통해 필요한 UI 시스템을 전달받는다.
-/// </summary>
 public class GameUIRoot : MonoBehaviour
 {
     [Header("Presenters")]
-
     [SerializeField]
     private UpgradeManager_PlayerController upgradeManager;
 
     [SerializeField]
     private GameResultPresenter gameResultPresenter;
 
+    [SerializeField]
+    private GameHUDPresenter gameHUDPresenter;
 
-    [Header("Player HUD")]
 
+    [Header("Player UI")]
     [SerializeField]
     private SoldierCountUI soldierCountUI;
 
@@ -26,15 +21,69 @@ public class GameUIRoot : MonoBehaviour
     private ExpProgressUI expProgressUI;
 
 
-    public UpgradeManager_PlayerController UpgradeManager
-        => upgradeManager;
+    public UpgradeManager_PlayerController UpgradeManager =>
+        upgradeManager;
 
-    public GameResultPresenter GameResultPresenter
-        => gameResultPresenter;
+    public GameResultPresenter GameResultPresenter =>
+        gameResultPresenter;
 
-    public SoldierCountUI SoldierCountUI
-        => soldierCountUI;
+    public GameHUDPresenter GameHUDPresenter =>
+        gameHUDPresenter;
 
-    public ExpProgressUI ExpProgressUI
-        => expProgressUI;
+    public SoldierCountUI SoldierCountUI =>
+        soldierCountUI;
+
+    public ExpProgressUI ExpProgressUI =>
+        expProgressUI;
+
+
+    private void Awake()
+    {
+        // Prefab 내부이므로 자동 탐색 가능
+
+        if (upgradeManager == null)
+        {
+            upgradeManager =
+                GetComponentInChildren
+                <UpgradeManager_PlayerController>(
+                    true
+                );
+        }
+
+        if (gameResultPresenter == null)
+        {
+            gameResultPresenter =
+                GetComponentInChildren
+                <GameResultPresenter>(
+                    true
+                );
+        }
+
+        if (gameHUDPresenter == null)
+        {
+            gameHUDPresenter =
+                GetComponentInChildren
+                <GameHUDPresenter>(
+                    true
+                );
+        }
+
+        if (soldierCountUI == null)
+        {
+            soldierCountUI =
+                GetComponentInChildren
+                <SoldierCountUI>(
+                    true
+                );
+        }
+
+        if (expProgressUI == null)
+        {
+            expProgressUI =
+                GetComponentInChildren
+                <ExpProgressUI>(
+                    true
+                );
+        }
+    }
 }
