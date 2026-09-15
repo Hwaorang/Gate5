@@ -202,6 +202,12 @@ public class UpgradeManager_PlayerController : MonoBehaviour
             return;
         }
 
+        AudioManager_PlayerController
+            .Instance?
+            .PlaySfx(
+                PlayerSfxType.LevelUp
+            );
+
         // 현재 Player Level을 제목에 표시
         RefreshUpgradeTitle();
 

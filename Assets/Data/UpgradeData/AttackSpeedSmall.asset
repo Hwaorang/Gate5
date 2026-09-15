@@ -16,6 +16,7 @@ MonoBehaviour:
   description: '
 
     Attack speed increases slightly.'
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 1aa42682a843c4faab70c10abf987836, type: 3}
   upgradeType: 1
   value: 0.5
+  maxLevel: 5
