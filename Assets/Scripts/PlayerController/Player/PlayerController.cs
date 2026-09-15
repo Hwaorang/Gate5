@@ -4,50 +4,139 @@ using UnityEngine.InputSystem;
 /// <summary>
 /// PlayerRoot의 좌우 이동을 담당한다.
 ///
-/// 현재 게임 구조에서는 Player가 앞으로 직접 이동하지 않고,
-/// X축 방향으로만 이동한다.
+/// 실제 이동 범위는 StageChunk의
+/// RoadLeftEdge / RoadRightEdge를 기준으로 계산한다.
 ///
-/// 이동 속도는 PlayerStats의 MoveSpeed를 사용하며,
-/// xLimit 범위를 벗어나지 않도록 위치를 제한한다.
+/// StageChunk를 아직 찾지 못한 경우에만
+/// 기존 xLimit 값을 fallback으로 사용한다.
 /// </summary>
 public class PlayerController : MonoBehaviour
 {
+    // ========================================================
+    // Player Stats
+    // ========================================================
+
     [Header("플레이어 스탯")]
 
-    // 이동 속도 등의 Player 기본/강화 스탯을 관리하는 컴포넌트
-    [SerializeField] private PlayerStats playerStats;
+    [SerializeField]
+    private PlayerStats playerStats;
 
 
-    [Header("좌우 이동 범위")]
+    // ========================================================
+    // Road Area
+    // ========================================================
 
-    // Player가 이동할 수 있는 X축 최대 범위
-    //
-    // 예:
-    // xLimit = 4
-    // 이동 가능 범위 = -4 ~ +4
-    [SerializeField] private float xLimit = 4f;
+    [Header("도로 이동 범위")]
+
+    [Tooltip(
+        "Player 중심이 도로 끝까지 붙지 않도록 확보할 여백. " +
+        "Player 반폭 정도를 권장합니다."
+    )]
+    [SerializeField]
+    [Min(0f)]
+    private float edgeClearance = 0.5f;
+
+
+    [Header("Fallback 이동 범위")]
+
+    [Tooltip(
+        "StageChunk의 RoadLeftEdge / RoadRightEdge를 아직 찾지 못했을 때만 사용합니다. " +
+        "예: 4 -> -4 ~ +4"
+    )]
+    [SerializeField]
+    [Min(0f)]
+    private float xLimit = 4f;
+
+
+    // Runtime에 생성되는 StageChunk를 한 번 찾은 뒤 캐싱한다.
+    private StageChunk roadAreaSource;
+
+
+    // ========================================================
+    // Public Properties
+    // ========================================================
+
+    /// <summary>
+    /// Player 중심이 도로 중앙을 기준으로
+    /// 좌우로 이동할 수 있는 거리.
+    ///
+    /// 도로 폭 9 / edgeClearance 0.5
+    /// -> XLimit = 4
+    /// </summary>
+    public float XLimit
+    {
+        get
+        {
+            if (TryGetRoadArea(
+                    out _,
+                    out float roadWidth))
+            {
+                return Mathf.Max(
+                    0f,
+                    roadWidth * 0.5f -
+                    edgeClearance
+                );
+            }
+
+
+            return xLimit;
+        }
+    }
 
 
     /// <summary>
-    /// 외부 시스템에서 Player의 이동 가능 범위를 확인할 때 사용한다.
-    ///
-    /// DamageLine이 자신의 Collider 폭을 계산할 때도 사용한다.
+    /// Gate가 채워야 하는 실제 도로 전체 폭.
     /// </summary>
-    public float XLimit => xLimit;
+    public float GateWidth
+    {
+        get
+        {
+            if (TryGetRoadArea(
+                    out _,
+                    out float roadWidth))
+            {
+                return roadWidth;
+            }
 
+
+            return xLimit * 2f;
+        }
+    }
+
+
+    /// <summary>
+    /// 실제 도로의 월드 X 중심.
+    /// </summary>
+    public float MovementCenterX
+    {
+        get
+        {
+            if (TryGetRoadArea(
+                    out float centerX,
+                    out _))
+            {
+                return centerX;
+            }
+
+
+            return 0f;
+        }
+    }
+
+
+    // ========================================================
+    // Unity
+    // ========================================================
 
     private void Awake()
     {
-        // Inspector에서 PlayerStats가 연결되지 않았을 경우
-        // 같은 GameObject에서 자동으로 찾아본다.
         if (playerStats == null)
         {
             playerStats =
                 GetComponent<PlayerStats>();
         }
 
-        // 자동 탐색 이후에도 없다면
-        // 이동 처리에서 NullReference가 발생할 수 있으므로 경고
+
         if (playerStats == null)
         {
             Debug.LogWarning(
@@ -63,82 +152,150 @@ public class PlayerController : MonoBehaviour
     }
 
 
+    // ========================================================
+    // Road Area
+    // ========================================================
+
     /// <summary>
-    /// A / D 키 입력을 받아 Player를 X축 방향으로 이동시킨다.
+    /// 현재 StageChunk에 배치된
+    /// RoadLeftEdge / RoadRightEdge를 기준으로
+    /// 실제 도로 중심과 폭을 가져온다.
     ///
-    /// A = 왼쪽
-    /// D = 오른쪽
+    /// PlayerRoot가 Runtime에 생성되기 때문에
+    /// StageChunk 참조도 Runtime에 자동 탐색한다.
+    /// </summary>
+    public bool TryGetRoadArea(
+        out float centerX,
+        out float width)
+    {
+        centerX = 0f;
+        width = 0f;
+
+
+        // 아직 StageChunk를 찾지 않았거나
+        // 기존 참조가 사라졌다면 다시 탐색한다.
+        if (roadAreaSource == null)
+        {
+            roadAreaSource =
+                Object.FindFirstObjectByType<StageChunk>();
+        }
+
+
+        if (roadAreaSource == null)
+        {
+            return false;
+        }
+
+
+        return roadAreaSource.TryGetRoadArea(
+            out centerX,
+            out width
+        );
+    }
+
+
+    // ========================================================
+    // Movement
+    // ========================================================
+
+    /// <summary>
+    /// A / D 키 입력으로 PlayerRoot를 좌우 이동시킨다.
     ///
-    /// 이동 후에는 Mathf.Clamp를 이용해
-    /// xLimit 범위를 벗어나지 않도록 제한한다.
+    /// Clamp 기준은 실제 도로 중심과 폭이다.
     /// </summary>
     private void Move()
     {
-        // PlayerStats가 없다면
-        // 이동 속도를 가져올 수 없으므로 종료
         if (playerStats == null)
         {
             return;
         }
 
-        // Keyboard 장치가 없는 경우 방어
+
         if (Keyboard.current == null)
         {
             return;
         }
 
 
-        // -1 = 왼쪽
-        //  0 = 이동 없음
-        //  1 = 오른쪽
         float horizontal = 0f;
 
 
-        // A 키를 누르고 있으면 왼쪽 이동
         if (Keyboard.current.aKey.isPressed)
         {
             horizontal = -1f;
         }
 
 
-        // D 키를 누르고 있으면 오른쪽 이동
         if (Keyboard.current.dKey.isPressed)
         {
             horizontal = 1f;
         }
 
 
-        // X축 이동 방향과 현재 MoveSpeed를 이용해
-        // 이번 프레임의 이동 방향을 계산한다.
         Vector3 direction =
             Vector3.right *
             horizontal *
             playerStats.MoveSpeed;
 
 
-        // 프레임 속도에 영향을 덜 받도록
-        // Time.deltaTime을 곱해서 실제 위치를 변경한다.
         transform.position +=
             direction *
             Time.deltaTime;
 
 
-        // 이동 후 현재 위치 가져오기
         Vector3 position =
             transform.position;
 
 
-        // Player가 지정된 좌우 이동 범위를
-        // 벗어나지 못하도록 X 위치를 제한한다.
+        float minX;
+        float maxX;
+
+
+        // =============================================
+        // 실제 도로 기준 Clamp
+        // =============================================
+
+        if (TryGetRoadArea(
+                out float roadCenterX,
+                out float roadWidth))
+        {
+            float currentXLimit =
+                Mathf.Max(
+                    0f,
+                    roadWidth * 0.5f -
+                    edgeClearance
+                );
+
+
+            minX =
+                roadCenterX -
+                currentXLimit;
+
+
+            maxX =
+                roadCenterX +
+                currentXLimit;
+        }
+        else
+        {
+            // StageChunk가 아직 준비되지 않은 경우에만
+            // 기존 값으로 동작한다.
+            minX =
+                -xLimit;
+
+            maxX =
+                xLimit;
+        }
+
+
         position.x =
             Mathf.Clamp(
                 position.x,
-                -xLimit,
-                xLimit
+                minX,
+                maxX
             );
 
 
-        // 제한된 위치를 최종 적용
         transform.position =
             position;
     }
