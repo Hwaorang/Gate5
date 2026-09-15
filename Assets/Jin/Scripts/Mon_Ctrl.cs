@@ -56,7 +56,7 @@ public class Mon_Ctrl : MonoBehaviour
             //targetPos = _target.position;
             
             targetPos = new Vector3(this.transform.position.x, _target.position.y, _target.position.z);
-            Debug.Log("target_Set : " + targetPos);
+            //Debug.Log("target_Set : " + targetPos);
         }
     }
 
@@ -84,15 +84,57 @@ public class Mon_Ctrl : MonoBehaviour
         }
     }
 
+    //public void TakeDamage(float _damage)
+    //{
+    //    curHP -= _damage;
+    //    Debug.Log("Take Damage");
+    //    if (curHP <= 0 && !isDead)
+    //    {
+    //        if(!isDead)
+    //            isDead = true;
+    //        MonSpawn_Mgr.instance.ReturnObject(objname, this.gameObject, exp);
+    //    }
+    //}
+
     public void TakeDamage(float _damage)
     {
-        curHP -= _damage;
-        Debug.Log("Take Damage");
-        if (curHP <= 0 && !isDead)
+        // 이미 죽은 몬스터는 추가 데미지를 받지 않는다.
+        if (isDead)
         {
-            if(!isDead)
-                isDead = true;
-            MonSpawn_Mgr.instance.ReturnObject(objname, this.gameObject, exp);
+            return;
+        }
+
+#if UNITY_EDITOR
+        Debug.Log(
+      $"[Enemy Damage] 들어온 데미지 : {_damage} / " +
+       $"맞기 전 HP : {curHP}"
+   );
+#endif
+
+        curHP -= _damage;
+
+#if UNITY_EDITOR
+        Debug.Log(
+    $"[Enemy Damage] 맞은 후 HP : {curHP}"
+);
+#endif
+        Debug.Log("Take Damage");
+        //if (curHP <= 0 && !isDead)
+        //{
+        //    if(!isDead)
+        //        isDead = true;
+        //    MonSpawn_Mgr.instance.ReturnObject(objname, this.gameObject, exp);
+        //}
+
+        if (curHP <= 0f)
+        {
+            isDead = true;
+
+            MonSpawn_Mgr.instance.ReturnObject(
+                objname,
+                gameObject,
+                exp
+            );
         }
     }
 }
