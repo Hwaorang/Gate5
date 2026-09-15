@@ -292,17 +292,27 @@ public class InGameMenuPresenter : MonoBehaviour
         // Closed
         // =========================
 
-        if (currentState ==
-            UIState.Closed)
-        {
+        if(currentState == UIState.Closed)
+{
+            if (menuUI != null)
+            {
+                menuUI.Hide();
+            }
+
             if (hudRoot != null)
             {
                 hudRoot.SetActive(false);
             }
 
-            if (menuUI != null)
+            // 다음에 HUD를 열었을 때 다시 보이도록
+            if (menuButton != null)
             {
-                menuUI.Hide();
+                menuButton.gameObject.SetActive(true);
+            }
+
+            if (hudCloseButton != null)
+            {
+                hudCloseButton.gameObject.SetActive(true);
             }
 
             if (settingsPanel != null)
@@ -323,22 +333,26 @@ public class InGameMenuPresenter : MonoBehaviour
         // HUD
         // =========================
 
-        if (currentState ==
-            UIState.HUD)
+        if (currentState == UIState.HUD)
         {
             if (hudRoot != null)
             {
                 hudRoot.SetActive(true);
             }
 
+            if (menuButton != null)
+            {
+                menuButton.gameObject.SetActive(true);
+            }
+
+            if (hudCloseButton != null)
+            {
+                hudCloseButton.gameObject.SetActive(true);
+            }
+
             if (menuUI != null)
             {
                 menuUI.Hide();
-            }
-
-            if (settingsPanel != null)
-            {
-                settingsPanel.SetActive(false);
             }
 
             if (GameManager.Instance != null)
@@ -354,13 +368,23 @@ public class InGameMenuPresenter : MonoBehaviour
         // Menu
         // =========================
 
-        if (currentState ==
-            UIState.Menu)
+        if (currentState == UIState.Menu)
         {
-            // HUD는 뒤에 계속 표시
             if (hudRoot != null)
             {
                 hudRoot.SetActive(true);
+            }
+
+            // 메뉴가 열려 있을 동안
+            // HUD의 조작 버튼은 숨긴다.
+            if (menuButton != null)
+            {
+                menuButton.gameObject.SetActive(false);
+            }
+
+            if (hudCloseButton != null)
+            {
+                hudCloseButton.gameObject.SetActive(false);
             }
 
             if (menuUI != null)
@@ -372,6 +396,8 @@ public class InGameMenuPresenter : MonoBehaviour
             {
                 GameManager.Instance.Pause();
             }
+
+            return;
         }
     }
 
