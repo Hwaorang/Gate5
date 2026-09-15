@@ -112,6 +112,9 @@ public class SquadAttackResolver : MonoBehaviour
     /// <summary>
     /// 각 Column별로 대표 병사를 선정하고
     /// 해당 열의 병사 수를 데미지에 반영한다.
+    ///
+    /// 한 번의 Squad 공격 주기마다
+    /// 총소리는 한 번만 재생한다.
     /// </summary>
     private void FireColumns(
         IReadOnlyList<SoldierAttack> attacks)
@@ -119,10 +122,17 @@ public class SquadAttackResolver : MonoBehaviour
         int columnCount =
             squadManager.CurrentColumnCount;
 
+
         if (columnCount <= 0)
         {
             return;
         }
+
+
+        // 실제로 이번 공격 주기에
+        // 발사한 병사가 있었는지 확인한다.
+        bool firedAnyColumn =
+            false;
 
 
         for (int column = 0;
@@ -147,10 +157,12 @@ public class SquadAttackResolver : MonoBehaviour
                 SoldierAttack attack =
                     attacks[index];
 
+
                 if (attack == null)
                 {
                     continue;
                 }
+
 
                 // 죽어가는 병사는
                 // 공격력 계산에서 제외한다.
@@ -158,6 +170,7 @@ public class SquadAttackResolver : MonoBehaviour
                 {
                     continue;
                 }
+
 
                 aliveSoldierCount++;
 
@@ -182,14 +195,36 @@ public class SquadAttackResolver : MonoBehaviour
             // =========================
             // 대표 공격
             // =========================
-            //
-            // 대표 병사 1명의 Raycast에
-            // 해당 Column 전체의 공격력을 합산한다.
+
             representative.FireGroup(
                 aliveSoldierCount,
                 soldiersPerDamageBatch,
                 true
             );
+
+
+            // 최소 한 Column이라도
+            // 실제 공격을 수행했다.
+            firedAnyColumn =
+                true;
+        }
+
+
+        // =========================
+        // Squad Shoot SFX
+        // =========================
+        //
+        // Column 수나 병사 수와 관계없이
+        // 한 번의 공격 주기마다
+        // 총소리는 단 한 번만 재생한다.
+
+        if (firedAnyColumn)
+        {
+            AudioManager_PlayerController
+                .Instance?
+                .PlaySfx(
+                    PlayerSfxType.PlayerShoot
+                );
         }
     }
 
