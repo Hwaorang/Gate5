@@ -3,14 +3,14 @@ using UnityEngine.SceneManagement;
 
 public class LobbyManager : MonoBehaviour
 {
-    [Header("게임 씬 이름")]
+
     [SerializeField] private string gameSceneName = "Game";
 
     public void StartGame()
     {
         if (SaveManager.Instance == null)
         {
-            Debug.LogError("SaveManager가 없습니다.");
+            Debug.LogError("SaveManager.");
             return;
         }
 
@@ -30,7 +30,7 @@ public class LobbyManager : MonoBehaviour
 
     public void QuitGame()
     {
-        Debug.Log("게임 종료");
+        Debug.Log("GoodBye");
 
         Application.Quit();
     }
