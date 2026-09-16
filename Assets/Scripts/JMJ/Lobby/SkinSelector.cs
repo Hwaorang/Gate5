@@ -4,160 +4,187 @@ using UnityEngine.UI;
 
 public class SkinSelector : MonoBehaviour
 {
-    [Header("½ºÅ² ¿ÀºêÁ§Æ®")]
+    [Header("ì‹¤ì œ ë¡œë¹„ ìºë¦­í„° ìŠ¤í‚¨")]
     [SerializeField] private GameObject[] skins;
 
-    [Header("½ºÅ² ÀÌ¸§")]
+    [Header("ìŠ¤í‚¨ íŒ¨ë„ ë¯¸ë¦¬ë³´ê¸° ìŠ¤í‚¨")]
+    [SerializeField] private GameObject[] previewSkins;
+
+    [Header("ìŠ¤í‚¨ ì´ë¦„")]
     [SerializeField] private string[] skinNames;
 
-    [Header("½ºÅ² ÀÌ¸§ UI")]
+    [Header("UI")]
     [SerializeField] private TMP_Text skinNameText;
-
-    [Header("½ºÅ² º¯°æ ¹öÆ°")]
     [SerializeField] private Button previousButton;
     [SerializeField] private Button nextButton;
 
-    [Header("¹öÆ° »ö»ó")]
+    [Header("ë²„íŠ¼ ìƒ‰ìƒ")]
     [SerializeField] private Color normalColor = Color.white;
     [SerializeField] private Color disabledColor = Color.gray;
 
-
-    // ÇöÀç ¼±ÅÃµÈ ½ºÅ² ¹øÈ£
     private int currentSkin;
 
-
-    // =====================================================
-    // ½ÃÀÛ
-    // =====================================================
 
     private void Start()
     {
         if (SaveManager.Instance == null)
         {
-            Debug.LogError("SaveManager°¡ Á¸ÀçÇÏÁö ¾Ê½À´Ï´Ù.");
+            Debug.LogError("SaveManagerê°€ ì¡´ì¬í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤.");
             return;
         }
 
-        // ÀúÀåµÈ ½ºÅ² ¹øÈ£ °¡Á®¿À±â
-        currentSkin =
-            SaveManager.Instance.Data.selectedSkin;
+        currentSkin = SaveManager.Instance.Data.selectedSkin;
 
-
-        // ½ºÅ²ÀÌ ¾ø´Â °æ¿ì
         if (skins == null || skins.Length == 0)
         {
-            Debug.LogWarning("µî·ÏµÈ ½ºÅ²ÀÌ ¾ø½À´Ï´Ù.");
+            Debug.LogWarning("ì‹¤ì œ ë¡œë¹„ ìŠ¤í‚¨ì´ ë“±ë¡ë˜ì–´ ìˆì§€ ì•ŠìŠµë‹ˆë‹¤.");
             return;
         }
 
-
-        // Àß¸øµÈ ¹øÈ£°¡ ÀúÀåµÇ¾î ÀÖ´Ù¸é 0¹øÀ¸·Î
-        if (currentSkin < 0 ||
-            currentSkin >= skins.Length)
+        if (currentSkin < 0 || currentSkin >= skins.Length)
         {
             currentSkin = 0;
         }
 
-
-        // ½ºÅ² Àû¿ë
         ApplySkin();
     }
 
 
     // =====================================================
-    // ´ÙÀ½ ½ºÅ²
+    // ë‹¤ìŒ ìŠ¤í‚¨
     // =====================================================
 
     public void NextSkin()
     {
-        // ½ºÅ²ÀÌ ¾ø´Â °æ¿ì
         if (skins == null || skins.Length == 0)
         {
             return;
         }
 
-
-        // ¸¶Áö¸· ½ºÅ²ÀÌ¸é ÀÌµ¿ÇÏÁö ¾ÊÀ½
         if (currentSkin >= skins.Length - 1)
         {
             return;
         }
 
-
-        // ´ÙÀ½ ½ºÅ²À¸·Î ÀÌµ¿
         currentSkin++;
 
-
-        // ½ºÅ² Àû¿ë
         ApplySkin();
 
-
-        // ÀúÀå
         SaveSkin();
     }
 
 
     // =====================================================
-    // ÀÌÀü ½ºÅ²
+    // ì´ì „ ìŠ¤í‚¨
     // =====================================================
 
     public void PreviousSkin()
     {
-        // ½ºÅ²ÀÌ ¾ø´Â °æ¿ì
         if (skins == null || skins.Length == 0)
         {
             return;
         }
 
-
-        // Ã¹ ¹øÂ° ½ºÅ²ÀÌ¸é ÀÌµ¿ÇÏÁö ¾ÊÀ½
         if (currentSkin <= 0)
         {
             return;
         }
 
-
-        // ÀÌÀü ½ºÅ²À¸·Î ÀÌµ¿
         currentSkin--;
 
-
-        // ½ºÅ² Àû¿ë
         ApplySkin();
 
-
-        // ÀúÀå
         SaveSkin();
     }
 
 
     // =====================================================
-    // ½ºÅ² Àû¿ë
+    // ìŠ¤í‚¨ ì ìš©
     // =====================================================
 
     private void ApplySkin()
     {
-        // ¸ğµç ½ºÅ² È®ÀÎ
+        Debug.Log("í˜„ì¬ ìŠ¤í‚¨ ë²ˆí˜¸ : " + currentSkin);
+
+
+        // =================================================
+        // ì‹¤ì œ ë¡œë¹„ ìºë¦­í„°
+        // =================================================
+
         for (int i = 0; i < skins.Length; i++)
         {
-            if (skins[i] != null)
+            if (skins[i] == null)
             {
-                // ÇöÀç ½ºÅ²¸¸ È°¼ºÈ­
-                skins[i].SetActive(i == currentSkin);
+                Debug.LogWarning(
+                    "Skins[" + i + "]ê°€ ë¹„ì–´ ìˆìŠµë‹ˆë‹¤."
+                );
+
+                continue;
+            }
+
+            bool active = (i == currentSkin);
+
+            skins[i].SetActive(active);
+
+            Debug.Log(
+                "ì‹¤ì œ ìŠ¤í‚¨ [" + i + "] : " +
+                skins[i].name +
+                " / Active = " +
+                active
+            );
+        }
+
+
+        // =================================================
+        // ìŠ¤í‚¨ íŒ¨ë„ ë¯¸ë¦¬ë³´ê¸° ìºë¦­í„°
+        // =================================================
+
+        if (previewSkins == null || previewSkins.Length == 0)
+        {
+            Debug.LogError("Preview Skinsê°€ ë¹„ì–´ ìˆìŠµë‹ˆë‹¤!");
+        }
+        else
+        {
+            for (int i = 0; i < previewSkins.Length; i++)
+            {
+                if (previewSkins[i] == null)
+                {
+                    Debug.LogError(
+                        "Preview Skins[" + i + "]ê°€ ë¹„ì–´ ìˆìŠµë‹ˆë‹¤!"
+                    );
+
+                    continue;
+                }
+
+                bool active = (i == currentSkin);
+
+                previewSkins[i].SetActive(active);
+
+                Debug.Log(
+                    "ë¯¸ë¦¬ë³´ê¸° ë³€ê²½ : " +
+                    previewSkins[i].name +
+                    " / ë¶€ëª¨ : " +
+                    previewSkins[i].transform.parent.name +
+                    " / Active : " +
+                    previewSkins[i].activeSelf +
+                    " / í˜„ì¬ ìŠ¤í‚¨ : " +
+                    currentSkin
+                );
             }
         }
 
 
-        // ½ºÅ² ÀÌ¸§ º¯°æ
+        // =================================================
+        // UI
+        // =================================================
+
         UpdateSkinName();
-
-
-        // ¹öÆ° »óÅÂ º¯°æ
         UpdateButtons();
     }
 
 
     // =====================================================
-    // ½ºÅ² ÀÌ¸§ º¯°æ
+    // ìŠ¤í‚¨ ì´ë¦„
     // =====================================================
 
     private void UpdateSkinName()
@@ -167,44 +194,34 @@ public class SkinSelector : MonoBehaviour
             return;
         }
 
-
         if (skinNames != null &&
             currentSkin >= 0 &&
             currentSkin < skinNames.Length)
         {
-            skinNameText.text =
-                skinNames[currentSkin];
+            skinNameText.text = skinNames[currentSkin];
         }
         else
         {
-            skinNameText.text =
-                "Skin " + (currentSkin + 1);
+            skinNameText.text = "Skin " + (currentSkin + 1);
         }
     }
 
 
     // =====================================================
-    // ¹öÆ° »óÅÂ º¯°æ
+    // ë²„íŠ¼ ìƒíƒœ
     // =====================================================
 
     private void UpdateButtons()
     {
-        // Ã¹ ¹øÂ° ½ºÅ²ÀÌ¸é ÀÌÀü ¹öÆ° ºñÈ°¼ºÈ­
-        bool canGoPrevious =
-            currentSkin > 0;
+        bool canGoPrevious = currentSkin > 0;
 
-
-        // ¸¶Áö¸· ½ºÅ²ÀÌ¸é ´ÙÀ½ ¹öÆ° ºñÈ°¼ºÈ­
         bool canGoNext =
             currentSkin < skins.Length - 1;
 
-
-        // ¹öÆ° »ö»ó º¯°æ
         SetButtonColor(
             previousButton,
             canGoPrevious
         );
-
 
         SetButtonColor(
             nextButton,
@@ -214,35 +231,28 @@ public class SkinSelector : MonoBehaviour
 
 
     // =====================================================
-    // ¹öÆ° »ö»ó º¯°æ
+    // ë²„íŠ¼ ìƒ‰ìƒ
     // =====================================================
 
     private void SetButtonColor(
-    Button button,
-    bool active)
+        Button button,
+        bool active)
     {
         if (button == null)
         {
             return;
         }
 
-
-        // ¹öÆ° Å¬¸¯ °¡´É ¿©ºÎ
         button.interactable = active;
 
-
-        // ¹öÆ° ÀÌ¹ÌÁö
         Image image =
             button.GetComponent<Image>();
-
 
         if (image == null)
         {
             return;
         }
 
-
-        // È°¼º / ºñÈ°¼º »ö»ó
         if (active)
         {
             image.color = normalColor;
@@ -255,27 +265,30 @@ public class SkinSelector : MonoBehaviour
 
 
     // =====================================================
-    // ½ºÅ² ÀúÀå
+    // ì €ì¥
     // =====================================================
 
     private void SaveSkin()
     {
+        if (SaveManager.Instance == null)
+        {
+            return;
+        }
+
         SaveManager.Instance.Data.selectedSkin =
             currentSkin;
 
-
         SaveManager.Instance.Save();
 
-
         Debug.Log(
-            "ÇöÀç ½ºÅ² ÀúÀå : " +
+            "í˜„ì¬ ìŠ¤í‚¨ ì €ì¥ : " +
             currentSkin
         );
     }
 
 
     // =====================================================
-    // ÇöÀç ½ºÅ² ¹øÈ£ °¡Á®¿À±â
+    // í˜„ì¬ ìŠ¤í‚¨ ë²ˆí˜¸
     // =====================================================
 
     public int GetCurrentSkin()
