@@ -1,34 +1,39 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.PlasticSCM.Editor.WebApi;
 using UnityEngine;
-using UnityEngine.UIElements;
-using static UnityEngine.GraphicsBuffer;
 
 public class MonSpawn_Mgr : MonoBehaviour
 {
     public static MonSpawn_Mgr instance;
 
-    [SerializeField] Renderer field;
-    float fieldSize;
+    [Header("Field")]
+    [SerializeField] private Renderer field;
 
-    [SerializeField] List<GameObject> objList = new List<GameObject>();
+    [Header("Monster Prefabs")]
+    [SerializeField]
+    private List<GameObject> objList =
+        new List<GameObject>();
 
-    Dictionary<string, Queue<GameObject>> pools = new Dictionary<string, Queue<GameObject>>();
+    [Header("Pool Settings")]
+    [SerializeField] private int poolSize = 50;
 
-    int poolSize = 50;
+    private readonly Dictionary<string, Queue<GameObject>> pools =
+        new Dictionary<string, Queue<GameObject>>();
 
-    Vector3 curPos;
+    private readonly Dictionary<string, Transform> poolParents =
+        new Dictionary<string, Transform>();
 
-    Vector3 targetPos;
+    private PlayerController player;
+    private PlayerExperience playerExp;
+    private Transform target;
 
-    float spawnNum;
+    private float fieldSize;
+    private Vector3 spawnStartPosition;
 
-    PlayerExperience playerExp;
+    // 프리팹 생성 중 OnEnable 실행을 막기 위한 비활성 부모
+    private Transform inactiveCreateRoot;
 
-
-    Transform target;
-    void Awake()
+    private void Awake()
     {
         if (instance == null)
         {
@@ -37,116 +42,455 @@ public class MonSpawn_Mgr : MonoBehaviour
         else
         {
             Destroy(gameObject);
+            return;
         }
-
-
     }
-    void Start()
+
+    private IEnumerator Start()
     {
-        curPos = transform.position;
-
-        target = FindFirstObjectByType<PlayerController>().transform;
-        if (target == null)
+        if (field == null)
         {
-            Debug.Log("TargetNull");
-        }
-        targetPos = FindFirstObjectByType<PlayerController>().transform.position;
+            Debug.LogError(
+                "MonSpawn_Mgr에 field Renderer가 할당되지 않았어.",
+                this
+            );
 
-        foreach (GameObject obj in objList)
-        {
-            pools[obj.name] = new Queue<GameObject>();
-
-            GameObject parentPool = new GameObject($"{obj.name}_Pool");
-            parentPool.transform.SetParent(this.transform);
-
-            for (int i = 0; i < poolSize; i++)
-            {
-                GameObject go = Instantiate(obj, parentPool.transform);
-                go.SetActive(false);
-                pools[obj.name].Enqueue(go);
-            }
+            yield break;
         }
 
-        fieldSize = field.bounds.size.x;
-        float fieldSizeZ = field.bounds.size.z;
-        this.transform.position = new Vector3((fieldSize / 2)+0.5f, 2.5f, (fieldSizeZ/2)+5);
-        Debug.Log("field" + fieldSize);
+        if (objList == null || objList.Count == 0)
+        {
+            Debug.LogError(
+                "objList에 몬스터 프리팹이 없어.",
+                this
+            );
 
-        playerExp = FindFirstObjectByType<PlayerExperience>();
+            yield break;
+        }
+
+        // 동적으로 생성되는 플레이어를 기다림
+        yield return FindPlayer();
+
+        if (player == null)
+        {
+            Debug.LogError(
+                "PlayerController를 찾지 못했어.",
+                this
+            );
+
+            yield break;
+        }
+
+        target = player.transform;
+
+        playerExp =
+            player.GetComponent<PlayerExperience>();
+
+        if (playerExp == null)
+        {
+            playerExp =
+                FindFirstObjectByType<PlayerExperience>();
+        }
+
+        if (playerExp == null)
+        {
+            Debug.LogError(
+                "PlayerExperience를 찾지 못했어.",
+                this
+            );
+
+            yield break;
+        }
+
+        InitializeField();
+        InitializePools();
+
         StartCoroutine(SpawnMon(0));
     }
 
-    public GameObject GetObject(string name, Vector3 _pos)
+    private IEnumerator FindPlayer()
     {
-        if (!pools.ContainsKey(name))
+        WaitForSeconds wait =
+            new WaitForSeconds(0.1f);
+
+        while (player == null)
         {
-            Debug.Log("null");
+            player =
+                FindFirstObjectByType<PlayerController>();
+
+            if (player == null)
+            {
+                yield return wait;
+            }
+        }
+
+        Debug.Log(
+            $"플레이어 탐색 완료: {player.name}",
+            player
+        );
+    }
+
+    private void InitializeField()
+    {
+        Bounds fieldBounds = field.bounds;
+
+        fieldSize = fieldBounds.size.x;
+
+        // 필드의 왼쪽 바깥쪽부터 몬스터가 생성되도록 설정
+        spawnStartPosition = new Vector3(
+            fieldBounds.min.x,
+            2.5f,
+            fieldBounds.max.z + 5f
+        );
+
+        transform.position = spawnStartPosition;
+
+        Debug.Log(
+            $"fieldSize: {fieldSize}, " +
+            $"spawnStartPosition: {spawnStartPosition}"
+        );
+    }
+
+    private void InitializePools()
+    {
+        // 생성 중 OnEnable 방지용 비활성 오브젝트
+        GameObject inactiveRootObject =
+            new GameObject("Inactive_Create_Root");
+
+        inactiveRootObject.transform.SetParent(transform);
+        inactiveRootObject.SetActive(false);
+
+        inactiveCreateRoot =
+            inactiveRootObject.transform;
+
+        foreach (GameObject prefab in objList)
+        {
+            if (prefab == null)
+            {
+                Debug.LogError(
+                    "objList에 null 프리팹이 있어.",
+                    this
+                );
+
+                continue;
+            }
+
+            string poolName = prefab.name;
+
+            if (pools.ContainsKey(poolName))
+            {
+                Debug.LogWarning(
+                    $"중복된 프리팹 이름이야: {poolName}",
+                    prefab
+                );
+
+                continue;
+            }
+
+            pools.Add(
+                poolName,
+                new Queue<GameObject>()
+            );
+
+            GameObject parentPool =
+                new GameObject($"{poolName}_Pool");
+
+            parentPool.transform.SetParent(transform);
+
+            poolParents.Add(
+                poolName,
+                parentPool.transform
+            );
+
+            for (int i = 0; i < poolSize; i++)
+            {
+                GameObject go =
+                    CreatePoolObject(
+                        poolName,
+                        prefab
+                    );
+
+                pools[poolName].Enqueue(go);
+            }
+        }
+    }
+
+    private GameObject CreatePoolObject(
+        string poolName,
+        GameObject prefab)
+    {
+        /*
+         * 비활성 부모 밑에서 생성하기 때문에
+         * Instantiate 순간 OnEnable이 호출되지 않음
+         */
+        GameObject go =
+            Instantiate(
+                prefab,
+                inactiveCreateRoot
+            );
+
+        // (Clone)을 제거하고 풀 키와 이름을 통일
+        go.name = poolName;
+
+        go.SetActive(false);
+
+        if (poolParents.TryGetValue(
+                poolName,
+                out Transform poolParent))
+        {
+            go.transform.SetParent(poolParent);
+        }
+
+        Mon_Ctrl monCtrl =
+            go.GetComponent<Mon_Ctrl>();
+
+        if (monCtrl == null)
+        {
+            Debug.LogError(
+                $"{poolName} 프리팹에 Mon_Ctrl이 없어.",
+                go
+            );
+        }
+
+        return go;
+    }
+
+    public GameObject GetObject(
+        string poolName,
+        Vector3 spawnPosition)
+    {
+        if (!pools.TryGetValue(
+                poolName,
+                out Queue<GameObject> pool))
+        {
+            Debug.LogError(
+                $"존재하지 않는 풀 이름이야: {poolName}",
+                this
+            );
+
             return null;
         }
 
-        if (pools[name].Count > 0)
-        {
-            //Debug.Log($"name : {name}");
-            GameObject go = pools[name].Dequeue();
+        GameObject go;
 
-            go.transform.position = _pos;
-            go.SetActive(true);
-            go.GetComponent<Mon_Ctrl>().SetTarget(target);
-            return go;
+        if (pool.Count > 0)
+        {
+            go = pool.Dequeue();
         }
         else
         {
-            GameObject go = Instantiate(objList.Find(obj => obj.name == name));
-            go.transform.position = _pos;
-            go.GetComponent<Mon_Ctrl>().SetTarget(target);
-            return go;
+            GameObject prefab =
+                objList.Find(
+                    obj => obj != null &&
+                           obj.name == poolName
+                );
+
+            if (prefab == null)
+            {
+                Debug.LogError(
+                    $"{poolName} 프리팹을 찾지 못했어.",
+                    this
+                );
+
+                return null;
+            }
+
+            go = CreatePoolObject(
+                poolName,
+                prefab
+            );
         }
 
-        
+        Mon_Ctrl monCtrl =
+            go.GetComponent<Mon_Ctrl>();
+
+        if (monCtrl == null)
+        {
+            Debug.LogError(
+                $"{go.name}에 Mon_Ctrl이 없어.",
+                go
+            );
+
+            go.SetActive(false);
+            pool.Enqueue(go);
+
+            return null;
+        }
+
+        // 순서가 중요함
+        go.transform.position = spawnPosition;
+        monCtrl.SetTarget(target);
+        go.SetActive(true);
+
+        return go;
     }
 
-    public void ReturnObject(string name, GameObject go, int _exp)
+    public void ReturnObject(
+        string poolName,
+        GameObject go,
+        int exp)
     {
-        Debug.Log("Return");
-        playerExp.AddExp(_exp);
-        if (!pools.ContainsKey(name))
+        if (go == null)
+            return;
+
+        if (playerExp != null)
         {
+            playerExp.AddExp(exp);
+        }
+        else
+        {
+            Debug.LogWarning(
+                "PlayerExperience가 null이라 경험치를 지급하지 못했어.",
+                this
+            );
+        }
+
+        if (!pools.TryGetValue(
+                poolName,
+                out Queue<GameObject> pool))
+        {
+            Debug.LogError(
+                $"반환할 풀이 존재하지 않아: {poolName}",
+                go
+            );
+
             Destroy(go);
             return;
         }
+
         go.SetActive(false);
-        pools[name].Enqueue(go);
+
+        if (poolParents.TryGetValue(
+                poolName,
+                out Transform poolParent))
+        {
+            go.transform.SetParent(poolParent);
+        }
+
+        pool.Enqueue(go);
     }
 
-    IEnumerator SpawnMon(int _num)
+    private IEnumerator SpawnMon(int prefabIndex)
     {
-        BoxCollider moncoll = objList[_num].GetComponent<BoxCollider>();
-        if(moncoll == null)
-            Debug.Log("null");  
-        float monSize = moncoll.size.x * Mathf.Abs(objList[_num].transform.lossyScale.x);
+        if (prefabIndex < 0 ||
+            prefabIndex >= objList.Count)
+        {
+            Debug.LogError(
+                $"잘못된 objList 인덱스: {prefabIndex}",
+                this
+            );
 
-        Debug.Log("Monsize : " + monSize + ", Moncoll : " + moncoll.size.x);
-        int spawnCount = Mathf.FloorToInt(fieldSize / (monSize * 1.5f)) -1;
+            yield break;
+        }
 
-        WaitForSeconds wait = new WaitForSeconds(1.5f);
+        GameObject monsterPrefab =
+            objList[prefabIndex];
+
+        if (monsterPrefab == null)
+        {
+            Debug.LogError(
+                "몬스터 프리팹이 null이야.",
+                this
+            );
+
+            yield break;
+        }
+
+        BoxCollider monsterCollider =
+            monsterPrefab.GetComponent<BoxCollider>();
+
+        if (monsterCollider == null)
+        {
+            Debug.LogError(
+                $"{monsterPrefab.name}에 BoxCollider가 없어.",
+                monsterPrefab
+            );
+
+            yield break;
+        }
+
+        float monsterSize =
+            monsterCollider.size.x *
+            Mathf.Abs(
+                monsterPrefab.transform.lossyScale.x
+            );
+
+        if (monsterSize <= 0f)
+        {
+            Debug.LogError(
+                $"몬스터 크기가 잘못됐어: {monsterSize}",
+                monsterPrefab
+            );
+
+            yield break;
+        }
+
+        float spawnSpacing =
+            monsterSize * 1.5f;
+
+        int spawnCount =
+            Mathf.FloorToInt(
+                fieldSize / spawnSpacing
+            );
+
+        if (spawnCount <= 0)
+        {
+            Debug.LogError(
+                $"spawnCount가 0 이하야. " +
+                $"fieldSize: {fieldSize}, " +
+                $"monsterSize: {monsterSize}",
+                this
+            );
+
+            yield break;
+        }
+
+        Debug.Log(
+            $"monsterSize: {monsterSize}, " +
+            $"spawnSpacing: {spawnSpacing}, " +
+            $"spawnCount: {spawnCount}"
+        );
+
+        WaitForSeconds wait =
+            new WaitForSeconds(1.5f);
 
         while (true)
         {
             yield return wait;
 
-            //Debug.Log("why2" + spawnCount);
             for (int i = 0; i < spawnCount; i++)
             {
-                Vector3 spawnPos = new Vector3(curPos.x + i * (monSize * 1.5f),curPos.y,curPos.z);
-                GameObject zombie = GetObject("zombie", spawnPos);
+                Vector3 spawnPosition =
+                    new Vector3(
+                        spawnStartPosition.x +
+                        i * spawnSpacing,
 
-                if (zombie == null)
-                    continue;
+                        spawnStartPosition.y,
+                        spawnStartPosition.z
+                    );
 
-                
+                GameObject monster =
+                    GetObject(
+                        monsterPrefab.name,
+                        spawnPosition
+                    );
 
-                //zombie.transform.position = spawnPos;
+                if (monster == null)
+                {
+                    Debug.LogWarning(
+                        $"{monsterPrefab.name} 생성 실패",
+                        this
+                    );
+                }
             }
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (instance == this)
+        {
+            instance = null;
         }
     }
 }
