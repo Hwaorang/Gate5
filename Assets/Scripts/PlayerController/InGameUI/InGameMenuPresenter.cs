@@ -90,6 +90,8 @@ public class InGameMenuPresenter : MonoBehaviour
     private UIState currentState =
         UIState.Closed;
 
+    // GameOver 이후 일반 인게임 UI 입력을 막기 위한 값
+    private bool gameOverLocked;
 
     // ========================================================
     // Unity
@@ -107,6 +109,24 @@ public class InGameMenuPresenter : MonoBehaviour
 
     private void Update()
     {
+        // =========================
+        // GameOver 검사
+        // =========================
+
+        if (IsGameOver())
+        {
+            // GameOver UI 정리는 한 번만 실행
+            if (!gameOverLocked)
+            {
+                LockForGameOver();
+            }
+
+            // GameOver 중에는
+            // ESC를 포함한 메뉴 입력을 처리하지 않는다.
+            return;
+        }
+
+
         if (Keyboard.current == null)
         {
             return;
@@ -122,6 +142,90 @@ public class InGameMenuPresenter : MonoBehaviour
         HandleEscape();
     }
 
+    // ========================================================
+    // GameOver Lock
+    // ========================================================
+
+    /// <summary>
+    /// 현재 GameOver 상태인지 확인한다.
+    /// </summary>
+    private bool IsGameOver()
+    {
+        return
+            GameManager.Instance != null &&
+            GameManager.Instance.IsGameOver;
+    }
+
+
+    /// <summary>
+    /// GameOver가 발생하면
+    /// 일반 HUD / Menu / Settings를 모두 닫고
+    /// 더 이상 열리지 않게 한다.
+    ///
+    /// 주의:
+    /// SetState(UIState.Closed)는 사용하지 않는다.
+    /// Closed는 GameManager.Resume()을 호출하기 때문이다.
+    /// </summary>
+    private void LockForGameOver()
+    {
+        gameOverLocked = true;
+
+        currentState =
+            UIState.Closed;
+
+
+        // HUD 닫기
+        if (hudRoot != null)
+        {
+            hudRoot.SetActive(false);
+        }
+
+
+        // HUD를 여는 버튼도 숨기기
+        if (hudToggleButton != null)
+        {
+            hudToggleButton.gameObject.SetActive(
+                false
+            );
+        }
+
+
+        // Menu 닫기
+        if (menuUI != null)
+        {
+            menuUI.Hide();
+        }
+
+
+        // Settings 닫기
+        if (settingsPanelUI != null)
+        {
+            settingsPanelUI.Hide();
+        }
+
+
+        // HUD 안쪽 조작 버튼들도 숨김
+        if (menuButton != null)
+        {
+            menuButton.gameObject.SetActive(
+                false
+            );
+        }
+
+
+        if (hudCloseButton != null)
+        {
+            hudCloseButton.gameObject.SetActive(
+                false
+            );
+        }
+
+
+        Debug.Log(
+            "[InGameMenuPresenter] " +
+            "GameOver - HUD / Menu / Settings 입력 차단"
+        );
+    }
 
     private void OnEnable()
     {
@@ -259,6 +363,11 @@ public class InGameMenuPresenter : MonoBehaviour
     /// </summary>
     private void ToggleHUD()
     {
+        if (IsGameOver())
+        {
+            return;
+        }
+
         if (currentState ==
             UIState.Closed)
         {
@@ -280,6 +389,11 @@ public class InGameMenuPresenter : MonoBehaviour
     /// </summary>
     private void OpenMenu()
     {
+        if (IsGameOver())
+        {
+            return;
+        }
+
         SetState(
             UIState.Menu
         );
@@ -292,6 +406,11 @@ public class InGameMenuPresenter : MonoBehaviour
     /// </summary>
     private void CloseAll()
     {
+        if (IsGameOver())
+        {
+            return;
+        }
+
         SetState(
             UIState.Closed
         );
@@ -307,6 +426,11 @@ public class InGameMenuPresenter : MonoBehaviour
     /// </summary>
     private void OpenSettings()
     {
+        if (IsGameOver())
+        {
+            return;
+        }
+
         if (settingsPanelUI == null)
         {
             Debug.LogWarning(
@@ -332,6 +456,11 @@ public class InGameMenuPresenter : MonoBehaviour
     /// </summary>
     private void CloseSettings()
     {
+        if (IsGameOver())
+        {
+            return;
+        }
+
         SetState(
             UIState.Menu
         );
@@ -347,6 +476,11 @@ public class InGameMenuPresenter : MonoBehaviour
     /// </summary>
     private void HandleEscape()
     {
+        if (IsGameOver())
+        {
+            return;
+        }
+
         switch (currentState)
         {
             // 게임 중 ESC
@@ -406,6 +540,11 @@ public class InGameMenuPresenter : MonoBehaviour
     private void SetState(
         UIState newState)
     {
+        if (IsGameOver())
+        {
+            return;
+        }
+
         currentState =
             newState;
 
