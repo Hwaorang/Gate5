@@ -104,7 +104,29 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void GoLobby()
     {
+        // Scene 이동 전에
+        // 일시정지 상태를 정상적으로 복구
         Time.timeScale = 1f;
+
+
+        // =========================
+        // InGame BGM 정지
+        // =========================
+
+        // AudioManager는 DontDestroyOnLoad이므로
+        // Scene을 이동해도 살아있다.
+        //
+        // 따라서 Lobby로 넘어가기 전에
+        // 현재 재생 중인 InGame BGM을 직접 정지한다.
+        if (AudioManager_PlayerController.Instance != null)
+        {
+            AudioManager_PlayerController.Instance.StopBgm();
+        }
+
+
+        // =========================
+        // Lobby Scene 이동
+        // =========================
 
         SceneManager.LoadScene(
             lobbySceneName
