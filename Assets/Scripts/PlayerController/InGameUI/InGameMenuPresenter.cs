@@ -3,21 +3,30 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 /// <summary>
-/// 인게임 HUD / Menu의 상태를 관리한다.
+/// 인게임 HUD / Menu / Settings의 상태를 관리한다.
 ///
 /// Closed
 /// - HUD OFF
 /// - Menu OFF
+/// - Settings OFF
 /// - 게임 진행
 ///
 /// HUD
 /// - HUD ON
 /// - Menu OFF
+/// - Settings OFF
 /// - 게임 Pause
 ///
 /// Menu
 /// - HUD ON
 /// - Menu ON
+/// - Settings OFF
+/// - 게임 Pause
+///
+/// Settings
+/// - HUD ON
+/// - Menu OFF
+/// - Settings ON
 /// - 게임 Pause
 /// </summary>
 public class InGameMenuPresenter : MonoBehaviour
@@ -26,29 +35,37 @@ public class InGameMenuPresenter : MonoBehaviour
     {
         Closed,
         HUD,
-        Menu
+        Menu,
+        Settings
     }
 
 
+    // ========================================================
+    // HUD
+    // ========================================================
+
     [Header("HUD")]
 
-    // 게임 시작 시 항상 보이는 HUD 열기 버튼
+    // 게임 중 HUD를 여는 버튼
     [SerializeField]
     private Button hudToggleButton;
 
-    // 실제 진행 정보가 표시되는 HUD
+    // 실제 HUD 전체
     [SerializeField]
     private GameObject hudRoot;
 
-    // HUD 내부의 닫기 버튼
-    // 필요 없으면 None이어도 된다.
+    // HUD 내부 닫기 버튼
     [SerializeField]
     private Button hudCloseButton;
 
-    // HUD 내부의 Menu 버튼
+    // HUD 내부 Menu 버튼
     [SerializeField]
     private Button menuButton;
 
+
+    // ========================================================
+    // Menu
+    // ========================================================
 
     [Header("Menu")]
 
@@ -56,22 +73,32 @@ public class InGameMenuPresenter : MonoBehaviour
     private InGameMenuUI menuUI;
 
 
+    // ========================================================
+    // Settings
+    // ========================================================
+
     [Header("Settings")]
 
     [SerializeField]
-    private GameObject settingsPanel;
+    private SettingsPanelUI settingsPanelUI;
 
+
+    // ========================================================
+    // State
+    // ========================================================
 
     private UIState currentState =
         UIState.Closed;
 
 
+    // ========================================================
+    // Unity
+    // ========================================================
+
     private void Start()
     {
-        // =========================
-        // 게임 시작 상태
-        // =========================
-
+        // 게임 시작 시
+        // 모든 메뉴를 닫고 게임 진행
         SetState(
             UIState.Closed
         );
@@ -80,19 +107,17 @@ public class InGameMenuPresenter : MonoBehaviour
 
     private void Update()
     {
-        // =========================
-        // ESC 입력
-        // =========================
-
         if (Keyboard.current == null)
         {
             return;
         }
 
+
         if (!Keyboard.current.escapeKey.wasPressedThisFrame)
         {
             return;
         }
+
 
         HandleEscape();
     }
@@ -101,7 +126,7 @@ public class InGameMenuPresenter : MonoBehaviour
     private void OnEnable()
     {
         // =========================
-        // HUD 버튼
+        // HUD Button Events
         // =========================
 
         if (hudToggleButton != null)
@@ -129,7 +154,7 @@ public class InGameMenuPresenter : MonoBehaviour
 
 
         // =========================
-        // Menu 내부 버튼
+        // Menu Events
         // =========================
 
         if (menuUI != null)
@@ -146,11 +171,26 @@ public class InGameMenuPresenter : MonoBehaviour
             menuUI.OnLobbyClicked +=
                 GoLobby;
         }
+
+
+        // =========================
+        // Settings Events
+        // =========================
+
+        if (settingsPanelUI != null)
+        {
+            settingsPanelUI.OnCloseClicked +=
+                CloseSettings;
+        }
     }
 
 
     private void OnDisable()
     {
+        // =========================
+        // HUD Button Events
+        // =========================
+
         if (hudToggleButton != null)
         {
             hudToggleButton.onClick.RemoveListener(
@@ -175,6 +215,10 @@ public class InGameMenuPresenter : MonoBehaviour
         }
 
 
+        // =========================
+        // Menu Events
+        // =========================
+
         if (menuUI != null)
         {
             menuUI.OnContinueClicked -=
@@ -189,14 +233,29 @@ public class InGameMenuPresenter : MonoBehaviour
             menuUI.OnLobbyClicked -=
                 GoLobby;
         }
+
+
+        // =========================
+        // Settings Events
+        // =========================
+
+        if (settingsPanelUI != null)
+        {
+            settingsPanelUI.OnCloseClicked -=
+                CloseSettings;
+        }
     }
 
+
+    // ========================================================
+    // HUD
+    // ========================================================
 
     /// <summary>
     /// HUD 열기 버튼.
     ///
-    /// 닫혀있으면 HUD를 열고,
-    /// HUD/Menu가 열려있다면 모두 닫는다.
+    /// Closed -> HUD
+    /// HUD/Menu/Settings -> Closed
     /// </summary>
     private void ToggleHUD()
     {
@@ -217,7 +276,7 @@ public class InGameMenuPresenter : MonoBehaviour
 
 
     /// <summary>
-    /// HUD에서 Menu 버튼을 눌렀을 때.
+    /// HUD 내부 Menu 버튼.
     /// </summary>
     private void OpenMenu()
     {
@@ -228,7 +287,8 @@ public class InGameMenuPresenter : MonoBehaviour
 
 
     /// <summary>
-    /// Continue 또는 HUD 닫기.
+    /// Continue 또는 HUD Close.
+    /// 모든 UI를 닫고 게임을 재개한다.
     /// </summary>
     private void CloseAll()
     {
@@ -238,14 +298,59 @@ public class InGameMenuPresenter : MonoBehaviour
     }
 
 
+    // ========================================================
+    // Settings
+    // ========================================================
+
     /// <summary>
-    /// ESC는 현재 UI 상태에 따라 동작한다.
+    /// Menu의 Settings 버튼.
+    /// </summary>
+    private void OpenSettings()
+    {
+        if (settingsPanelUI == null)
+        {
+            Debug.LogWarning(
+                "[InGameMenuPresenter] " +
+                "SettingsPanelUI가 연결되지 않았습니다."
+            );
+
+            return;
+        }
+
+
+        SetState(
+            UIState.Settings
+        );
+    }
+
+
+    /// <summary>
+    /// Settings의 Close 버튼.
+    ///
+    /// 게임으로 바로 돌아가는 것이 아니라
+    /// 이전 Menu 화면으로 돌아간다.
+    /// </summary>
+    private void CloseSettings()
+    {
+        SetState(
+            UIState.Menu
+        );
+    }
+
+
+    // ========================================================
+    // ESC
+    // ========================================================
+
+    /// <summary>
+    /// 현재 UI 상태에 따라 ESC 동작을 결정한다.
     /// </summary>
     private void HandleEscape()
     {
         switch (currentState)
         {
-            // 아무 UI도 없으면 HUD 열기
+            // 게임 중 ESC
+            // -> HUD 열기
             case UIState.Closed:
 
                 SetState(
@@ -255,7 +360,8 @@ public class InGameMenuPresenter : MonoBehaviour
                 break;
 
 
-            // HUD가 열려있으면 닫기
+            // HUD에서 ESC
+            // -> 게임으로 복귀
             case UIState.HUD:
 
                 SetState(
@@ -265,8 +371,8 @@ public class InGameMenuPresenter : MonoBehaviour
                 break;
 
 
-            // Menu가 열려있으면
-            // Menu와 HUD 모두 닫기
+            // Menu에서 ESC
+            // -> 게임으로 복귀
             case UIState.Menu:
 
                 SetState(
@@ -274,12 +380,28 @@ public class InGameMenuPresenter : MonoBehaviour
                 );
 
                 break;
+
+
+            // Settings에서 ESC
+            // -> Menu로 복귀
+            // 게임은 계속 Pause
+            case UIState.Settings:
+
+                SetState(
+                    UIState.Menu
+                );
+
+                break;
         }
     }
 
 
+    // ========================================================
+    // State
+    // ========================================================
+
     /// <summary>
-    /// UI 상태를 한 곳에서 변경한다.
+    /// 모든 UI 상태 변경은 이 메서드를 통해 처리한다.
     /// </summary>
     private void SetState(
         UIState newState)
@@ -288,105 +410,213 @@ public class InGameMenuPresenter : MonoBehaviour
             newState;
 
 
-        // =========================
-        // Closed
-        // =========================
-
-        if (currentState ==
-            UIState.Closed)
+        switch (currentState)
         {
-            if (hudRoot != null)
-            {
-                hudRoot.SetActive(false);
-            }
+            // =================================================
+            // Closed
+            // =================================================
 
-            if (menuUI != null)
-            {
-                menuUI.Hide();
-            }
+            case UIState.Closed:
 
-            if (settingsPanel != null)
-            {
-                settingsPanel.SetActive(false);
-            }
-
-            if (GameManager.Instance != null)
-            {
-                GameManager.Instance.Resume();
-            }
-
-            return;
-        }
+                if (menuUI != null)
+                {
+                    menuUI.Hide();
+                }
 
 
-        // =========================
-        // HUD
-        // =========================
-
-        if (currentState ==
-            UIState.HUD)
-        {
-            if (hudRoot != null)
-            {
-                hudRoot.SetActive(true);
-            }
-
-            if (menuUI != null)
-            {
-                menuUI.Hide();
-            }
-
-            if (settingsPanel != null)
-            {
-                settingsPanel.SetActive(false);
-            }
-
-            if (GameManager.Instance != null)
-            {
-                GameManager.Instance.Pause();
-            }
-
-            return;
-        }
+                if (settingsPanelUI != null)
+                {
+                    settingsPanelUI.Hide();
+                }
 
 
-        // =========================
-        // Menu
-        // =========================
+                if (hudRoot != null)
+                {
+                    hudRoot.SetActive(false);
+                }
 
-        if (currentState ==
-            UIState.Menu)
-        {
-            // HUD는 뒤에 계속 표시
-            if (hudRoot != null)
-            {
-                hudRoot.SetActive(true);
-            }
 
-            if (menuUI != null)
-            {
-                menuUI.Show();
-            }
+                // 다음 HUD 오픈을 위해 복구
+                if (menuButton != null)
+                {
+                    menuButton.gameObject.SetActive(
+                        true
+                    );
+                }
 
-            if (GameManager.Instance != null)
-            {
-                GameManager.Instance.Pause();
-            }
+
+                if (hudCloseButton != null)
+                {
+                    hudCloseButton.gameObject.SetActive(
+                        true
+                    );
+                }
+
+
+                if (GameManager.Instance != null)
+                {
+                    GameManager.Instance.Resume();
+                }
+
+                break;
+
+
+            // =================================================
+            // HUD
+            // =================================================
+
+            case UIState.HUD:
+
+                if (hudRoot != null)
+                {
+                    hudRoot.SetActive(true);
+                }
+
+
+                if (menuUI != null)
+                {
+                    menuUI.Hide();
+                }
+
+
+                if (settingsPanelUI != null)
+                {
+                    settingsPanelUI.Hide();
+                }
+
+
+                if (menuButton != null)
+                {
+                    menuButton.gameObject.SetActive(
+                        true
+                    );
+                }
+
+
+                if (hudCloseButton != null)
+                {
+                    hudCloseButton.gameObject.SetActive(
+                        true
+                    );
+                }
+
+
+                if (GameManager.Instance != null)
+                {
+                    GameManager.Instance.Pause();
+                }
+
+                break;
+
+
+            // =================================================
+            // Menu
+            // =================================================
+
+            case UIState.Menu:
+
+                if (hudRoot != null)
+                {
+                    hudRoot.SetActive(true);
+                }
+
+
+                // HUD의 조작 버튼은
+                // Menu와 겹치지 않도록 숨긴다.
+                if (menuButton != null)
+                {
+                    menuButton.gameObject.SetActive(
+                        false
+                    );
+                }
+
+
+                if (hudCloseButton != null)
+                {
+                    hudCloseButton.gameObject.SetActive(
+                        false
+                    );
+                }
+
+
+                if (settingsPanelUI != null)
+                {
+                    settingsPanelUI.Hide();
+                }
+
+
+                if (menuUI != null)
+                {
+                    menuUI.Show();
+                }
+
+
+                if (GameManager.Instance != null)
+                {
+                    GameManager.Instance.Pause();
+                }
+
+                break;
+
+
+            // =================================================
+            // Settings
+            // =================================================
+
+            case UIState.Settings:
+
+                // HUD 자체는 유지
+                if (hudRoot != null)
+                {
+                    hudRoot.SetActive(true);
+                }
+
+
+                // HUD 조작 버튼 숨기기
+                if (menuButton != null)
+                {
+                    menuButton.gameObject.SetActive(
+                        false
+                    );
+                }
+
+
+                if (hudCloseButton != null)
+                {
+                    hudCloseButton.gameObject.SetActive(
+                        false
+                    );
+                }
+
+
+                // Menu는 숨기고
+                if (menuUI != null)
+                {
+                    menuUI.Hide();
+                }
+
+
+                // Settings 표시
+                if (settingsPanelUI != null)
+                {
+                    settingsPanelUI.Show();
+                }
+
+
+                // Settings에서도 계속 Pause
+                if (GameManager.Instance != null)
+                {
+                    GameManager.Instance.Pause();
+                }
+
+                break;
         }
     }
 
 
-    private void OpenSettings()
-    {
-        if (settingsPanel == null)
-        {
-            return;
-        }
-
-        // 이후 설정창 단계에서 조금 더 다듬을 예정
-        settingsPanel.SetActive(true);
-    }
-
+    // ========================================================
+    // Game Flow
+    // ========================================================
 
     private void Retry()
     {

@@ -4,21 +4,21 @@ using System;
 public class PlayerData
 {
     // =========================
-    // ��ȭ
+    // 기본 골드 
     // =========================
 
     public int gold = 1000;
 
 
     // =========================
-    // ������ ��Ų
+    // 기본 스킨
     // =========================
 
     public int selectedSkin = 0;
 
 
     // =========================
-    // ���̵�
+    // 난이도
     // =========================
 
     // 0 = Easy
@@ -29,18 +29,15 @@ public class PlayerData
 
 
     // =========================
-    // �÷��̾� ��ȭ
+    // 업그레이드
     // =========================
 
-    // ���ݷ�
+   
     public int attackLevel = 0;
 
-    // �̵��ӵ�
     public int speedLevel = 0;
 
-    // ���ݼӵ�
     public int attackSpeedLevel = 0;
 
-    // �������� Ŭ���� ��� ȹ�淮
     public int goldRewardLevel = 0;
 }

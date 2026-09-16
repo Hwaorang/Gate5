@@ -50,6 +50,7 @@ GameObject:
   - component: {fileID: 6172481598011547863}
   - component: {fileID: 6332842898400522407}
   - component: {fileID: 908975879532057778}
+  - component: {fileID: 4116298896519374539}
   m_Layer: 7
   m_Name: PlayerRoot
   m_TagString: Untagged
@@ -86,6 +87,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   playerStats: {fileID: 7110261656882566274}
+  playAreaConfig: {fileID: 11400000, guid: 14450f0ae9ed86b45b021adb75e73ff8, type: 2}
   xLimit: 4
 --- !u!114 &1788119257003499149
 MonoBehaviour:
@@ -106,9 +108,6 @@ MonoBehaviour:
   fireLine: {fileID: 1401601078157791423}
   bulletPool: {fileID: 0}
   bulletFx: {fileID: 0}
-  shotsPerFrame: 20
-  maxVisualShooters: 40
-  visualFrontRows: 3
 --- !u!114 &5340773646937143775
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -252,3 +251,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SquadAttackResolver
   squadManager: {fileID: 1788119257003499149}
   soldiersPerDamageBatch: 5
+--- !u!114 &4116298896519374539
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3858501899684243877}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8bd480aab68e10c41a39e8deb8521786, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SquadGateReceiver
+  squadManager: {fileID: 0}
