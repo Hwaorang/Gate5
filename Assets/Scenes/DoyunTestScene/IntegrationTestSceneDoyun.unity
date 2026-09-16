@@ -182,7 +182,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc9e68308877ddd42930d45e63fe4811, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
-  lobbySceneName: LobbyScene
+  lobbySceneName: JMJ
 --- !u!1 &451078626
 GameObject:
   m_ObjectHideFlags: 0
