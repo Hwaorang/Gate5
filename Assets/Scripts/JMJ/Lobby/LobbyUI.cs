@@ -24,6 +24,6 @@ public class LobbyUI : MonoBehaviour
 
         int gold =SaveManager.Instance.Data.gold;
 
-        goldText.SetText("Gold{0}",gold);
+        goldText.SetText("Gold : {0}",gold);
     }
 }
