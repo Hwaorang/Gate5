@@ -717,6 +717,10 @@ PrefabInstance:
       propertyPath: field
       value: 
       objectReference: {fileID: 775004120}
+    - target: {fileID: 1749174399589014393, guid: d4126ba383bcd9b4389a9a99e1dba40f, type: 3}
+      propertyPath: 'objList.Array.data[0]'
+      value: 
+      objectReference: {fileID: 4022943791312532874, guid: b100d96f7e94b8041bc4d7489943acf7, type: 3}
     - target: {fileID: 2638857772232012298, guid: d4126ba383bcd9b4389a9a99e1dba40f, type: 3}
       propertyPath: m_Name
       value: MonSpawner
