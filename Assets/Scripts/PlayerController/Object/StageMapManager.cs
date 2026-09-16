@@ -50,6 +50,30 @@ public class StageMapManager : MonoBehaviour
     [SerializeField]
     private int behindChunkCount = 1;
 
+    [Header("Stage Size")]
+
+    [SerializeField]
+    [Min(1f)]
+    private float roadWidth = 8f;
+
+    [Header("Play Area")]
+
+    [SerializeField]
+    private PlayAreaConfig playAreaConfig;
+
+
+    // 외부 시스템에서 읽기 전용으로 사용
+    public float RoadWidth =>
+        roadWidth;
+
+
+    public float MoveSpeed =>
+        moveSpeed;
+
+
+    public Vector3 MoveDirection =>
+        Vector3.back;
+
     private void Start()
     {
         CreateChunks();
@@ -130,7 +154,6 @@ public class StageMapManager : MonoBehaviour
                     Quaternion.identity,
                     transform
                 );
-
 
             activeChunks.Add(chunk);
         }
@@ -246,5 +269,52 @@ public class StageMapManager : MonoBehaviour
 
         chunk.transform.position =
             position;
+    }
+
+    /// <summary>
+    /// 현재 Stage의 실제 도로 중심과 폭을 반환한다.
+    ///
+    /// StageChunk에 배치된
+    /// RoadLeftEdge / RoadRightEdge가 기준이다.
+    /// </summary>
+    public bool TryGetRoadArea(
+        out float centerX,
+        out float width)
+    {
+        centerX = 0f;
+        width = 0f;
+
+
+        if (activeChunks == null ||
+            activeChunks.Count == 0)
+        {
+            return false;
+        }
+
+
+        for (int i = 0;
+             i < activeChunks.Count;
+             i++)
+        {
+            StageChunk chunk =
+                activeChunks[i];
+
+
+            if (chunk == null)
+            {
+                continue;
+            }
+
+
+            if (chunk.TryGetRoadArea(
+                    out centerX,
+                    out width))
+            {
+                return true;
+            }
+        }
+
+
+        return false;
     }
 }
