@@ -4,6 +4,8 @@ public enum PlayerSfxType
     UpgradeSelect,
     LevelUp,
     PlayerShoot,
-
-    GameOver
+    GameOver,
+    // Game Start Countdown
+    CountdownTick,
+    CountdownGo
 }
