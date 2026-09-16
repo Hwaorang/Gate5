@@ -99,11 +99,7 @@ public class InGameMenuPresenter : MonoBehaviour
 
     private void Start()
     {
-        // 게임 시작 시
-        // 모든 메뉴를 닫고 게임 진행
-        SetState(
-            UIState.Closed
-        );
+        InitializeClosedState();
     }
 
 
@@ -140,6 +136,62 @@ public class InGameMenuPresenter : MonoBehaviour
 
 
         HandleEscape();
+    }
+
+    /// <summary>
+    /// Scene 시작 시 UI의 초기 모습만 설정한다.
+    ///
+    /// 여기서는 GameManager.Resume()을 호출하지 않는다.
+    /// 실제 게임 시작 여부는 다른 Game Flow 시스템이 담당한다.
+    /// </summary>
+    private void InitializeClosedState()
+    {
+        currentState =
+            UIState.Closed;
+
+
+        if (menuUI != null)
+        {
+            menuUI.Hide();
+        }
+
+
+        if (settingsPanelUI != null)
+        {
+            settingsPanelUI.Hide();
+        }
+
+
+        if (hudRoot != null)
+        {
+            hudRoot.SetActive(
+                false
+            );
+        }
+
+
+        if (hudToggleButton != null)
+        {
+            hudToggleButton.gameObject.SetActive(
+                true
+            );
+        }
+
+
+        if (menuButton != null)
+        {
+            menuButton.gameObject.SetActive(
+                true
+            );
+        }
+
+
+        if (hudCloseButton != null)
+        {
+            hudCloseButton.gameObject.SetActive(
+                true
+            );
+        }
     }
 
     // ========================================================

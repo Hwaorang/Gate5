@@ -442,6 +442,69 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e2785bb6211887e4cbf8b74697f40047, type: 3}
+--- !u!1 &913991088
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 913991090}
+  - component: {fileID: 913991089}
+  - component: {fileID: 913991091}
+  m_Layer: 0
+  m_Name: GameFlow
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &913991089
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 913991088}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0af92037e73d2434c97b32f4a1cb4499, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameStartCountdownController
+  countdownSeconds: 3
+  goDisplaySeconds: 0.6
+  countdownUI: {fileID: 0}
+--- !u!4 &913991090
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 913991088}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 464.26715, y: -0.00001, z: 446.16858}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &913991091
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 913991088}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a18e2738f233ab4189a82eb16656702, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameStartCountdownSound
+  countdownController: {fileID: 0}
+  tickSfxType: 5
+  goSfxType: 6
 --- !u!1 &937885143
 GameObject:
   m_ObjectHideFlags: 0
@@ -1841,7 +1904,15 @@ MonoBehaviour:
     volume: 0.4
     minInterval: 0.08
   - type: 4
-    clip: {fileID: 8300000, guid: d6bd8c83afafb9b4bbdd09d15c0d568d, type: 3}
+    clip: {fileID: 8300000, guid: 4ede6224ae4c3f44f8f26e58bd2b10ca, type: 3}
+    volume: 0.4
+    minInterval: 0
+  - type: 5
+    clip: {fileID: 8300000, guid: 524d7c1b8e8857e4a94d0696c61366d6, type: 3}
+    volume: 0.4
+    minInterval: 0
+  - type: 6
+    clip: {fileID: 8300000, guid: 342a245b76e3069459eb77e9a4e6e60c, type: 3}
     volume: 0.4
     minInterval: 0
 --- !u!4 &1786439784
@@ -1919,3 +1990,4 @@ SceneRoots:
   - {fileID: 1786439784}
   - {fileID: 2006753742}
   - {fileID: 1652484647}
+  - {fileID: 913991090}
