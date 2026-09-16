@@ -362,78 +362,114 @@ public class SoldierAttack : MonoBehaviour
                 direction
             );
 
-        if (Physics.Raycast(
-            ray,
-            out RaycastHit hit,
-            attackRange,
-            enemyLayer,
-            QueryTriggerInteraction.Collide))
+        //if (Physics.Raycast(
+        //    ray,
+        //    out RaycastHit hit,
+        //    attackRange,
+        //    enemyLayer,
+        //    QueryTriggerInteraction.Collide))
+        //{
+
+        //    hitDistance =
+        //        hit.distance;
+
+
+        //    // =========================
+        //    // EnemyHealth
+        //    // =========================
+
+        //    EnemyHealth enemyHealth =
+        //        hit.collider
+        //            .GetComponentInParent<EnemyHealth>();
+
+        //    if (enemyHealth != null)
+        //    {
+        //        enemyHealth.TakeDamage(
+        //            damage
+        //        );
+        //    }
+        //    else
+        //    {
+        //        // =========================
+        //        // Team Enemy - Mon_Ctrl
+        //        // =========================
+        //        Debug.Log("머리가 깨질 것 같다");
+        //        Mon_Ctrl monCtrl =
+        //            hit.collider
+        //                .GetComponentInParent<Mon_Ctrl>();
+
+        //        if (monCtrl != null)
+        //        {
+        //            monCtrl.TakeDamage(
+        //                damage
+        //            );
+        //        }
+        //    }
+        //    Debug.Log("머리가 깨질 것 같다");
+
+        //    // =========================
+        //    // Impact FX
+        //    // =========================
+        //    //
+        //    // Batch마다 Impact를 생성하면
+        //    // 같은 위치에서 FX가 수십 번 겹칠 수 있으므로
+        //    // 대표 Batch에서만 표시한다.
+
+        //    if (playImpact &&
+        //        bulletFx != null)
+        //    {
+        //        bulletFx.PlayImpact(
+        //            hit.point +
+        //            hit.normal * 0.1f,
+        //            hit.normal
+        //        );
+        //    }
+
+
+        //    return true;
+        //}
+
+        Debug.DrawRay(
+    origin,
+    direction * attackRange,
+    Color.red,
+    1f
+);
+        if (Physics.Raycast(origin, direction,out RaycastHit hit,attackRange,enemyLayer))
         {
+            Debug.Log(
+                $"[SoldierAttack] Raycast Hit : {hit.collider.name}"
+            );
 
-            hitDistance =
-                hit.distance;
+            Mon_Ctrl monCtrl =
+                hit.collider.GetComponentInParent<Mon_Ctrl>();
 
-
-            // =========================
-            // EnemyHealth
-            // =========================
-
-            EnemyHealth enemyHealth =
-                hit.collider
-                    .GetComponentInParent<EnemyHealth>();
-
-            if (enemyHealth != null)
+            if (monCtrl == null)
             {
-                enemyHealth.TakeDamage(
-                    damage
+                Debug.LogWarning(
+                    $"[SoldierAttack] " +
+                    $"{hit.collider.name}을 맞췄지만 " +
+                    $"부모에서 Mon_Ctrl을 찾지 못했습니다."
                 );
-            }
-            else
-            {
-                // =========================
-                // Team Enemy - Mon_Ctrl
-                // =========================
 
-                Mon_Ctrl monCtrl =
-                    hit.collider
-                        .GetComponentInParent<Mon_Ctrl>();
-
-                if (monCtrl != null)
-                {
-                    monCtrl.TakeDamage(
-                        damage
-                    );
-                }
+                hitDistance = hit.distance;
+                return false;
             }
 
+            Debug.Log(
+                $"[SoldierAttack] Mon_Ctrl 발견 : {monCtrl.name}"
+            );
 
-            // =========================
-            // Impact FX
-            // =========================
-            //
-            // Batch마다 Impact를 생성하면
-            // 같은 위치에서 FX가 수십 번 겹칠 수 있으므로
-            // 대표 Batch에서만 표시한다.
-
-            if (playImpact &&
-                bulletFx != null)
-            {
-                bulletFx.PlayImpact(
-                    hit.point +
-                    hit.normal * 0.1f,
-                    hit.normal
-                );
-            }
-
-
-            return true;
+            monCtrl.TakeDamage(damage);
+        }
+        else
+        {
+            Debug.Log(
+                "[SoldierAttack] Raycast가 Enemy를 맞추지 못했습니다."
+            );
         }
 
-
-        // Enemy를 맞히지 못한 경우
-        hitDistance =
-            attackRange;
-
+        hitDistance = attackRange;
         return false;
     }
 
