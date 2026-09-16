@@ -2,19 +2,17 @@ using UnityEngine;
 
 public class GamePlayer : MonoBehaviour
 {
-    [Header("±âº» ´É·ÂÄ¡")]
+    [Header("ê¸°ë³¸")]
     [SerializeField] private int baseAttack = 10;
     [SerializeField] private float baseSpeed = 5f;
-
-    [Header("±âº» °ø°İ¼Óµµ")]
     [SerializeField] private float baseAttackSpeed = 1f;
 
-    [Header("ÇöÀç ´É·ÂÄ¡")]
+    [Header("ì •ë³´")]
     [SerializeField] private int attack;
     [SerializeField] private float speed;
     [SerializeField] private float attackSpeed;
 
-    [Header("½ºÅ²")]
+    [Header("ìŠ¤í‚¨")]
     [SerializeField] private GameObject[] skins;
 
 
@@ -36,28 +34,28 @@ public class GamePlayer : MonoBehaviour
             SaveManager.Instance.Data;
 
 
-        // °ø°İ·Â
+        // ê³µê²©
         attack =
             baseAttack +
             data.attackLevel * 5;
 
 
-        // ÀÌµ¿¼Óµµ
+        // ì´ë™ ì†ë„
         speed =
             baseSpeed +
             data.speedLevel * 0.5f;
 
 
-        // °ø°İ¼Óµµ
+        // ê³µê²© ì†ë„
         attackSpeed =
             baseAttackSpeed +
             data.attackSpeedLevel * 0.1f;
 
 
         Debug.Log(
-            "°ø°İ·Â : " + attack +
-            " / ÀÌµ¿¼Óµµ : " + speed +
-            " / °ø°İ¼Óµµ : " + attackSpeed
+            "ê³µê²© : " + attack +
+            " /ì´ë™ ì†ë„ : " + speed +
+            " / ê³µê²© ì†ë„ : " + attackSpeed
         );
     }
 
