@@ -123,6 +123,10 @@ public class GameManager : MonoBehaviour
             AudioManager_PlayerController.Instance.StopBgm();
         }
 
+        // 게임 플레이 중 Lobby로 돌아가는 것임을 기록
+        LobbyNavigationContext
+            .SetReturnFromGame();
+
 
         // =========================
         // Lobby Scene 이동
