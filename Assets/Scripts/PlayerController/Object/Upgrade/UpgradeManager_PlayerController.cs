@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 using TMPro;
 
@@ -33,6 +34,22 @@ public class UpgradeManager_PlayerController : MonoBehaviour
 
     [SerializeField] private TMP_Text upgradeTitleText;
 
+    //카드에 애니매이션 추가
+    [SerializeField]
+    private UpgradeCardSequenceAnimator cardSequenceAnimator;
+
+    //강화패널애니매이션
+    [SerializeField]
+    private UIPanelTransition upgradePanelTransition;
+
+    private bool isClosingUpgradePanel;
+
+    private readonly Dictionary
+    <UpgradeData, UpgradeButton>
+    upgradeButtonMap =
+        new Dictionary
+            <UpgradeData, UpgradeButton>();
+
     [Header("Upgrade Data")]
 
     // 게임에서 사용할 전체 강화 데이터 목록
@@ -57,7 +74,6 @@ public class UpgradeManager_PlayerController : MonoBehaviour
 
     // EXP 레벨업 상태를 완료 처리하기 위한 참조
     [SerializeField] private PlayerExperience playerExperience;
-
 
     // =========================
     // 강화 진행 상태
@@ -214,11 +230,32 @@ public class UpgradeManager_PlayerController : MonoBehaviour
         // 현재 선택 가능한 강화 버튼 생성
         CreateUpgradeButtons();
 
-        // 강화 패널 표시
-        upgradePanel.SetActive(true);
 
-        // 강화 선택 중에는 게임 진행을 멈춘다.
+        // 강화 선택 중에는 게임 진행 정지
         Time.timeScale = 0f;
+
+
+        // 강화 패널 전체 등장
+        if (upgradePanelTransition != null)
+        {
+            upgradePanelTransition.Show();
+        }
+        else
+        {
+            // Transition이 연결되지 않았을 때 fallback
+            upgradePanel.SetActive(
+                true
+            );
+        }
+
+
+        // 강화 카드 순차 등장
+        if (cardSequenceAnimator != null)
+        {
+            cardSequenceAnimator.Play(
+                createdButtons
+            );
+        }
     }
 
 
@@ -241,6 +278,7 @@ public class UpgradeManager_PlayerController : MonoBehaviour
         }
 
         createdButtons.Clear();
+        upgradeButtonMap.Clear();
     }
 
 
@@ -278,6 +316,11 @@ public class UpgradeManager_PlayerController : MonoBehaviour
     public void SelectUpgrade(
         UpgradeData data)
     {
+        if (isClosingUpgradePanel)
+        {
+            return;
+        }
+
         if (data == null)
         {
             return;
@@ -327,6 +370,19 @@ public class UpgradeManager_PlayerController : MonoBehaviour
             return;
         }
 
+        // 여기부터는 정상 선택 확정
+        // 중복 클릭 방지
+        isClosingUpgradePanel = true;
+
+        // 어떤 카드가 선택되었는지 찾는다.
+        UpgradeButton selectedButton =
+            null;
+
+        upgradeButtonMap.TryGetValue(
+            data,
+            out selectedButton
+        );
+
 
         // 실제 강화 적용
         strategy.Apply(
@@ -340,37 +396,95 @@ public class UpgradeManager_PlayerController : MonoBehaviour
         );
 
 
-        // EXP 시스템에
-        // 이번 레벨업 처리가 끝났음을 알려준다.
         if (playerExperience != null)
         {
             playerExperience.CompleteLevelUp();
         }
 
 
-        // 강화 선택 완료 후 게임 재개
-        CloseUpgradePanel();
-
-        // 남은 EXP가 다음 레벨 조건까지 충족했다면
-        // 다음 강화창을 다시 연다.
-        if (playerExperience != null)
-        {
-            playerExperience.CheckPendingLevelUp();
-        }
+        // 닫기 애니메이션이 끝난 뒤
+        // 게임 재개 + 다음 레벨업 확인
+        StartCoroutine(
+            CloseUpgradePanelRoutine(
+                selectedButton
+            )
+        );
     }
 
 
     /// <summary>
-    /// 강화 패널을 닫고 게임 진행을 다시 시작한다.
+    /// 강화 선택 후 패널 닫기 애니메이션을 재생한다.
+    ///
+    /// 애니메이션이 끝난 뒤
+    /// 게임을 재개하고 남은 EXP를 검사한다.
     /// </summary>
-    private void CloseUpgradePanel()
+    private IEnumerator CloseUpgradePanelRoutine(
+    UpgradeButton selectedButton)
     {
-        if (upgradePanel != null)
+        // ========================================================
+        // 1. 카드 선택 피드백
+        // ========================================================
+
+        if (cardSequenceAnimator != null)
         {
-            upgradePanel.SetActive(false);
+            yield return
+                cardSequenceAnimator.PlaySelection(
+                    createdButtons,
+                    selectedButton
+                );
         }
 
+
+        // 아주 짧게 결과를 보여준다.
+        yield return
+            new WaitForSecondsRealtime(
+                0.05f
+            );
+
+
+        // ========================================================
+        // 2. Panel Close Animation
+        // ========================================================
+
+        if (upgradePanelTransition != null)
+        {
+            upgradePanelTransition.Hide();
+
+
+            yield return
+                new WaitForSecondsRealtime(
+                    upgradePanelTransition.Duration
+                );
+        }
+        else
+        {
+            if (upgradePanel != null)
+            {
+                upgradePanel.SetActive(
+                    false
+                );
+            }
+        }
+
+
+        // ========================================================
+        // 3. Game Resume
+        // ========================================================
+
         Time.timeScale = 1f;
+
+
+        isClosingUpgradePanel = false;
+
+
+        // ========================================================
+        // 4. Pending Level Up
+        // ========================================================
+
+        if (playerExperience != null)
+        {
+            playerExperience.CheckPendingLevelUp();
+        }
     }
 
 
@@ -428,6 +542,8 @@ public class UpgradeManager_PlayerController : MonoBehaviour
             createdButtons.Add(
                 button
             );
+
+            upgradeButtonMap[data] = button;
         }
     }
 

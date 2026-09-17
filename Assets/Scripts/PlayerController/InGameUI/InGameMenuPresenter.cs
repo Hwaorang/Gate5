@@ -62,6 +62,9 @@ public class InGameMenuPresenter : MonoBehaviour
     [SerializeField]
     private Button menuButton;
 
+    [SerializeField]
+    private UIPanelTransition hudTransition;
+
 
     // ========================================================
     // Menu
@@ -96,6 +99,16 @@ public class InGameMenuPresenter : MonoBehaviour
     // ========================================================
     // Unity
     // ========================================================
+
+    private void Awake()
+    {
+        if (hudTransition == null &&
+            hudRoot != null)
+        {
+            hudTransition =
+                hudRoot.GetComponent<UIPanelTransition>();
+        }
+    }
 
     private void Start()
     {
@@ -141,6 +154,9 @@ public class InGameMenuPresenter : MonoBehaviour
     /// <summary>
     /// Scene 시작 시 UI의 초기 모습만 설정한다.
     ///
+    /// 시작할 때는 닫기 애니메이션을 재생하지 않고
+    /// 모든 패널을 즉시 숨긴 상태로 만든다.
+    ///
     /// 여기서는 GameManager.Resume()을 호출하지 않는다.
     /// 실제 게임 시작 여부는 다른 Game Flow 시스템이 담당한다.
     /// </summary>
@@ -150,25 +166,45 @@ public class InGameMenuPresenter : MonoBehaviour
             UIState.Closed;
 
 
+        // =========================
+        // Menu
+        // =========================
+
         if (menuUI != null)
         {
-            menuUI.Hide();
+            menuUI.HideImmediate();
         }
 
+
+        // =========================
+        // Settings
+        // =========================
 
         if (settingsPanelUI != null)
         {
-            settingsPanelUI.Hide();
+            settingsPanelUI.HideImmediate();
         }
 
 
-        if (hudRoot != null)
+        // =========================
+        // HUD
+        // =========================
+
+        if (hudTransition != null)
+        {
+            hudTransition.HideImmediate();
+        }
+        else if (hudRoot != null)
         {
             hudRoot.SetActive(
                 false
             );
         }
 
+
+        // =========================
+        // HUD Toggle
+        // =========================
 
         if (hudToggleButton != null)
         {
@@ -177,6 +213,10 @@ public class InGameMenuPresenter : MonoBehaviour
             );
         }
 
+
+        // =========================
+        // HUD Buttons
+        // =========================
 
         if (menuButton != null)
         {
@@ -621,9 +661,15 @@ public class InGameMenuPresenter : MonoBehaviour
                 }
 
 
-                if (hudRoot != null)
+                if (hudTransition != null)
                 {
-                    hudRoot.SetActive(false);
+                    hudTransition.Hide();
+                }
+                else if (hudRoot != null)
+                {
+                    hudRoot.SetActive(
+                        false
+                    );
                 }
 
 
@@ -658,9 +704,15 @@ public class InGameMenuPresenter : MonoBehaviour
 
             case UIState.HUD:
 
-                if (hudRoot != null)
+                if (hudTransition != null)
                 {
-                    hudRoot.SetActive(true);
+                    hudTransition.Show();
+                }
+                else if (hudRoot != null)
+                {
+                    hudRoot.SetActive(
+                        true
+                    );
                 }
 
 
