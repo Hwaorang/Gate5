@@ -478,7 +478,7 @@ public class SquadManager : MonoBehaviour
     /// 마지막 병사 한 명을 사망 처리한다.
     /// DamageLine 등에서 사용한다.
     /// </summary>
-    public void RemoveOneSoldier()
+    public void RemoveOneSoldier(int _damage)
     {
         if (soldiers.Count <= 0)
         {
@@ -487,7 +487,7 @@ public class SquadManager : MonoBehaviour
 
         GameObject soldierObject =
             soldiers[
-                soldiers.Count - 1
+                soldiers.Count - _damage
             ];
 
         if (soldierObject == null)

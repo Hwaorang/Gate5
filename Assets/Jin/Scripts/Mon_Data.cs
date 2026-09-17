@@ -6,7 +6,7 @@ public class Mon_Data : ScriptableObject
     public string monName;
 
     public float maxHp;
-    public float damage;
+    public int damage;
     public float walkSpeed;
     public int exp;
 }
