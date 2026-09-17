@@ -164,7 +164,8 @@ public class DamageLine : MonoBehaviour
             return;
         }
 
-        squadManager.RemoveOneSoldier();
+        
+        squadManager.RemoveOneSoldier(monCtrl.Damage);
     }
 
     private void LateUpdate()
