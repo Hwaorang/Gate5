@@ -24,6 +24,10 @@ public class GameManager_KHM : MonoBehaviour
     [Header("Enemy HP Scaling")]
     [SerializeField] private float hpIncreasePerMinute = 0.2f;
 
+    [Header("Gold Reward")]
+    [SerializeField] private float goldPerSecond = 2f;
+    [SerializeField] private float goldMultiplierIncreasePerMinute = 0.1f;
+
     private void Awake()
     {
         // Singleton
@@ -74,12 +78,38 @@ public class GameManager_KHM : MonoBehaviour
             1f + minutes * hpIncreasePerMinute;
     }
 
+    // 생존 시간에 따른 골드 계산
+    private int CalculateGoldReward()
+    {
+        // 1초당 2골드
+        float baseGold = GameTime * goldPerSecond;
+
+        // 60초마다 배율 +0.1
+        int minutes = Mathf.FloorToInt(GameTime / 60f);
+
+        float goldMultiplier =
+            1f + minutes * goldMultiplierIncreasePerMinute;
+
+        // 최종 골드
+        int finalGold =
+            Mathf.FloorToInt(baseGold * goldMultiplier);
+
+        return finalGold;
+    }
+
     // 게임 오버
     public void GameOver()
     {
         CurrentState = GameState.GameOver;
 
-        Debug.Log("게임 오버");
+        int rewardGold = CalculateGoldReward();
+
+        // 로비의 실제 보유 골드에 지급
+        SaveManager.Instance.AddGold(rewardGold);
+
+        Debug.Log($"게임 오버!");
+        Debug.Log($"생존 시간 : {GameTime:F1}초");
+        Debug.Log($"획득 골드 : {rewardGold}G");
     }
 
     // 게임 일시정지
