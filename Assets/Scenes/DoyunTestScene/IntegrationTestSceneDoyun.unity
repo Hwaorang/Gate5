@@ -459,6 +459,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5095719059579591487, guid: e2785bb6211887e4cbf8b74697f40047, type: 3}
+      propertyPath: poolSize
+      value: 128
+      objectReference: {fileID: 0}
+    - target: {fileID: 5095719059579591487, guid: e2785bb6211887e4cbf8b74697f40047, type: 3}
+      propertyPath: tracerSpeed
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 5095719059579591487, guid: e2785bb6211887e4cbf8b74697f40047, type: 3}
+      propertyPath: visualBulletCount
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6409438274662702203, guid: e2785bb6211887e4cbf8b74697f40047, type: 3}
       propertyPath: m_TagString
       value: Goal
@@ -621,38 +633,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -36, y: -36}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!1 &1029624599 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6409438274662702203, guid: e2785bb6211887e4cbf8b74697f40047, type: 3}
-  m_PrefabInstance: {fileID: 814075279}
-  m_PrefabAsset: {fileID: 0}
---- !u!54 &1029624603
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1029624599}
-  serializedVersion: 5
-  m_Mass: 1
-  m_LinearDamping: 0
-  m_AngularDamping: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 0
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 14
-  m_CollisionDetection: 0
 --- !u!1 &1064678627
 GameObject:
   m_ObjectHideFlags: 0

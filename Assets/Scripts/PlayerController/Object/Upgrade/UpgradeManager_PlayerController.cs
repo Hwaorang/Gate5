@@ -42,6 +42,11 @@ public class UpgradeManager_PlayerController : MonoBehaviour
     [SerializeField]
     private UIPanelTransition upgradePanelTransition;
 
+    [Header("Menu Reference")]
+
+    [SerializeField]
+    private InGameMenuPresenter inGameMenuPresenter;
+
     private bool isClosingUpgradePanel;
 
     private readonly Dictionary
@@ -102,9 +107,24 @@ public class UpgradeManager_PlayerController : MonoBehaviour
     public event System.Action<UpgradeType, int>
     OnUpgradeApplied;
 
+    /// <summary>
+    /// 현재 강화 선택창이 열려 있는지.
+    /// </summary>
+    public bool IsUpgradePanelOpen =>
+        upgradePanel != null &&
+        upgradePanel.activeInHierarchy;
+
     private void Awake()
     {
         CreateStrategyFactory();
+
+        if (inGameMenuPresenter == null)
+        {
+            inGameMenuPresenter =
+                GetComponentInParent<GameUIRoot>()
+                    ?.GetComponentInChildren
+                        <InGameMenuPresenter>(true);
+        }
     }
 
     /// <summary>
