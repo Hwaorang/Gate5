@@ -2,88 +2,116 @@ using UnityEngine;
 
 public class LobbyUIManager : MonoBehaviour
 {
-    [Header("���׷��̵� â")]
+    // =====================================================
+    // 패널
+    // =====================================================
+
+    [Header("패널")]
     [SerializeField] private GameObject upgradePanel;
-
-    [Header("��Ų â")]
     [SerializeField] private GameObject skinPanel;
-
-    [Header("���̵� â")]
     [SerializeField] private GameObject difficultyPanel;
 
 
     // =====================================================
-    // ���׷��̵� â ����
+    // 실제 로비 캐릭터
+    // =====================================================
+
+    [Header("실제 로비 캐릭터")]
+    [SerializeField] private GameObject lobbyCharacter;
+
+
+    // =====================================================
+    // 강화 패널 열기
     // =====================================================
 
     public void OpenUpgradePanel()
     {
-        // �ٸ� â �ݱ�
+        // 다른 패널 닫기
         skinPanel.SetActive(false);
         difficultyPanel.SetActive(false);
 
-        // ���׷��̵� â ����
+        // 강화 패널 열기
         upgradePanel.SetActive(true);
+
+        // 실제 로비 캐릭터 보이기
+        lobbyCharacter.SetActive(true);
     }
 
 
     // =====================================================
-    // ���׷��̵� â �ݱ�
+    // 강화 패널 닫기
     // =====================================================
 
     public void CloseUpgradePanel()
     {
+        // 강화 패널 닫기
         upgradePanel.SetActive(false);
+
+        // 실제 로비 캐릭터 보이기
+        lobbyCharacter.SetActive(true);
     }
 
 
     // =====================================================
-    // ��Ų â ����
+    // 스킨 패널 열기
     // =====================================================
 
     public void OpenSkinPanel()
     {
-        // �ٸ� â �ݱ�
+        // 다른 패널 닫기
         upgradePanel.SetActive(false);
         difficultyPanel.SetActive(false);
 
-        // ��Ų â ����
+        // 스킨 패널 열기
         skinPanel.SetActive(true);
+
+        // 실제 로비 캐릭터 숨기기
+        lobbyCharacter.SetActive(false);
     }
 
 
     // =====================================================
-    // ��Ų â �ݱ�
+    // 스킨 패널 닫기
     // =====================================================
 
     public void CloseSkinPanel()
     {
+        // 스킨 패널 닫기
         skinPanel.SetActive(false);
+
+        // 실제 로비 캐릭터 다시 보이기
+        lobbyCharacter.SetActive(true);
     }
 
 
     // =====================================================
-    // ���̵� â ����
+    // 난이도 패널 열기
     // =====================================================
 
     public void OpenDifficultyPanel()
     {
-        // �ٸ� â �ݱ�
+        // 다른 패널 닫기
         upgradePanel.SetActive(false);
         skinPanel.SetActive(false);
 
-        // ���̵� â ����
+        // 난이도 패널 열기
         difficultyPanel.SetActive(true);
+
+        // 실제 로비 캐릭터 보이기
+        lobbyCharacter.SetActive(true);
     }
 
 
     // =====================================================
-    // ���̵� â �ݱ�
+    // 난이도 패널 닫기
     // =====================================================
 
     public void CloseDifficultyPanel()
     {
+        // 난이도 패널 닫기
         difficultyPanel.SetActive(false);
+
+        // 실제 로비 캐릭터 다시 보이기
+        lobbyCharacter.SetActive(true);
     }
 }
-

@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &357793469514009188
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2436036705320241819}
+  m_Layer: 0
+  m_Name: SoldiersRoot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2436036705320241819
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 357793469514009188}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2473248520332561056}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &403926432696428397
 GameObject:
   m_ObjectHideFlags: 0
@@ -51,6 +82,7 @@ GameObject:
   - component: {fileID: 6332842898400522407}
   - component: {fileID: 908975879532057778}
   - component: {fileID: 4116298896519374539}
+  - component: {fileID: 4000002361871550273}
   m_Layer: 7
   m_Name: PlayerRoot
   m_TagString: Untagged
@@ -72,6 +104,8 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1401601078157791423}
+  - {fileID: 2875033075454815216}
+  - {fileID: 2436036705320241819}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3696898093733037751
@@ -87,7 +121,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   playerStats: {fileID: 7110261656882566274}
-  playAreaConfig: {fileID: 11400000, guid: 14450f0ae9ed86b45b021adb75e73ff8, type: 2}
+  edgeClearance: 0
   xLimit: 4
 --- !u!114 &1788119257003499149
 MonoBehaviour:
@@ -105,6 +139,8 @@ MonoBehaviour:
   playerStats: {fileID: 7110261656882566274}
   spacing: 1.2
   maxColumnCount: 7
+  formationRoot: {fileID: 2436036705320241819}
+  formationEdgePadding: 0.15
   fireLine: {fileID: 1401601078157791423}
   bulletPool: {fileID: 0}
   bulletFx: {fileID: 0}
@@ -264,3 +300,56 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SquadGateReceiver
   squadManager: {fileID: 0}
+--- !u!114 &4000002361871550273
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3858501899684243877}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f22428d054ff3e4690c14460de9ee99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerCharacterVisual
+  soldierPool: {fileID: 0}
+  visualLocalPosition: {x: 0, y: 0, z: 0.8}
+  visualLocalEulerAngles: {x: 0, y: 0, z: 0}
+  visualLocalScale: {x: 1, y: 1, z: 1}
+  runStateName: Run
+  createPlayerMarker: 1
+  markerLocalPosition: {x: 0, y: 2.4, z: 0.8}
+  markerWidth: 0.35
+  markerHeight: 0.45
+  markerColor: {r: 1, g: 0, b: 0, a: 1}
+--- !u!1 &5330440304630736220
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2875033075454815216}
+  m_Layer: 7
+  m_Name: PlayerVisualRoot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2875033075454815216
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5330440304630736220}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2473248520332561056}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

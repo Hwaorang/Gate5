@@ -15,7 +15,8 @@ public class GameHUDPresenter : MonoBehaviour
 
     private PlayerExperience playerExperience;
 
-    private GameManager_KHM gameManager;
+    // GameManager_KHM → GameManager
+    private GameManager gameManager;
 
     private UpgradeManager_PlayerController upgradeManager;
 
@@ -120,16 +121,17 @@ public class GameHUDPresenter : MonoBehaviour
             return;
         }
 
-        if (GameManager_KHM.Instance != null)
+        // 기존 GameManager_KHM → 통합된 GameManager
+        if (GameManager.Instance != null)
         {
             gameManager =
-                GameManager_KHM.Instance;
+                GameManager.Instance;
 
             return;
         }
 
         gameManager =
-            FindFirstObjectByType<GameManager_KHM>();
+            FindFirstObjectByType<GameManager>();
     }
 
 
