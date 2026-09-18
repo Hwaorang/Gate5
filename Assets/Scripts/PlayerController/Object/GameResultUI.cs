@@ -26,6 +26,8 @@ public class GameResultUI : MonoBehaviour
     [SerializeField]
     private TMP_Text levelText;
 
+    [SerializeField]
+    private TMP_Text earnedGoldText;
 
     // ========================================================
     // Button
@@ -128,7 +130,7 @@ public class GameResultUI : MonoBehaviour
     // ========================================================
 
     public void Show(
-    GameResultData data)
+      GameResultData data)
     {
         // 패널 전체 등장
         if (transition != null)
@@ -143,6 +145,17 @@ public class GameResultUI : MonoBehaviour
         }
 
 
+        // =========================
+        // Earned Gold
+        // =========================
+
+        if (earnedGoldText != null)
+        {
+            earnedGoldText.text =
+                data.EarnedGold.ToString("N0");
+        }
+
+
         // 내부 결과 순차 연출
         if (sequenceAnimator != null)
         {
@@ -152,7 +165,6 @@ public class GameResultUI : MonoBehaviour
         }
         else
         {
-            // SequenceAnimator가 없는 경우를 위한 fallback
             if (survivalTimeText != null)
             {
                 survivalTimeText.text =
