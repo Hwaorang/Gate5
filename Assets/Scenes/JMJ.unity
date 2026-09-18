@@ -9315,7 +9315,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f073a433aa2dbcd44a0aa0f0257d1d44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SceneBgmPlayer
-  bgm: {fileID: 8300000, guid: ffe717537c4be5940a843acafd6db718, type: 3}
+  bgm: {fileID: 8300000, guid: 934b5b4e3f54d7842a2d573cc67eb31e, type: 3}
 --- !u!4 &1958830945
 Transform:
   m_ObjectHideFlags: 0

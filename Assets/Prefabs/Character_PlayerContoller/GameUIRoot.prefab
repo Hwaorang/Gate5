@@ -12198,7 +12198,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameResultPresenter
   squadManager: {fileID: 0}
-  gameManager_KHM: {fileID: 0}
   gameManager: {fileID: 0}
   playerExperience: {fileID: 0}
   gameResultUI: {fileID: 6966417310112931287}
@@ -13353,6 +13352,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameResultUI
   survivalTimeText: {fileID: 6488957524897644395}
   levelText: {fileID: 5690079951004830146}
+  earnedGoldText: {fileID: 3959876618223644}
   retryButton: {fileID: 2562508817292322594}
   lobbyButton: {fileID: 8096317424396700435}
   transition: {fileID: 0}
