@@ -39,6 +39,16 @@ public class InGameMenuPresenter : MonoBehaviour
         Settings
     }
 
+    [Header("Upgrade")]
+
+    [SerializeField]
+    private UpgradeManager_PlayerController upgradeManager;
+
+    /// <summary>
+    /// HUD / Menu / Settings 중 하나가 열려 있는지.
+    /// </summary>
+    public bool IsMenuPauseActive =>
+        currentState != UIState.Closed;
 
     // ========================================================
     // HUD
@@ -107,6 +117,18 @@ public class InGameMenuPresenter : MonoBehaviour
         {
             hudTransition =
                 hudRoot.GetComponent<UIPanelTransition>();
+        }
+
+        if (upgradeManager == null)
+        {
+            GameUIRoot uiRoot =
+                GetComponentInParent<GameUIRoot>();
+
+            if (uiRoot != null)
+            {
+                upgradeManager =
+                    uiRoot.UpgradeManager;
+            }
         }
     }
 
@@ -692,7 +714,19 @@ public class InGameMenuPresenter : MonoBehaviour
 
                 if (GameManager.Instance != null)
                 {
-                    GameManager.Instance.Resume();
+                    // 강화 선택창이 아직 열려 있다면
+                    // HUD/Menu만 닫고 게임은 계속 Pause 상태로 유지한다.
+                    if (upgradeManager != null &&
+                        upgradeManager.IsUpgradePanelOpen)
+                    {
+                        break;
+                    }
+
+
+                    if (GameManager.Instance != null)
+                    {
+                        GameManager.Instance.Resume();
+                    }
                 }
 
                 break;

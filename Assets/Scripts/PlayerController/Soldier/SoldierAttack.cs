@@ -350,129 +350,152 @@ public class SoldierAttack : MonoBehaviour
     /// 남은 Batch 처리를 중단할 수 있다.
     /// </summary>
     private bool FireBatchRay(
-        Vector3 origin,
-        Vector3 direction,
-        float damage,
-        bool playImpact,
-        out float hitDistance)
+    Vector3 origin,
+    Vector3 direction,
+    float damage,
+    bool playImpact,
+    out float hitDistance)
     {
-        Ray ray =
-            new Ray(
-                origin,
-                direction
-            );
-
-        //if (Physics.Raycast(
-        //    ray,
-        //    out RaycastHit hit,
-        //    attackRange,
-        //    enemyLayer,
-        //    QueryTriggerInteraction.Collide))
-        //{
-
-        //    hitDistance =
-        //        hit.distance;
-
-
-        //    // =========================
-        //    // EnemyHealth
-        //    // =========================
-
-        //    EnemyHealth enemyHealth =
-        //        hit.collider
-        //            .GetComponentInParent<EnemyHealth>();
-
-        //    if (enemyHealth != null)
-        //    {
-        //        enemyHealth.TakeDamage(
-        //            damage
-        //        );
-        //    }
-        //    else
-        //    {
-        //        // =========================
-        //        // Team Enemy - Mon_Ctrl
-        //        // =========================
-        //        Debug.Log("머리가 깨질 것 같다");
-        //        Mon_Ctrl monCtrl =
-        //            hit.collider
-        //                .GetComponentInParent<Mon_Ctrl>();
-
-        //        if (monCtrl != null)
-        //        {
-        //            monCtrl.TakeDamage(
-        //                damage
-        //            );
-        //        }
-        //    }
-        //    Debug.Log("머리가 깨질 것 같다");
-
-        //    // =========================
-        //    // Impact FX
-        //    // =========================
-        //    //
-        //    // Batch마다 Impact를 생성하면
-        //    // 같은 위치에서 FX가 수십 번 겹칠 수 있으므로
-        //    // 대표 Batch에서만 표시한다.
-
-        //    if (playImpact &&
-        //        bulletFx != null)
-        //    {
-        //        bulletFx.PlayImpact(
-        //            hit.point +
-        //            hit.normal * 0.1f,
-        //            hit.normal
-        //        );
-        //    }
-
-
-        //    return true;
-        //}
-
         Debug.DrawRay(
-    origin,
-    direction * attackRange,
-    Color.red,
-    1f
-);
-        if (Physics.Raycast(origin, direction,out RaycastHit hit,attackRange,enemyLayer))
+            origin,
+            direction * attackRange,
+            Color.red,
+            1f
+        );
+
+
+        if (Physics.Raycast(
+            origin,
+            direction,
+            out RaycastHit hit,
+            attackRange,
+            enemyLayer,
+            QueryTriggerInteraction.Collide))
         {
-            Debug.Log(
-                $"[SoldierAttack] Raycast Hit : {hit.collider.name}"
-            );
+            hitDistance =
+                hit.distance;
+
 
             Mon_Ctrl monCtrl =
-                hit.collider.GetComponentInParent<Mon_Ctrl>();
+                hit.collider
+                    .GetComponentInParent<Mon_Ctrl>();
+
 
             if (monCtrl == null)
             {
-                Debug.LogWarning(
-                    $"[SoldierAttack] " +
-                    $"{hit.collider.name}을 맞췄지만 " +
-                    $"부모에서 Mon_Ctrl을 찾지 못했습니다."
-                );
-
-                hitDistance = hit.distance;
                 return false;
             }
 
-            Debug.Log(
-                $"[SoldierAttack] Mon_Ctrl 발견 : {monCtrl.name}"
+
+            monCtrl.TakeDamage(
+                damage
             );
 
-            monCtrl.TakeDamage(damage);
-        }
-        else
-        {
-            Debug.Log(
-                "[SoldierAttack] Raycast가 Enemy를 맞추지 못했습니다."
-            );
+
+            if (playImpact &&
+                bulletFx != null)
+            {
+                bulletFx.PlayImpact(
+                    hit.point +
+                    hit.normal * 0.1f,
+                    hit.normal
+                );
+            }
+
+
+            return true;
         }
 
-        hitDistance = attackRange;
+
+        hitDistance =
+            attackRange;
+
         return false;
     }
 
+    /// <summary>
+    /// 실제 데미지는 발생시키지 않고
+    /// 이 병사의 위치에서 Projectile 강화가 반영된
+    /// 총알 FX만 재생한다.
+    /// </summary>
+    public void PlayVisualOnly()
+    {
+        if (!CanAttack)
+        {
+            return;
+        }
+
+        if (firePoint == null ||
+            bulletFx == null ||
+            projectileUpgradeData == null)
+        {
+            return;
+        }
+
+
+        // 여러 투사체가 중앙 기준으로
+        // 좌우 대칭으로 퍼지도록 시작 각도 계산
+        float startAngle =
+            -projectileUpgradeData.spreadAngle *
+            (projectileCount - 1) *
+            0.5f;
+
+
+        for (int projectileIndex = 0;
+             projectileIndex < projectileCount;
+             projectileIndex++)
+        {
+            float angle =
+                startAngle +
+                projectileUpgradeData.spreadAngle *
+                projectileIndex;
+
+
+            Quaternion rotation =
+                firePoint.rotation *
+                Quaternion.Euler(
+                    0f,
+                    angle,
+                    0f
+                );
+
+
+            Vector3 direction =
+                rotation *
+                Vector3.forward;
+
+
+            // 각 병사의 실제 위치에서 발사
+            Vector3 origin =
+                firePoint.position;
+
+
+            float visualDistance =
+                attackRange;
+
+
+            // 거리 확인만 한다.
+            // TakeDamage는 호출하지 않는다.
+            if (Physics.Raycast(
+                origin,
+                direction,
+                out RaycastHit hit,
+                attackRange,
+                enemyLayer,
+                QueryTriggerInteraction.Collide))
+            {
+                visualDistance =
+                    hit.distance;
+            }
+
+
+            PlayBulletFx(
+                origin,
+                direction,
+                visualDistance
+            );
+        }
+    }
 
     /// <summary>
     /// 실제 공격 판정과 별개로

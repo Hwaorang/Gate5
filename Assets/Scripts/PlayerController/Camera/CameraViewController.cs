@@ -112,13 +112,11 @@ public class CameraViewController : MonoBehaviour
 
     private void Update()
     {
-#if UNITY_EDITOR
         if (Keyboard.current != null &&
             Keyboard.current.f10Key.wasPressedThisFrame)
         {
             ToggleView();
         }
-#endif
 
         // 대각선 시점 사용 중에
         // Player의 XLimit이 변경되었다면 카메라 위치 재계산

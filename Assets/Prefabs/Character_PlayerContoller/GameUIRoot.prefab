@@ -1551,6 +1551,7 @@ MonoBehaviour:
   upgradeTitleText: {fileID: 0}
   cardSequenceAnimator: {fileID: 5825376089033834853}
   upgradePanelTransition: {fileID: 5691514514828929065}
+  inGameMenuPresenter: {fileID: 0}
   upgradeDatas:
   - {fileID: 11400000, guid: e0c4c363b8aa2b142a3d79b2e90e33cc, type: 2}
   - {fileID: 11400000, guid: e2a0597b6882a624a98fc32083a2b091, type: 2}
@@ -1830,18 +1831,18 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7468628858549310230}
-  - {fileID: 993620507978633978}
   - {fileID: 4750416078800713981}
   - {fileID: 225844767383848064}
   - {fileID: 6660619847076895589}
   - {fileID: 7861168456374076436}
   - {fileID: 7506314633008694276}
   - {fileID: 2763206804069215213}
+  - {fileID: 8524533153272224935}
   - {fileID: 1358005446266795169}
   - {fileID: 6860831642059744108}
-  - {fileID: 8524533153272224935}
   - {fileID: 2705646310680089061}
   - {fileID: 5486231004041956579}
+  - {fileID: 993620507978633978}
   m_Father: {fileID: 4428392444759973753}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -8611,6 +8612,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b56103b178dbf704299a491bb50eceed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InGameMenuPresenter
+  upgradeManager: {fileID: 0}
   hudToggleButton: {fileID: 1574512588970238270}
   hudRoot: {fileID: 4113607238725885600}
   hudCloseButton: {fileID: 4036072352089479373}

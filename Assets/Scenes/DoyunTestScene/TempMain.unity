@@ -217,7 +217,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1327830007ed47748bf82c5c938394f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager_KHM
-  hpIncreasePerMinute: 0.2
 --- !u!4 &311911511
 Transform:
   m_ObjectHideFlags: 0
@@ -246,6 +245,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   lobbySceneName: LobbyScene
+  hpIncreasePerMinute: 0.2
+  goldPerSecond: 2
+  goldMultiplierIncreasePerMinute: 0.1
 --- !u!1 &486060528
 GameObject:
   m_ObjectHideFlags: 0

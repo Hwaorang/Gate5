@@ -256,6 +256,23 @@ public class SquadManager : MonoBehaviour
     /// </summary>
     public event Action OnGameOver;
 
+    // =========================
+    // GameOver 상태
+    // =========================
+
+    // 마지막 살아있는 병사가 사망하기 시작한 순간 true.
+    // 이 상태에서는 + Gate 등으로 병사를 다시 추가할 수 없다.
+    private bool isSquadDefeated;
+
+    // GameOver 이벤트 중복 호출 방지
+    private bool gameOverTriggered;
+
+
+    /// <summary>
+    /// 현재 Squad의 패배가 확정되었는지.
+    /// </summary>
+    public bool IsSquadDefeated =>
+        isSquadDefeated;
 
     private void Start()
     {
@@ -292,6 +309,22 @@ public class SquadManager : MonoBehaviour
     public void AddUnit(
         int amount)
     {
+        // 마지막 병사가 이미 사망하기 시작했다면
+        // Gate 등으로 다시 부활하지 못하게 한다.
+        if (isSquadDefeated)
+        {
+            return;
+        }
+
+
+        // 이미 GameOver가 확정된 경우도 추가 불가
+        if (GameManager.Instance != null &&
+            GameManager.Instance.IsGameOver)
+        {
+            return;
+        }
+
+
         if (amount <= 0)
         {
             return;
@@ -642,6 +675,59 @@ public class SquadManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Soldier가 Alive → Dying 상태가 되었을 때 호출한다.
+    ///
+    /// 아직 살아있는 병사가 한 명이라도 있으면 계속 진행하고,
+    /// 살아있는 병사가 한 명도 없다면 패배를 확정한다.
+    ///
+    /// 실제 GameOver는 Death 애니메이션이 끝나고
+    /// 마지막 Soldier가 RemoveUnit될 때 처리한다.
+    /// </summary>
+    public void NotifySoldierDying()
+    {
+        if (isSquadDefeated)
+        {
+            return;
+        }
+
+
+        for (int i = 0;
+             i < soldiers.Count;
+             i++)
+        {
+            GameObject soldierObject =
+                soldiers[i];
+
+            if (soldierObject == null)
+            {
+                continue;
+            }
+
+
+            SoldierUnit unit =
+                soldierObject.GetComponent<SoldierUnit>();
+
+
+            // 아직 Alive인 병사가 존재하면
+            // 게임은 계속 진행
+            if (unit != null &&
+                unit.CanAttack)
+            {
+                return;
+            }
+        }
+
+
+        // Alive 병사가 한 명도 없다.
+        // 이 순간부터 +Gate 등으로 복구 불가.
+        isSquadDefeated = true;
+
+        Debug.Log(
+            "[SquadManager] 살아있는 병사가 없습니다. " +
+            "GameOver 확정."
+        );
+    }
 
     // =========================================================
     // GameOver
@@ -653,16 +739,31 @@ public class SquadManager : MonoBehaviour
     /// </summary>
     private void CheckGameOver()
     {
+        // 아직 실제로 제거되지 않은 병사가 존재
         if (soldiers.Count > 0)
         {
             return;
         }
 
+
+        // GameOver 중복 호출 방지
+        if (gameOverTriggered)
+        {
+            return;
+        }
+
+
+        gameOverTriggered =
+            true;
+
+        isSquadDefeated =
+            true;
+
+
         // Observer Pattern
         OnGameOver?.Invoke();
 
 
-        // 기존 프로젝트 GameOver 처리
         if (GameManager.Instance != null)
         {
             GameManager.Instance.GameOver();

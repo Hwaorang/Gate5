@@ -20,7 +20,7 @@ public class Mon_Ctrl : MonoBehaviour
 
     bool isDead = false;
 
-    
+    [SerializeField] Animator animator;
     void Start()
     {
                
@@ -34,6 +34,8 @@ public class Mon_Ctrl : MonoBehaviour
         objname = data.monName;
         exp = data.exp;
         isDead = false;
+        animator.SetBool("IsDead", false);
+        animator.SetBool("IsRun", false);
     }
 
     public int Damage
@@ -69,8 +71,11 @@ public class Mon_Ctrl : MonoBehaviour
     {
         while(true)
         {
+
             agent.SetDestination(targetPos);
             //agent.SetDestination(testTargetPos.position);
+
+            animator.SetBool("IsRun", true);
 
             if(arrive)
                 yield break;
@@ -150,7 +155,7 @@ public class Mon_Ctrl : MonoBehaviour
         if (curHP <= 0f)
         {
             isDead = true;
-
+            animator.SetBool("IsDead", true);
             MonSpawn_Mgr.instance.ReturnObject(
                 objname,
                 gameObject,

@@ -121,17 +121,19 @@ public class SoldierUnit : MonoBehaviour
     /// </summary>
     public void Die()
     {
-        // Alive 상태가 아니라면
-        // 이미 사망 처리 중이거나 제거된 상태
+        // 이미 Dying 또는 Dead 상태라면
+        // 중복 사망 처리하지 않는다.
         if (CurrentState != SoldierState.Alive)
         {
             return;
         }
 
+
         if (squadManager == null)
         {
             return;
         }
+
 
         // =========================
         // Alive → Dying
@@ -140,6 +142,18 @@ public class SoldierUnit : MonoBehaviour
         ChangeState(
             SoldierState.Dying
         );
+
+
+        // =========================
+        // Squad 패배 여부 확인
+        // =========================
+
+        squadManager.NotifySoldierDying();
+
+
+        // =========================
+        // 사망 연출 시작
+        // =========================
 
         StartCoroutine(
             DeathRoutine()
