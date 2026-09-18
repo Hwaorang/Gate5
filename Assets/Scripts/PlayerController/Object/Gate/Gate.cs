@@ -14,6 +14,54 @@ using UnityEngine;
 public class Gate : MonoBehaviour
 {
     // ========================================================
+    // Progressive Random Value
+    // ========================================================
+
+    [Header("Progressive Random Value")]
+
+    [Tooltip(
+        "게임 진행 시간에 따라 Gate 숫자 범위를 증가시킬지 여부"
+    )]
+    [SerializeField]
+    private bool useProgressiveRandomValue = true;
+
+
+    [Header("Early Game")]
+
+    [Tooltip("게임 초반 최소 Gate 값")]
+    [SerializeField]
+    [Min(1)]
+    private int earlyMinValue = 1;
+
+    [Tooltip("게임 초반 최대 Gate 값")]
+    [SerializeField]
+    [Min(1)]
+    private int earlyMaxValue = 4;
+
+
+    [Header("Late Game")]
+
+    [Tooltip("후반 최소 Gate 값")]
+    [SerializeField]
+    [Min(1)]
+    private int lateMinValue = 5;
+
+    [Tooltip("후반 최대 Gate 값")]
+    [SerializeField]
+    [Min(1)]
+    private int lateMaxValue = 12;
+
+
+    [Header("Progression")]
+
+    [Tooltip(
+        "몇 초 후 Late Game 범위에 도달할지 설정"
+    )]
+    [SerializeField]
+    [Min(1f)]
+    private float progressionDuration = 120f;
+
+    // ========================================================
     // Data
     // ========================================================
 
@@ -129,8 +177,7 @@ public class Gate : MonoBehaviour
             );
 
 
-        currentValue =
-            gateData.InitialValue;
+        currentValue = GetInitialValue();
 
 
         isUsed =
@@ -147,6 +194,107 @@ public class Gate : MonoBehaviour
         RefreshView();
     }
 
+    /// <summary>
+    /// Gate가 생성될 때 사용할 초기값을 결정한다.
+    ///
+    /// Add / Subtract Gate는
+    /// 게임 진행 시간에 따라 랜덤 범위가 증가한다.
+    ///
+    /// Multiply Gate는 기존 GateData 값을 유지한다.
+    /// </summary>
+    private int GetInitialValue()
+    {
+        if (gateData == null)
+        {
+            return 0;
+        }
+
+
+        // =============================================
+        // Multiply Gate
+        // =============================================
+
+        // ×2 같은 곱하기 Gate는
+        // 랜덤값 시스템의 영향을 받지 않는다.
+        if (gateData.OperationType ==
+            GateOperationType.Multiply)
+        {
+            return gateData.InitialValue;
+        }
+
+
+        // =============================================
+        // Random 사용 안 함
+        // =============================================
+
+        if (!useProgressiveRandomValue)
+        {
+            return gateData.InitialValue;
+        }
+
+
+        // =============================================
+        // Game Progress
+        // =============================================
+
+        float elapsedTime =
+            Time.timeSinceLevelLoad;
+
+
+        float progress =
+            Mathf.Clamp01(
+                elapsedTime /
+                progressionDuration
+            );
+
+
+        // =============================================
+        // Current Range
+        // =============================================
+
+        int currentMin =
+            Mathf.RoundToInt(
+                Mathf.Lerp(
+                    earlyMinValue,
+                    lateMinValue,
+                    progress
+                )
+            );
+
+
+        int currentMax =
+            Mathf.RoundToInt(
+                Mathf.Lerp(
+                    earlyMaxValue,
+                    lateMaxValue,
+                    progress
+                )
+            );
+
+
+        // Inspector에서 값 순서를 잘못 넣어도
+        // 정상 동작하도록 보정한다.
+        int min =
+            Mathf.Min(
+                currentMin,
+                currentMax
+            );
+
+
+        int max =
+            Mathf.Max(
+                currentMin,
+                currentMax
+            );
+
+
+        // int Random.Range의 max는 포함되지 않으므로
+        // +1 해준다.
+        return UnityEngine.Random.Range(
+            min,
+            max + 1
+        );
+    }
 
     // ========================================================
     // Bullet
