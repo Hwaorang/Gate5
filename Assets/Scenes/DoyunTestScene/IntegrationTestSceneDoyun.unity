@@ -277,12 +277,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7afecf8a67bb16146b9e0dc7c79228f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StageMapManager
-  chunkPrefab: {fileID: 8184887640042037564, guid: 098d97a410dbcd64696fef863c0910d1, type: 3}
+  chunkPrefab: {fileID: 8184887640042037564, guid: 77196f9a64fc85b49afa5a0133cc15d2, type: 3}
   chunkCount: 4
   moveSpeed: 5
   recycleZ: -50
   recycleAnchor: {fileID: 94119559}
-  recycleBehindDistance: 15
+  recycleBehindDistance: 45
   behindChunkCount: 1
   roadWidth: 8
   playAreaConfig: {fileID: 11400000, guid: 14450f0ae9ed86b45b021adb75e73ff8, type: 2}
@@ -621,6 +621,38 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -36, y: -36}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &1029624599 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6409438274662702203, guid: e2785bb6211887e4cbf8b74697f40047, type: 3}
+  m_PrefabInstance: {fileID: 814075279}
+  m_PrefabAsset: {fileID: 0}
+--- !u!54 &1029624603
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1029624599}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 14
+  m_CollisionDetection: 0
 --- !u!1 &1064678627
 GameObject:
   m_ObjectHideFlags: 0
