@@ -154,7 +154,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1327830007ed47748bf82c5c938394f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager_KHM
-  hpIncreasePerMinute: 0.2
 --- !u!4 &311911511
 Transform:
   m_ObjectHideFlags: 0
@@ -183,6 +182,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   lobbySceneName: JMJ
+  hpIncreasePerMinute: 0.2
+  goldPerSecond: 2
+  goldMultiplierIncreasePerMinute: 0.1
 --- !u!1 &451078626
 GameObject:
   m_ObjectHideFlags: 0
@@ -243,12 +245,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7afecf8a67bb16146b9e0dc7c79228f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StageMapManager
-  chunkPrefab: {fileID: 8184887640042037564, guid: 098d97a410dbcd64696fef863c0910d1, type: 3}
+  chunkPrefab: {fileID: 8184887640042037564, guid: 77196f9a64fc85b49afa5a0133cc15d2, type: 3}
   chunkCount: 4
   moveSpeed: 5
   recycleZ: -50
   recycleAnchor: {fileID: 94119559}
-  recycleBehindDistance: 15
+  recycleBehindDistance: 45
   behindChunkCount: 1
   roadWidth: 8
   playAreaConfig: {fileID: 11400000, guid: 14450f0ae9ed86b45b021adb75e73ff8, type: 2}
