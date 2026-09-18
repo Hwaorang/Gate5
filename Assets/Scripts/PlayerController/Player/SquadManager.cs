@@ -52,6 +52,24 @@ public class SquadManager : MonoBehaviour
     [SerializeField]
     private int maxColumnCount = 7;
 
+    [Header("대형 경계")]
+
+    [Tooltip(
+    "병사 전체 대형을 이동시키는 부모 Transform"
+)]
+    [SerializeField]
+    private Transform formationRoot;
+
+    [Tooltip(
+        "병사가 도로 끝에 너무 딱 붙지 않도록 하는 여백"
+    )]
+    [SerializeField]
+    [Min(0f)]
+    private float formationEdgePadding = 0.15f;
+
+
+    private PlayerController playerController;
+
 
     // =========================
     // 공격 기준점
@@ -118,6 +136,36 @@ public class SquadManager : MonoBehaviour
     public int CurrentCount =>
         soldiers.Count;
 
+    private void Awake()
+    {
+        playerController =
+            GetComponent<PlayerController>();
+
+
+        // Inspector 연결을 깜빡했을 경우
+        // PlayerRoot/soldiers 자동 탐색
+        if (formationRoot == null)
+        {
+            formationRoot =
+                transform.Find("soldiers");
+        }
+
+
+        if (formationRoot == null)
+        {
+            Debug.LogWarning(
+                "[SquadManager] formationRoot를 찾을 수 없습니다."
+            );
+        }
+
+
+        if (playerController == null)
+        {
+            Debug.LogWarning(
+                "[SquadManager] PlayerController를 찾을 수 없습니다."
+            );
+        }
+    }
 
     /// <summary>
     /// 현재 Squad 대형의 Column 수.
@@ -226,6 +274,10 @@ public class SquadManager : MonoBehaviour
         );
     }
 
+    private void LateUpdate()
+    {
+        UpdateFormationBoundary();
+    }
 
     // =========================================================
     // Soldier 생성
@@ -259,9 +311,15 @@ public class SquadManager : MonoBehaviour
              i < amount;
              i++)
         {
+            Transform soldierParent =
+                formationRoot != null
+                    ? formationRoot
+                    : transform;
+
+
             GameObject soldier =
                 soldierPool.GetSoldier(
-                    transform
+                    soldierParent
                 );
 
             if (soldier == null)
@@ -818,5 +876,122 @@ public class SquadManager : MonoBehaviour
                 bulletFx
             );
         }
+    }
+
+    /// <summary>
+    /// PlayerRoot는 도로 끝까지 이동할 수 있게 유지하면서
+    /// 병사 대형만 도로 바깥으로 나가지 않도록 안쪽으로 이동시킨다.
+    /// </summary>
+    private void UpdateFormationBoundary()
+    {
+        if (formationRoot == null ||
+            playerController == null ||
+            soldiers.Count == 0)
+        {
+            return;
+        }
+
+
+        // 현재 도로의 실제 중심과 폭을 가져온다.
+        if (!playerController.TryGetRoadArea(
+                out float roadCenterX,
+                out float roadWidth))
+        {
+            return;
+        }
+
+
+        int columnCount =
+            CurrentColumnCount;
+
+        if (columnCount <= 0)
+        {
+            return;
+        }
+
+
+        // 가장 넓은 줄에 실제로 들어가는 병사 수
+        int widestRowCount =
+            Mathf.Min(
+                columnCount,
+                soldiers.Count
+            );
+
+
+        // 현재 대형의 절반 너비
+        float formationHalfWidth =
+            (widestRowCount - 1) *
+            spacing *
+            0.5f;
+
+
+        // 실제 도로 좌우 끝
+        float roadLeft =
+            roadCenterX -
+            roadWidth * 0.5f +
+            formationEdgePadding;
+
+
+        float roadRight =
+            roadCenterX +
+            roadWidth * 0.5f -
+            formationEdgePadding;
+
+
+        // 대형 중심이 이동 가능한 범위
+        float minFormationCenter =
+            roadLeft +
+            formationHalfWidth;
+
+
+        float maxFormationCenter =
+            roadRight -
+            formationHalfWidth;
+
+
+        float playerWorldX =
+            transform.position.x;
+
+
+        float targetFormationCenterX;
+
+
+        // 정상적으로 대형이 도로 안에 들어갈 수 있는 경우
+        if (minFormationCenter <=
+            maxFormationCenter)
+        {
+            targetFormationCenterX =
+                Mathf.Clamp(
+                    playerWorldX,
+                    minFormationCenter,
+                    maxFormationCenter
+                );
+        }
+        else
+        {
+            // 대형 자체가 도로보다 넓은 특수 상황
+            // 우선 도로 중앙에 배치
+            targetFormationCenterX =
+                roadCenterX;
+        }
+
+
+        // PlayerRoot 위치와
+        // 병사 대형 중심 위치의 차이
+        float localOffsetX =
+            targetFormationCenterX -
+            playerWorldX;
+
+
+        Vector3 rootPosition =
+            formationRoot.localPosition;
+
+
+        rootPosition.x =
+            localOffsetX;
+
+
+        formationRoot.localPosition =
+            rootPosition;
     }
 }
