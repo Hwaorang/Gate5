@@ -717,6 +717,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1749174399589014393, guid: d4126ba383bcd9b4389a9a99e1dba40f, type: 3}
+      propertyPath: field
+      value: 
+      objectReference: {fileID: 1312147691}
     - target: {fileID: 2638857772232012298, guid: d4126ba383bcd9b4389a9a99e1dba40f, type: 3}
       propertyPath: m_Name
       value: MonSpawner
