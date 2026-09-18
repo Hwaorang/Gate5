@@ -191,6 +191,19 @@ public class GameResultPresenter : MonoBehaviour
 
 
         // =========================
+        // Earned Gold
+        // =========================
+
+        int earnedGold = 0;
+
+        if (gameManager != null)
+        {
+            earnedGold =
+                gameManager.GetGoldReward();
+        }
+
+
+        // =========================
         // GameOver Audio
         // =========================
 
@@ -199,10 +212,8 @@ public class GameResultPresenter : MonoBehaviour
 
         if (audio != null)
         {
-            // 인게임 BGM 정지
             audio.StopBgm();
 
-            // GameOver 효과음 재생
             audio.PlaySfx(
                 PlayerSfxType.GameOver
             );
@@ -216,12 +227,21 @@ public class GameResultPresenter : MonoBehaviour
         GameResultData resultData =
             new GameResultData(
                 survivalTime,
-                level
+                level,
+                earnedGold
             );
 
 
+        Debug.Log(
+            $"[GameResultPresenter] " +
+            $"Time : {survivalTime:F1} | " +
+            $"Level : {level} | " +
+            $"Gold : {earnedGold}"
+        );
+
+
         // =========================
-        // GameOver UI 표시
+        // GameOver UI
         // =========================
 
         if (gameResultUI != null)
