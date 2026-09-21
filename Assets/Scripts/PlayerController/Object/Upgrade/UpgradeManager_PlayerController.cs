@@ -229,7 +229,7 @@ public class UpgradeManager_PlayerController : MonoBehaviour
         if (!HasAvailableUpgrade())
         {
             string message =
-                "모든 강화가 최대 레벨입니다.";
+                "All upgrades are maxed out.";
 
             GameMessageUI.Instance?.ShowMessage(
                 message
@@ -357,7 +357,7 @@ public class UpgradeManager_PlayerController : MonoBehaviour
         if (currentLevel >= data.maxLevel)
         {
             GameMessageUI.Instance?.ShowMessage(
-                $"{data.upgradeName}은 최대 레벨입니다."
+                $"{data.upgradeName} is already at max level."
             );
 
             return;

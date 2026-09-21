@@ -274,8 +274,11 @@ MonoBehaviour:
   gameResultPresenter: {fileID: 0}
   debugUIBootstrapper: {fileID: 7388563598750662287}
   cameraViewController: {fileID: 0}
+  gameUIRoot: {fileID: 0}
+  lobbyUpgradeApplier: {fileID: 0}
   soldierPool: {fileID: 1584721321784394913}
   bulletFx: {fileID: 5095719059579591487}
+  gameHUDPresenter: {fileID: 0}
 --- !u!1001 &6398890595563978943
 PrefabInstance:
   m_ObjectHideFlags: 0

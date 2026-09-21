@@ -47,11 +47,46 @@ public class LobbyUpgradeApplier : MonoBehaviour
     [SerializeField] private int testAttackSpeedLevel = 3;
 
 
-    private void Start()
+    private bool hasApplied;
+
+    /// <summary>
+    /// PlayerBootstrapper가 런타임에 생성한
+    /// 실제 Player 시스템을 전달한다.
+    /// </summary>
+    public void Initialize(
+        PlayerContext context)
     {
+        if (context == null)
+        {
+            Debug.LogWarning(
+                "[LobbyUpgradeApplier] PlayerContext가 없습니다."
+            );
+
+            return;
+        }
+
+
+        playerStats =
+            context.PlayerStats;
+
+        squadManager =
+            context.SquadManager;
+
+
+        if (playerStats == null ||
+            squadManager == null)
+        {
+            Debug.LogWarning(
+                "[LobbyUpgradeApplier] " +
+                "PlayerStats 또는 SquadManager를 찾지 못했습니다."
+            );
+
+            return;
+        }
+
+
         ApplyLobbyUpgrades();
     }
-
 
     /// <summary>
     /// 현재 로비 강화 레벨을 읽어서
@@ -65,6 +100,31 @@ public class LobbyUpgradeApplier : MonoBehaviour
     /// </summary>
     private void ApplyLobbyUpgrades()
     {
+#if UNITY_EDITOR
+        Debug.Log(
+    $"[LobbyUpgradeApplier] 실행 객체 = {gameObject.name} | " +
+    $"UseTestData = {useTestData}"
+);
+#endif
+
+        // 같은 Player에게 중복 적용 방지
+        if (hasApplied)
+        {
+            return;
+        }
+
+
+        if (playerStats == null ||
+            squadManager == null)
+        {
+            Debug.LogWarning(
+                "[LobbyUpgradeApplier] " +
+                "Player 시스템이 아직 연결되지 않았습니다."
+            );
+
+            return;
+        }
+
         // 강화 수치 데이터가 없으면
         // 실제 배율을 계산할 수 없으므로 종료
         if (upgradeData == null)
@@ -166,6 +226,15 @@ public class LobbyUpgradeApplier : MonoBehaviour
             attackSpeedLevel *
             upgradeData.attackSpeedIncreasePerLevel;
 
+#if UNITY_EDITOR
+        Debug.Log(
+    $"[LobbyUpgradeApplier] 계산된 배율 | " +
+    $"Damage x{damageMultiplier:F2} / " +
+    $"MoveSpeed x{moveSpeedMultiplier:F2} / " +
+    $"AttackSpeed x{attackSpeedMultiplier:F2}"
+);
+#endif
+
 
         // =========================
         // 실제 Player 시스템에 적용
@@ -192,5 +261,26 @@ public class LobbyUpgradeApplier : MonoBehaviour
                 moveSpeedMultiplier
             );
         }
+
+#if UNITY_EDITOR
+        if (playerStats != null)
+        {
+            Debug.Log(
+                $"[LobbyUpgradeApplier] " +
+                $"현재 Player MoveSpeed = {playerStats.MoveSpeed:F2}"
+            );
+        }
+#endif
+
+        hasApplied = true;
+
+#if UNITY_EDITOR
+        Debug.Log(
+            $"[LobbyUpgradeApplier] 로비 강화 적용 완료 | " +
+            $"Attack Lv.{attackLevel} / " +
+            $"Move Lv.{moveSpeedLevel} / " +
+            $"AttackSpeed Lv.{attackSpeedLevel}"
+        );
+#endif
     }
 }
