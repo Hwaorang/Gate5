@@ -164,6 +164,7 @@ public class DamageLine : MonoBehaviour
             return;
         }
 
+        Debug.LogWarning("Zombie Coll");
         
         squadManager.RemoveOneSoldier(monCtrl.Damage);
     }
