@@ -18,4 +18,5 @@ MonoBehaviour:
     Soldier attack speed increases by 10%.'
   icon: {fileID: 0}
   upgradeType: 1
-  value: 0.1
+  value: 0.05
+  maxLevel: 5

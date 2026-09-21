@@ -253,7 +253,7 @@ MonoBehaviour:
   playerStats: {fileID: 7110261656882566274}
   squadManager: {fileID: 1788119257003499149}
   upgradeData: {fileID: 11400000, guid: 4a98803411932d945b1e8a18ac2542f3, type: 2}
-  useTestData: 1
+  useTestData: 0
   testAttackLevel: 3
   testMoveSpeedLevel: 2
   testAttackSpeedLevel: 4

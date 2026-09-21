@@ -56,7 +56,6 @@ public class PlayerBootstrapper : MonoBehaviour
     [SerializeField]
     private GameUIRoot gameUIRoot;
 
-
     // =========================
     // Scene References
     // =========================
@@ -499,6 +498,53 @@ public class PlayerBootstrapper : MonoBehaviour
     private void InitializePlayerSystems()
     {
         // =========================
+        // Lobby Permanent Upgrade
+        // =========================
+
+        LobbyUpgradeApplier lobbyUpgradeApplier =
+            playerInstance.GetComponent<LobbyUpgradeApplier>();
+
+
+        if (lobbyUpgradeApplier == null)
+        {
+            lobbyUpgradeApplier =
+                playerInstance.GetComponentInChildren
+                    <LobbyUpgradeApplier>(true);
+        }
+
+
+        if (lobbyUpgradeApplier != null)
+        {
+            lobbyUpgradeApplier.Initialize(
+                playerContext
+            );
+        }
+        else
+        {
+            Debug.LogWarning(
+                "[PlayerBootstrapper] " +
+                "PlayerRoot에서 LobbyUpgradeApplier를 찾지 못했습니다."
+            );
+        }
+
+
+        // =========================
+        // Upgrade
+        // =========================
+
+        if (upgradeManager != null)
+        {
+            upgradeManager.Initialize(
+                playerContext
+            );
+
+            playerContext.PlayerExperience
+                .SetUpgradeManager(
+                    upgradeManager
+                );
+        }
+
+        // =========================
         // Upgrade
         // =========================
 
@@ -612,6 +658,7 @@ public class PlayerBootstrapper : MonoBehaviour
     /// </summary>
     private void ResolveSceneReferences()
     {
+
         // =========================
         // Game UI
         // =========================
