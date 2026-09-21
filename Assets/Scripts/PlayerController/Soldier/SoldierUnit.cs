@@ -181,6 +181,9 @@ public class SoldierUnit : MonoBehaviour
             animationController.PlayDeath();
         }
 
+        squadManager.RemoveUnit(
+            this
+        );
 
         // =========================
         // 사망 연출 대기
@@ -204,9 +207,9 @@ public class SoldierUnit : MonoBehaviour
         // 실제 병사 제거
         // =========================
 
-        squadManager.RemoveUnit(
-            this
-        );
+        //squadManager.RemoveUnit(
+        //    this
+        //);
     }
 
 
