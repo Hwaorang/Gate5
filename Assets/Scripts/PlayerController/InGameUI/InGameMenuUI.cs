@@ -10,6 +10,11 @@ public class InGameMenuUI : MonoBehaviour
     [SerializeField] private Button retryButton;
     [SerializeField] private Button lobbyButton;
 
+    [Header("Transition")]
+
+    [SerializeField]
+    private UIPanelTransition transition;
+
 
     public event Action OnContinueClicked;
     public event Action OnSettingsClicked;
@@ -19,6 +24,17 @@ public class InGameMenuUI : MonoBehaviour
     private void Awake()
     {
         SetupMenuLayout();
+
+        ResolveReferences();
+    }
+
+    private void ResolveReferences()
+    {
+        if (transition == null)
+        {
+            transition =
+                GetComponent<UIPanelTransition>();
+        }
     }
 
     private void SetupMenuLayout()
@@ -319,17 +335,34 @@ public class InGameMenuUI : MonoBehaviour
 
     public void Show()
     {
-        gameObject.SetActive(true);
+        ResolveReferences();
 
-        // Canvas에서 가장 위에 렌더링
-        transform.SetAsLastSibling();
-
-        SetupMenuLayout();
+        if (transition != null)
+        {
+            transition.Show();
+        }
+        else
+        {
+            gameObject.SetActive(
+                true
+            );
+        }
     }
 
     public void Hide()
     {
-        gameObject.SetActive(false);
+        ResolveReferences();
+
+        if (transition != null)
+        {
+            transition.Hide();
+        }
+        else
+        {
+            gameObject.SetActive(
+                false
+            );
+        }
     }
 
     private void ResizeFrameBySprite(
@@ -375,5 +408,21 @@ public class InGameMenuUI : MonoBehaviour
 
         image.preserveAspect =
             true;
+    }
+
+    public void HideImmediate()
+    {
+        ResolveReferences();
+
+        if (transition != null)
+        {
+            transition.HideImmediate();
+        }
+        else
+        {
+            gameObject.SetActive(
+                false
+            );
+        }
     }
 }

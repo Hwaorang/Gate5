@@ -1,49 +1,85 @@
 using System;
-using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// GameOver 결과 화면을 표시한다.
+/// GameOver 결과 UI.
 ///
 /// 역할
-/// - 생존 시간 / 레벨 표시
-/// - Retry / Lobby 버튼 이벤트 전달
-/// - Time.timeScale == 0 상태에서도 동작하는 간단한 등장 애니메이션
+/// - 결과값 표시
+/// - Retry / Lobby 입력 전달
+/// - 실제 등장/퇴장 애니메이션은
+///   UIPanelTransition에게 맡긴다.
 /// </summary>
 public class GameResultUI : MonoBehaviour
 {
+    // ========================================================
+    // Result
+    // ========================================================
+
     [Header("Result")]
-    [SerializeField] private TMP_Text survivalTimeText;
-    [SerializeField] private TMP_Text levelText;
-
-    [Header("Button")]
-    [SerializeField] private Button retryButton;
-    [SerializeField] private Button lobbyButton;
-
-    [Header("Animation")]
-    [SerializeField] private CanvasGroup canvasGroup;
-    [SerializeField] private RectTransform contentRoot;
 
     [SerializeField]
-    [Range(0.05f, 1f)]
-    private float showDuration = 0.22f;
+    private TMP_Text survivalTimeText;
+
+    [SerializeField]
+    private TMP_Text levelText;
+
+    [SerializeField]
+    private TMP_Text earnedGoldText;
+
+    // ========================================================
+    // Button
+    // ========================================================
+
+    [Header("Button")]
+
+    [SerializeField]
+    private Button retryButton;
+
+    [SerializeField]
+    private Button lobbyButton;
+
+
+    // ========================================================
+    // Transition
+    // ========================================================
+
+    [Header("Transition")]
+
+    [SerializeField]
+    private UIPanelTransition transition;
+
+
+    // ========================================================
+    // Event
+    // ========================================================
 
     public event Action OnRetryClicked;
     public event Action OnLobbyClicked;
 
-    private Coroutine showRoutine;
+    [Header("Sequence")]
 
+    [SerializeField]
+    private GameResultSequenceAnimator sequenceAnimator;
+
+    // ========================================================
+    // Unity
+    // ========================================================
 
     private void Awake()
     {
+        ResolveReferences();
+
+
         if (retryButton != null)
         {
             retryButton.onClick.AddListener(
                 HandleRetryButtonClicked
             );
         }
+
 
         if (lobbyButton != null)
         {
@@ -63,6 +99,7 @@ public class GameResultUI : MonoBehaviour
             );
         }
 
+
         if (lobbyButton != null)
         {
             lobbyButton.onClick.RemoveListener(
@@ -71,6 +108,10 @@ public class GameResultUI : MonoBehaviour
         }
     }
 
+
+    // ========================================================
+    // Button
+    // ========================================================
 
     private void HandleRetryButtonClicked()
     {
@@ -84,116 +125,129 @@ public class GameResultUI : MonoBehaviour
     }
 
 
-    public void Show(GameResultData data)
+    // ========================================================
+    // Show / Hide
+    // ========================================================
+
+    public void Show(
+      GameResultData data)
     {
-        gameObject.SetActive(true);
-
-        if (survivalTimeText != null)
+        // 패널 전체 등장
+        if (transition != null)
         {
-            survivalTimeText.text =
-                FormatTime(data.SurvivalTime);
+            transition.Show();
         }
-
-        if (levelText != null)
+        else
         {
-            levelText.text =
-                $"Lv. {data.Level}";
-        }
-
-        if (showRoutine != null)
-        {
-            StopCoroutine(showRoutine);
-        }
-
-        showRoutine =
-            StartCoroutine(
-                PlayShowAnimation()
+            gameObject.SetActive(
+                true
             );
+        }
+
+
+        // =========================
+        // Earned Gold
+        // =========================
+
+        if (earnedGoldText != null)
+        {
+            earnedGoldText.text =
+                data.EarnedGold.ToString("N0");
+        }
+
+
+        // 내부 결과 순차 연출
+        if (sequenceAnimator != null)
+        {
+            sequenceAnimator.Play(
+                data
+            );
+        }
+        else
+        {
+            if (survivalTimeText != null)
+            {
+                survivalTimeText.text =
+                    FormatTime(
+                        data.SurvivalTime
+                    );
+            }
+
+
+            if (levelText != null)
+            {
+                levelText.text =
+                    $"Lv. {data.Level}";
+            }
+        }
     }
 
 
+    /// <summary>
+    /// Scene 시작 시 GameOverPanel을
+    /// 애니메이션 없이 바로 숨긴다.
+    /// </summary>
     public void Hide()
     {
-        if (showRoutine != null)
+        if (sequenceAnimator != null)
         {
-            StopCoroutine(showRoutine);
-            showRoutine = null;
+            sequenceAnimator.Stop();
         }
 
-        gameObject.SetActive(false);
+        if (transition != null)
+        {
+            transition.HideImmediate();
+        }
+        else
+        {
+            gameObject.SetActive(
+                false
+            );
+        }
     }
 
 
-    private IEnumerator PlayShowAnimation()
+    // ========================================================
+    // Reference
+    // ========================================================
+
+    private void ResolveReferences()
     {
-        if (canvasGroup == null ||
-            contentRoot == null)
+        if (transition == null)
         {
-            yield break;
+            transition =
+                GetComponent<UIPanelTransition>();
         }
 
-        canvasGroup.alpha = 0f;
-
-        Vector3 startScale =
-            Vector3.one * 0.92f;
-
-        Vector3 endScale =
-            Vector3.one;
-
-        contentRoot.localScale =
-            startScale;
-
-        float elapsed = 0f;
-
-        while (elapsed < showDuration)
+        if (sequenceAnimator == null)
         {
-            elapsed +=
-                Time.unscaledDeltaTime;
-
-            float t =
-                Mathf.Clamp01(
-                    elapsed / showDuration
-                );
-
-            // 부드러운 EaseOut
-            float eased =
-                1f -
-                Mathf.Pow(
-                    1f - t,
-                    3f
-                );
-
-            canvasGroup.alpha =
-                eased;
-
-            contentRoot.localScale =
-                Vector3.LerpUnclamped(
-                    startScale,
-                    endScale,
-                    eased
-                );
-
-            yield return null;
+            sequenceAnimator =
+                GetComponentInChildren
+                    <GameResultSequenceAnimator>(
+                        true
+                    );
         }
-
-        canvasGroup.alpha = 1f;
-        contentRoot.localScale = Vector3.one;
-
-        showRoutine = null;
     }
 
 
-    private string FormatTime(float time)
+    // ========================================================
+    // Format
+    // ========================================================
+
+    private string FormatTime(
+        float time)
     {
         int minutes =
             Mathf.FloorToInt(
                 time / 60f
             );
 
+
         int seconds =
             Mathf.FloorToInt(
                 time % 60f
             );
+
 
         return
             $"{minutes:00}:{seconds:00}";

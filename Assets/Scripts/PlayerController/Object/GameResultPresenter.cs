@@ -1,3 +1,4 @@
+
 using UnityEngine;
 
 /// <summary>
@@ -5,7 +6,7 @@ using UnityEngine;
 /// GameResultUI에 전달하는 중간 관리자.
 ///
 /// 생존 시간의 원본 데이터는
-/// GameManager_KHM.GameTime 하나만 사용한다.
+/// GameManager.GameTime 하나만 사용한다.
 /// </summary>
 public class GameResultPresenter : MonoBehaviour
 {
@@ -16,10 +17,6 @@ public class GameResultPresenter : MonoBehaviour
 
     [Header("결과 데이터")]
 
-    [SerializeField]
-    private GameManager_KHM gameManager_KHM;
-
-    // Retry / Lobby만 담당
     [SerializeField]
     private GameManager gameManager;
 
@@ -186,10 +183,23 @@ public class GameResultPresenter : MonoBehaviour
 
         float survivalTime = 0f;
 
-        if (gameManager_KHM != null)
+        if (gameManager != null)
         {
             survivalTime =
-                gameManager_KHM.GameTime;
+                gameManager.GameTime;
+        }
+
+
+        // =========================
+        // Earned Gold
+        // =========================
+
+        int earnedGold = 0;
+
+        if (gameManager != null)
+        {
+            earnedGold =
+                gameManager.GetGoldReward();
         }
 
 
@@ -202,10 +212,8 @@ public class GameResultPresenter : MonoBehaviour
 
         if (audio != null)
         {
-            // 인게임 BGM 정지
             audio.StopBgm();
 
-            // GameOver 효과음 재생
             audio.PlaySfx(
                 PlayerSfxType.GameOver
             );
@@ -219,12 +227,21 @@ public class GameResultPresenter : MonoBehaviour
         GameResultData resultData =
             new GameResultData(
                 survivalTime,
-                level
+                level,
+                earnedGold
             );
 
 
+        Debug.Log(
+            $"[GameResultPresenter] " +
+            $"Time : {survivalTime:F1} | " +
+            $"Level : {level} | " +
+            $"Gold : {earnedGold}"
+        );
+
+
         // =========================
-        // GameOver UI 표시
+        // GameOver UI
         // =========================
 
         if (gameResultUI != null)
@@ -238,12 +255,6 @@ public class GameResultPresenter : MonoBehaviour
 
     private void ResolveSceneReferences()
     {
-        if (gameManager_KHM == null)
-        {
-            gameManager_KHM =
-                FindFirstObjectByType<GameManager_KHM>();
-        }
-
         if (gameManager == null)
         {
             gameManager =

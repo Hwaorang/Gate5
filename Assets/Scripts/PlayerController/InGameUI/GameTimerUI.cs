@@ -16,7 +16,7 @@ public class GameTimerUI : MonoBehaviour
 
     [Header("Time Source")]
     [SerializeField]
-    private GameManager_KHM gameManagerKHM;
+    private GameManager gameManager;
 
 
     private void Awake()
@@ -41,11 +41,11 @@ public class GameTimerUI : MonoBehaviour
     {
         // Scene 초기화 순서 때문에 Start 시점에 못 찾았을 경우
         // 이후 한 번 더 찾을 수 있도록 한다.
-        if (gameManagerKHM == null)
+        if (gameManager == null)
         {
             ResolveGameManager();
 
-            if (gameManagerKHM == null)
+            if (gameManager == null)
             {
                 return;
             }
@@ -57,27 +57,27 @@ public class GameTimerUI : MonoBehaviour
 
     private void ResolveGameManager()
     {
-        if (gameManagerKHM != null)
+        if (gameManager != null)
         {
             return;
         }
 
-        gameManagerKHM =
-            FindFirstObjectByType<GameManager_KHM>();
+        gameManager =
+            FindFirstObjectByType<GameManager>();
     }
 
 
     private void Refresh()
     {
         if (timeText == null ||
-            gameManagerKHM == null)
+            gameManager == null)
         {
             return;
         }
 
         timeText.text =
             FormatTime(
-                gameManagerKHM.GameTime
+                gameManager.GameTime
             );
     }
 

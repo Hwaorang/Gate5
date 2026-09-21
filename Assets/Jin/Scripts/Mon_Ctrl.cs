@@ -15,12 +15,12 @@ public class Mon_Ctrl : MonoBehaviour
 
     string objname;
     float curHP;
-    float damage;
+    int damage;
     int exp;
 
     bool isDead = false;
 
-    
+    [SerializeField] Animator animator;
     void Start()
     {
                
@@ -34,6 +34,13 @@ public class Mon_Ctrl : MonoBehaviour
         objname = data.monName;
         exp = data.exp;
         isDead = false;
+        animator.SetBool("IsDead", false);
+        animator.SetBool("IsRun", false);
+    }
+
+    public int Damage
+    {
+        get {  return damage; }
     }
     private void OnEnable()
     {
@@ -64,8 +71,11 @@ public class Mon_Ctrl : MonoBehaviour
     {
         while(true)
         {
+
             agent.SetDestination(targetPos);
             //agent.SetDestination(testTargetPos.position);
+
+            animator.SetBool("IsRun", true);
 
             if(arrive)
                 yield break;
@@ -76,14 +86,30 @@ public class Mon_Ctrl : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        Debug.Log("Coll");
         if(collision.gameObject.CompareTag("Goal"))
         {
+            Debug.Log("CollToGoal");
             arrive = true;
             //Damage 
             MonSpawn_Mgr.instance.ReturnObject(objname, this.gameObject, 0);
         }
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        Debug.Log("Coll");
+        if (other.gameObject.CompareTag("Goal"))
+        {
+            Debug.Log("CollToGoal");
+            arrive = true;
+            //Damage 
+            MonSpawn_Mgr.instance.ReturnObject(objname, this.gameObject, 0);
+        }
+    }
+
+
+    
     //public void TakeDamage(float _damage)
     //{
     //    curHP -= _damage;
@@ -129,7 +155,7 @@ public class Mon_Ctrl : MonoBehaviour
         if (curHP <= 0f)
         {
             isDead = true;
-
+            animator.SetBool("IsDead", true);
             MonSpawn_Mgr.instance.ReturnObject(
                 objname,
                 gameObject,
