@@ -524,30 +524,37 @@ public class SquadManager : MonoBehaviour
     public void RemoveUnits(
         int amount)
     {
-        if (amount <= 0 ||
+        DamageSoldiers(amount);
+    }
+
+
+    /// <summary>
+    /// DamageLine에서 전달받은 피해량만큼
+    /// 살아있는 병사를 사망 처리한다.
+    /// 
+    /// 이미 Dying / Dead 상태인 병사는 건너뛴다.
+    /// </summary>
+    public void DamageSoldiers(int damage)
+    {
+        if (damage <= 0 ||
             soldiers.Count <= 0)
         {
             return;
         }
 
-        int removeCount =
-            Mathf.Min(
-                amount,
-                soldiers.Count
-            );
+        int killedCount = 0;
 
-
-        // Die()는 즉시 soldiers 리스트를 제거하지 않으므로
-        // 뒤에서부터 서로 다른 Index를 선택한다.
-        for (int i = 0;
-             i < removeCount;
-             i++)
+        for (int i = soldiers.Count - 1;
+             i >= 0;
+             i--)
         {
-            int index =
-                soldiers.Count - 1 - i;
+            if (killedCount >= damage)
+            {
+                break;
+            }
 
             GameObject soldierObject =
-                soldiers[index];
+                soldiers[i];
 
             if (soldierObject == null)
             {
@@ -557,41 +564,19 @@ public class SquadManager : MonoBehaviour
             SoldierUnit soldier =
                 soldierObject.GetComponent<SoldierUnit>();
 
-            if (soldier != null)
+            if (soldier == null)
             {
-                soldier.Die();
+                continue;
             }
-        }
-    }
 
+            if (!soldier.CanAttack)
+            {
+                continue;
+            }
 
-    /// <summary>
-    /// 마지막 병사 한 명을 사망 처리한다.
-    /// DamageLine 등에서 사용한다.
-    /// </summary>
-    public void RemoveOneSoldier(int _damage)
-    {
-        if (soldiers.Count <= 0)
-        {
-            return;
-        }
-
-        GameObject soldierObject =
-            soldiers[
-                soldiers.Count - _damage
-            ];
-
-        if (soldierObject == null)
-        {
-            return;
-        }
-
-        SoldierUnit soldier =
-            soldierObject.GetComponent<SoldierUnit>();
-
-        if (soldier != null)
-        {
             soldier.Die();
+
+            killedCount++;
         }
     }
 
