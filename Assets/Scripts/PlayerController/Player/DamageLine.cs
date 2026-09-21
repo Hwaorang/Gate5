@@ -198,6 +198,7 @@ public class DamageLine : MonoBehaviour
             return;
         }
 
+
         squadManager.DamageSoldiers(
             monCtrl.Damage
         );
