@@ -1,16 +1,43 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+/// <summary>
+/// Lobby 전용 Cheat UI.
+///
+/// 담당 역할
+/// - F11로 치트창 On / Off
+/// - 골드 추가
+/// - 골드 초기화
+/// - 업그레이드 초기화
+///
+/// Lobby Scene에만 존재하며
+/// DontDestroyOnLoad를 사용하지 않는다.
+/// </summary>
 public class LobbyCheatUI : MonoBehaviour
 {
+    // =========================
+    // UI
+    // =========================
+
     [Header("Cheat UI")]
+
     [SerializeField]
     private GameObject cheatPanel;
 
+
+    // =========================
+    // Cheat 설정
+    // =========================
+
     [Header("Gold Cheat")]
+
     [SerializeField]
     private int addGoldAmount = 10000;
 
+
+    // =========================
+    // 초기화
+    // =========================
 
     private void Start()
     {
@@ -20,6 +47,10 @@ public class LobbyCheatUI : MonoBehaviour
         }
     }
 
+
+    // =========================
+    // 입력
+    // =========================
 
     private void Update()
     {
@@ -35,6 +66,10 @@ public class LobbyCheatUI : MonoBehaviour
     }
 
 
+    // =========================
+    // Panel
+    // =========================
+
     private void ToggleCheatPanel()
     {
         if (cheatPanel == null)
@@ -48,6 +83,10 @@ public class LobbyCheatUI : MonoBehaviour
     }
 
 
+    // =========================
+    // Gold Add
+    // =========================
+
     public void AddGold()
     {
         if (!LobbyCheatDataBridge.AddGold(
@@ -59,5 +98,53 @@ public class LobbyCheatUI : MonoBehaviour
         Debug.Log(
             $"[Cheat] Gold +{addGoldAmount}"
         );
+    }
+
+
+    // =========================
+    // Gold Reset
+    // =========================
+
+    public void ResetGold()
+    {
+        if (!LobbyCheatDataBridge.ResetGold())
+        {
+            return;
+        }
+
+        Debug.Log(
+            "[Cheat] Gold Reset"
+        );
+    }
+
+
+    // =========================
+    // Upgrade Reset
+    // =========================
+
+    public void ResetUpgrades()
+    {
+        if (!LobbyCheatDataBridge.ResetUpgrades())
+        {
+            return;
+        }
+
+        // 비활성화된 UpgradePanel 안의
+        // UpgradeManager까지 찾아서 UI 갱신
+        UpgradeManager upgradeManager =
+            FindFirstObjectByType<UpgradeManager>(
+                FindObjectsInactive.Include
+            );
+
+        if (upgradeManager != null)
+        {
+            upgradeManager.RefreshUI();
+        }
+
+#if UNITY_EDITOR
+        Debug.Log(
+            "[Cheat] Upgrade Reset 완료"
+        );
+#endif
     }
 }
