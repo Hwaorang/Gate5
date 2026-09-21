@@ -7341,7 +7341,12 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
 <<<<<<< HEAD
+<<<<<<< HEAD
   m_Children: []
+=======
+  m_Children:
+  - {fileID: 993986558}
+>>>>>>> parent of 6d204e82 (Merge pull request #193 from Hwaorang/feature/player-controller)
 =======
   m_Children:
   - {fileID: 993986558}
@@ -9088,12 +9093,17 @@ RectTransform:
   - {fileID: 1622390232}
   - {fileID: 1318399269}
 <<<<<<< HEAD
+<<<<<<< HEAD
   - {fileID: 681962789}
 
   - {fileID: 1534863960}
   - {fileID: 2138022538}
   - {fileID: 1634765453}
 
+=======
+  - {fileID: 2138022538}
+  - {fileID: 1534863960}
+>>>>>>> parent of 6d204e82 (Merge pull request #193 from Hwaorang/feature/player-controller)
 =======
   - {fileID: 2138022538}
   - {fileID: 1534863960}
