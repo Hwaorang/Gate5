@@ -181,6 +181,7 @@ public class SoldierUnit : MonoBehaviour
             animationController.PlayDeath();
         }
 
+        
 
         // =========================
         // 사망 연출 대기
