@@ -7,6 +7,7 @@ using UnityEngine;
 /// PlayerRoot를 Scene에서 직접 참조하지 않고
 /// PlayerContext를 통해 필요한 컴포넌트를 전달받는다.
 /// </summary>
+[RequireComponent(typeof(LineRenderer))]
 public class DamageLine : MonoBehaviour
 {
     [Header("Collider")]
@@ -38,12 +39,51 @@ public class DamageLine : MonoBehaviour
     private float fixedX;
     private float fixedY;
 
+    [Header("빨간줄")]
+    [SerializeField] private float lineWidth = 0.1f;
+    [SerializeField] private float lineLength = 10f;
+
+    private LineRenderer lineRenderer;
+
     private void Awake()
     {
         // DamageLine은 좌우로 움직이지 않도록
         // 현재 Scene 위치의 X / Y를 기억한다.
         fixedX = transform.position.x;
         fixedY = transform.position.y;
+
+        //빨간선을 긋기 위한 함수
+        lineRenderer = GetComponent<LineRenderer>();
+
+        if (lineRenderer == null)
+        {
+            lineRenderer = gameObject.AddComponent<LineRenderer>();
+        }
+
+        lineRenderer.positionCount = 2;
+
+        lineRenderer.startWidth = lineWidth;
+        lineRenderer.endWidth = lineWidth;
+
+        // Material 생성
+        lineRenderer.material =
+            new Material(Shader.Find("Sprites/Default"));
+
+        // 빨간색
+        lineRenderer.startColor = Color.red;
+        lineRenderer.endColor = Color.red;
+
+        lineRenderer.useWorldSpace = false;
+
+        lineRenderer.SetPosition(
+            0,
+            new Vector3(-lineLength / 2f, 0f, 0f)
+        );
+
+        lineRenderer.SetPosition(
+            1,
+            new Vector3(lineLength / 2f, 0f, 0f)
+        );
     }
 
     /// <summary>
