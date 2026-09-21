@@ -84,17 +84,17 @@ public class Mon_Ctrl : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        Debug.Log("Coll");
-        if(collision.gameObject.CompareTag("Goal"))
-        {
-            Debug.Log("CollToGoal");
-            arrive = true;
-            //Damage 
-            MonSpawn_Mgr.instance.ReturnObject(objname, this.gameObject, 0);
-        }
-    }
+    //private void OnCollisionEnter(Collision collision)
+    //{
+    //    Debug.Log("Coll");
+    //    if(collision.gameObject.CompareTag("Goal"))
+    //    {
+    //        Debug.Log("CollToGoal");
+    //        arrive = true;
+    //        //Damage 
+    //        MonSpawn_Mgr.instance.ReturnObject(objname, this.gameObject, 0);
+    //    }
+    //}
 
     private void OnTriggerEnter(Collider other)
     {
