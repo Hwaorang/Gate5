@@ -3,7 +3,7 @@ using UnityEngine;
 public class SaveTest : MonoBehaviour
 {
     [Header("실시간 테스트 골드")]
-    [SerializeField] private int testGold = 10000;
+    [SerializeField] private int testGold = 1000;
 
     public void ApplyGold()
     {
