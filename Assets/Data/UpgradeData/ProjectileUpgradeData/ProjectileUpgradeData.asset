@@ -16,4 +16,4 @@ MonoBehaviour:
   maxProjectileCount: 5
   baseScaleMultiplier: 1
   scaleIncreasePerLevel: 0.2
-  spreadAngle: 5
+  spreadAngle: 1.5

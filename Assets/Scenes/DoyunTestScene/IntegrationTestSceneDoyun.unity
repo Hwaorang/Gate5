@@ -279,7 +279,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StageMapManager
   chunkPrefab: {fileID: 8184887640042037564, guid: 77196f9a64fc85b49afa5a0133cc15d2, type: 3}
   chunkCount: 4
-  moveSpeed: 5
+  moveSpeed: 7
   recycleZ: -50
   recycleAnchor: {fileID: 94119559}
   recycleBehindDistance: 45
@@ -525,6 +525,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0af92037e73d2434c97b32f4a1cb4499, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameStartCountdownController
+  inGameMenuPresenter: {fileID: 0}
   countdownSeconds: 3
   goDisplaySeconds: 0.6
   countdownUI: {fileID: 0}
