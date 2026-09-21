@@ -9,7 +9,6 @@ public class LobbyUIManager : MonoBehaviour
     [Header("패널")]
     [SerializeField] private GameObject upgradePanel;
     [SerializeField] private GameObject skinPanel;
-    [SerializeField] private GameObject difficultyPanel;
 
 
     // =====================================================
@@ -21,34 +20,110 @@ public class LobbyUIManager : MonoBehaviour
 
 
     // =====================================================
-    // 강화 패널 열기
+    // 로비 버튼
     // =====================================================
 
-    public void OpenUpgradePanel()
-    {
-        // 다른 패널 닫기
-        skinPanel.SetActive(false);
-        difficultyPanel.SetActive(false);
+    [Header("로비 버튼")]
+    [SerializeField] private GameObject upgradeButton;
+    [SerializeField] private GameObject skinButton;
+    [SerializeField] private GameObject startButton;
 
-        // 강화 패널 열기
-        upgradePanel.SetActive(true);
+
+    // =====================================================
+    // 게임 시작 시
+    // =====================================================
+
+    private void Start()
+    {
+        // 처음에는 모든 패널 닫기
+        CloseAllPanels();
+
+        // 로비 버튼 보이기
+        ShowLobbyButtons();
 
         // 실제 로비 캐릭터 보이기
-        lobbyCharacter.SetActive(true);
+        if (lobbyCharacter != null)
+        {
+            lobbyCharacter.SetActive(true);
+        }
     }
 
 
     // =====================================================
-    // 강화 패널 닫기
+    // 업그레이드 패널 열기
+    // =====================================================
+
+    public void OpenUpgradePanel()
+    {
+        // ---------------------------------------------
+        // 1. 스킨 패널 닫기
+        // ---------------------------------------------
+
+        if (skinPanel != null)
+        {
+            skinPanel.SetActive(false);
+        }
+
+
+        // ---------------------------------------------
+        // 2. 업그레이드 패널 열기
+        // ---------------------------------------------
+
+        if (upgradePanel != null)
+        {
+            upgradePanel.SetActive(true);
+        }
+
+
+        // ---------------------------------------------
+        // 3. 로비 버튼 숨기기
+        // ---------------------------------------------
+
+        HideLobbyButtons();
+
+
+        // ---------------------------------------------
+        // 4. 실제 로비 캐릭터 보이기
+        // ---------------------------------------------
+
+        if (lobbyCharacter != null)
+        {
+            lobbyCharacter.SetActive(true);
+        }
+    }
+
+
+    // =====================================================
+    // 업그레이드 패널 닫기
     // =====================================================
 
     public void CloseUpgradePanel()
     {
-        // 강화 패널 닫기
-        upgradePanel.SetActive(false);
+        // ---------------------------------------------
+        // 1. 업그레이드 패널 닫기
+        // ---------------------------------------------
 
-        // 실제 로비 캐릭터 보이기
-        lobbyCharacter.SetActive(true);
+        if (upgradePanel != null)
+        {
+            upgradePanel.SetActive(false);
+        }
+
+
+        // ---------------------------------------------
+        // 2. 로비 버튼 다시 보이기
+        // ---------------------------------------------
+
+        ShowLobbyButtons();
+
+
+        // ---------------------------------------------
+        // 3. 실제 로비 캐릭터 보이기
+        // ---------------------------------------------
+
+        if (lobbyCharacter != null)
+        {
+            lobbyCharacter.SetActive(true);
+        }
     }
 
 
@@ -58,15 +133,41 @@ public class LobbyUIManager : MonoBehaviour
 
     public void OpenSkinPanel()
     {
-        // 다른 패널 닫기
-        upgradePanel.SetActive(false);
-        difficultyPanel.SetActive(false);
+        // ---------------------------------------------
+        // 1. 업그레이드 패널 닫기
+        // ---------------------------------------------
 
-        // 스킨 패널 열기
-        skinPanel.SetActive(true);
+        if (upgradePanel != null)
+        {
+            upgradePanel.SetActive(false);
+        }
 
-        // 실제 로비 캐릭터 숨기기
-        lobbyCharacter.SetActive(false);
+
+        // ---------------------------------------------
+        // 2. 스킨 패널 열기
+        // ---------------------------------------------
+
+        if (skinPanel != null)
+        {
+            skinPanel.SetActive(true);
+        }
+
+
+        // ---------------------------------------------
+        // 3. 로비 버튼 숨기기
+        // ---------------------------------------------
+
+        HideLobbyButtons();
+
+
+        // ---------------------------------------------
+        // 4. 실제 로비 캐릭터 숨기기
+        // ---------------------------------------------
+
+        if (lobbyCharacter != null)
+        {
+            lobbyCharacter.SetActive(false);
+        }
     }
 
 
@@ -76,42 +177,106 @@ public class LobbyUIManager : MonoBehaviour
 
     public void CloseSkinPanel()
     {
+        // ---------------------------------------------
+        // 1. 스킨 패널 닫기
+        // ---------------------------------------------
+
+        if (skinPanel != null)
+        {
+            skinPanel.SetActive(false);
+        }
+
+
+        // ---------------------------------------------
+        // 2. 로비 버튼 다시 보이기
+        // ---------------------------------------------
+
+        ShowLobbyButtons();
+
+
+        // ---------------------------------------------
+        // 3. 실제 로비 캐릭터 다시 보이기
+        // ---------------------------------------------
+
+        if (lobbyCharacter != null)
+        {
+            lobbyCharacter.SetActive(true);
+        }
+    }
+
+
+    // =====================================================
+    // 모든 패널 닫기
+    // =====================================================
+
+    private void CloseAllPanels()
+    {
+        // 업그레이드 패널 닫기
+        if (upgradePanel != null)
+        {
+            upgradePanel.SetActive(false);
+        }
+
         // 스킨 패널 닫기
-        skinPanel.SetActive(false);
-
-        // 실제 로비 캐릭터 다시 보이기
-        lobbyCharacter.SetActive(true);
+        if (skinPanel != null)
+        {
+            skinPanel.SetActive(false);
+        }
     }
 
 
     // =====================================================
-    // 난이도 패널 열기
+    // 로비 버튼 숨기기
     // =====================================================
 
-    public void OpenDifficultyPanel()
+    private void HideLobbyButtons()
     {
-        // 다른 패널 닫기
-        upgradePanel.SetActive(false);
-        skinPanel.SetActive(false);
+        // 업그레이드 버튼 숨기기
+        if (upgradeButton != null)
+        {
+            upgradeButton.SetActive(false);
+        }
 
-        // 난이도 패널 열기
-        difficultyPanel.SetActive(true);
 
-        // 실제 로비 캐릭터 보이기
-        lobbyCharacter.SetActive(true);
+        // 스킨 버튼 숨기기
+        if (skinButton != null)
+        {
+            skinButton.SetActive(false);
+        }
+
+
+        // 게임 시작 버튼 숨기기
+        if (startButton != null)
+        {
+            startButton.SetActive(false);
+        }
     }
 
 
     // =====================================================
-    // 난이도 패널 닫기
+    // 로비 버튼 다시 보이기
     // =====================================================
 
-    public void CloseDifficultyPanel()
+    private void ShowLobbyButtons()
     {
-        // 난이도 패널 닫기
-        difficultyPanel.SetActive(false);
+        // 업그레이드 버튼 보이기
+        if (upgradeButton != null)
+        {
+            upgradeButton.SetActive(true);
+        }
 
-        // 실제 로비 캐릭터 다시 보이기
-        lobbyCharacter.SetActive(true);
+
+        // 스킨 버튼 보이기
+        if (skinButton != null)
+        {
+            skinButton.SetActive(true);
+        }
+
+
+        // 게임 시작 버튼 보이기
+        if (startButton != null)
+        {
+            startButton.SetActive(true);
+        }
     }
 }

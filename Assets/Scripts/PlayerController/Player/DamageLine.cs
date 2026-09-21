@@ -190,22 +190,17 @@ public class DamageLine : MonoBehaviour
             return;
         }
 
-        // 팀 Enemy
         Mon_Ctrl monCtrl =
             other.GetComponentInParent<Mon_Ctrl>();
 
-        // 테스트/레거시 Enemy
-        EnemyHealth enemyHealth =
-            other.GetComponentInParent<EnemyHealth>();
-
-        if (monCtrl == null &&
-            enemyHealth == null)
+        if (monCtrl == null)
         {
             return;
         }
 
-        
-        squadManager.RemoveOneSoldier(monCtrl.Damage);
+        squadManager.DamageSoldiers(
+            monCtrl.Damage
+        );
     }
 
     private void LateUpdate()
