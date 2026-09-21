@@ -7,7 +7,7 @@ public class PlayerData
     // 기본 골드 
     // =========================
 
-    public int gold = 1000;
+    public int gold = 0;
 
 
     // =========================
