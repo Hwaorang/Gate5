@@ -101,20 +101,19 @@ public static class CheatPanelCreator
             panel.GetComponent<RectTransform>();
 
         panelRect.anchorMin =
-            new Vector2(0.5f, 0.5f);
+            new Vector2(1f, 0.5f);
 
         panelRect.anchorMax =
-            new Vector2(0.5f, 0.5f);
+            new Vector2(1f, 0.5f);
 
         panelRect.pivot =
-            new Vector2(0.5f, 0.5f);
+            new Vector2(1f, 0.5f);
+
+        panelRect.anchoredPosition =
+            new Vector2(-40f, 0f);
 
         panelRect.sizeDelta =
             new Vector2(420f, 420f);
-
-        panelRect.anchoredPosition =
-            Vector2.zero;
-
 
         Image panelImage =
             panel.GetComponent<Image>();
