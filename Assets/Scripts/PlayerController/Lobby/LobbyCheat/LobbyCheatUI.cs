@@ -39,6 +39,18 @@ public class LobbyCheatUI : MonoBehaviour
     // 초기화
     // =========================
 
+    private void Awake()
+    {
+#if !UNITY_EDITOR
+    if (cheatPanel != null)
+    {
+        cheatPanel.SetActive(false);
+    }
+
+    enabled = false;
+#endif
+    }
+
     private void Start()
     {
         if (cheatPanel != null)
@@ -54,6 +66,7 @@ public class LobbyCheatUI : MonoBehaviour
 
     private void Update()
     {
+#if UNITY_EDITOR
         if (Keyboard.current == null)
         {
             return;
@@ -63,6 +76,7 @@ public class LobbyCheatUI : MonoBehaviour
         {
             ToggleCheatPanel();
         }
+#endif
     }
 
 
@@ -89,6 +103,10 @@ public class LobbyCheatUI : MonoBehaviour
 
     public void AddGold()
     {
+#if !UNITY_EDITOR
+    return;
+#endif
+
         if (!LobbyCheatDataBridge.AddGold(
                 addGoldAmount))
         {
