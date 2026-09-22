@@ -10,7 +10,7 @@ public class LobbyUIManager : MonoBehaviour
     [SerializeField] private GameObject upgradePanel;
     [SerializeField] private GameObject skinPanel;
 
-    // 초기화 확인창
+    // 리셋 확인 패널
     [SerializeField] private GameObject resetConfirmPanel;
 
 
@@ -42,7 +42,7 @@ public class LobbyUIManager : MonoBehaviour
         // 모든 패널 닫기
         CloseAllPanels();
 
-        // 초기화 확인창 닫기
+        // 리셋 확인창 닫기
         if (resetConfirmPanel != null)
         {
             resetConfirmPanel.SetActive(false);
@@ -169,12 +169,13 @@ public class LobbyUIManager : MonoBehaviour
 
     public void OpenResetConfirm()
     {
-        // 다른 패널 닫기
+        // 업그레이드 패널 닫기
         if (upgradePanel != null)
         {
             upgradePanel.SetActive(false);
         }
 
+        // 스킨 패널 닫기
         if (skinPanel != null)
         {
             skinPanel.SetActive(false);
@@ -186,7 +187,7 @@ public class LobbyUIManager : MonoBehaviour
             resetConfirmPanel.SetActive(true);
         }
 
-        // 로비 버튼 숨기기
+        // 모든 로비 버튼 숨기기
         HideLobbyButtons();
 
         // 로비 캐릭터는 보이게 유지
@@ -198,7 +199,7 @@ public class LobbyUIManager : MonoBehaviour
 
 
     // =====================================================
-    // 리셋 취소
+    // 리셋 취소 - 아니오
     // =====================================================
 
     public void CancelReset()
@@ -221,12 +222,13 @@ public class LobbyUIManager : MonoBehaviour
 
 
     // =====================================================
-    // 리셋 확인
+    // 리셋 확인 - 예
     // =====================================================
 
     public void ConfirmReset()
     {
-        // SaveManager의 저장 데이터 초기화
+        // SaveManager를 통해
+        // 골드 / 스킨 / 모든 업그레이드 초기화
         if (SaveManager.Instance != null)
         {
             SaveManager.Instance.ResetData();
