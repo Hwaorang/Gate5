@@ -5,7 +5,7 @@ public class LobbyUIManager : MonoBehaviour
     [Header("패널")]
     [SerializeField] private GameObject upgradePanel;
     [SerializeField] private GameObject skinPanel;
-    [SerializeField] private GameObject difficultyPanel;
+    [SerializeField] private GameObject SettingPanel;
 
     [Header("리셋 확인")]
     [SerializeField] private GameObject resetConfirmPanel;
@@ -16,7 +16,7 @@ public class LobbyUIManager : MonoBehaviour
     [Header("로비 버튼")]
     [SerializeField] private GameObject upgradeButton;
     [SerializeField] private GameObject skinButton;
-    [SerializeField] private GameObject difficultyButton;
+    [SerializeField] private GameObject SettingButton;
     [SerializeField] private GameObject startButton;
     [SerializeField] private GameObject resetButton;
 
@@ -130,16 +130,16 @@ public class LobbyUIManager : MonoBehaviour
 
 
     // =========================================================
-    // 난이도 패널 열기
+    // 세팅 패널 열기
     // =========================================================
 
-    public void OpenDifficultyPanel()
+    public void OpenSettingPanel()
     {
         CloseAllPanels();
 
-        if (difficultyPanel != null)
+        if (SettingPanel != null)
         {
-            difficultyPanel.SetActive(true);
+            SettingPanel.SetActive(true);
         }
 
         HideLobbyButtons();
@@ -152,14 +152,14 @@ public class LobbyUIManager : MonoBehaviour
 
 
     // =========================================================
-    // 난이도 패널 닫기
+    // 세팅 패널 닫기
     // =========================================================
 
-    public void CloseDifficultyPanel()
+    public void CloseSettingPanel()
     {
-        if (difficultyPanel != null)
+        if (SettingPanel != null)
         {
-            difficultyPanel.SetActive(false);
+            SettingPanel.SetActive(false);
         }
 
         ShowLobbyButtons();
@@ -351,9 +351,9 @@ public class LobbyUIManager : MonoBehaviour
             skinPanel.SetActive(false);
         }
 
-        if (difficultyPanel != null)
+        if (SettingPanel != null)
         {
-            difficultyPanel.SetActive(false);
+            SettingPanel.SetActive(false);
         }
     }
 
@@ -374,9 +374,9 @@ public class LobbyUIManager : MonoBehaviour
             skinButton.SetActive(false);
         }
 
-        if (difficultyButton != null)
+        if (SettingButton != null)
         {
-            difficultyButton.SetActive(false);
+            SettingButton.SetActive(false);
         }
 
         if (startButton != null)
@@ -407,9 +407,9 @@ public class LobbyUIManager : MonoBehaviour
             skinButton.SetActive(true);
         }
 
-        if (difficultyButton != null)
+        if (SettingButton != null)
         {
-            difficultyButton.SetActive(true);
+            SettingButton.SetActive(true);
         }
 
         if (startButton != null)
@@ -423,4 +423,3 @@ public class LobbyUIManager : MonoBehaviour
         }
     }
 }
-
