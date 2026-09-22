@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83267c823a5a7f048830b35f7ffd4e38, type: 3}
   m_Name: zombieLv2_Data
   m_EditorClassIdentifier: Assembly-CSharp::Mon_Data
-  monName: 
-  maxHp: 0
-  damage: 0
-  walkSpeed: 0
-  exp: 0
+  monName: zombie_Lv2
+  maxHp: 35
+  damage: 1
+  walkSpeed: 10
+  exp: 2

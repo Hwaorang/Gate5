@@ -129,7 +129,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Mon_Ctrl
   data: {fileID: 11400000, guid: bfb6cef190c57944a83caf44a4c18191, type: 2}
-  animator: {fileID: 0}
+  animator: {fileID: 1376822977845924596}
 --- !u!65 &1480445986074387010
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -228,6 +228,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f764cac7cb2c0aa45aea768e665e40d7, type: 3}
+--- !u!95 &1376822977845924596 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 9596350, guid: f764cac7cb2c0aa45aea768e665e40d7, type: 3}
+  m_PrefabInstance: {fileID: 1376822977853161290}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1376822977853611418 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 467664, guid: f764cac7cb2c0aa45aea768e665e40d7, type: 3}
