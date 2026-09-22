@@ -1554,9 +1554,7 @@ MonoBehaviour:
   inGameMenuPresenter: {fileID: 0}
   upgradeDatas:
   - {fileID: 11400000, guid: e0c4c363b8aa2b142a3d79b2e90e33cc, type: 2}
-  - {fileID: 11400000, guid: e2a0597b6882a624a98fc32083a2b091, type: 2}
   - {fileID: 11400000, guid: 64cac7f34695d9643979880b4dbafecb, type: 2}
-  - {fileID: 11400000, guid: 4f2db5cad7f38f64884dd0ad303c92e6, type: 2}
   - {fileID: 11400000, guid: 688b18a1bee264e4f8d045107275aa13, type: 2}
   - {fileID: 11400000, guid: 3d4348be5ef4afb4f87d0a68b358264f, type: 2}
   squadManager: {fileID: 0}

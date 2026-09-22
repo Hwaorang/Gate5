@@ -2,56 +2,40 @@ using UnityEngine;
 
 public class LobbyUIManager : MonoBehaviour
 {
-    // =====================================================
-    // 패널
-    // =====================================================
-
     [Header("패널")]
     [SerializeField] private GameObject upgradePanel;
     [SerializeField] private GameObject skinPanel;
+    [SerializeField] private GameObject difficultyPanel;
 
-    // 초기화 확인창
+    [Header("리셋 확인")]
     [SerializeField] private GameObject resetConfirmPanel;
-
-
-    // =====================================================
-    // 실제 로비 캐릭터
-    // =====================================================
 
     [Header("실제 로비 캐릭터")]
     [SerializeField] private GameObject lobbyCharacter;
 
-
-    // =====================================================
-    // 로비 버튼
-    // =====================================================
-
     [Header("로비 버튼")]
     [SerializeField] private GameObject upgradeButton;
     [SerializeField] private GameObject skinButton;
+    [SerializeField] private GameObject difficultyButton;
     [SerializeField] private GameObject startButton;
     [SerializeField] private GameObject resetButton;
 
 
-    // =====================================================
-    // 게임 시작 시
-    // =====================================================
+    // =========================================================
+    // 시작
+    // =========================================================
 
     private void Start()
     {
-        // 모든 패널 닫기
         CloseAllPanels();
 
-        // 초기화 확인창 닫기
         if (resetConfirmPanel != null)
         {
             resetConfirmPanel.SetActive(false);
         }
 
-        // 로비 버튼 보이기
         ShowLobbyButtons();
 
-        // 실제 로비 캐릭터 보이기
         if (lobbyCharacter != null)
         {
             lobbyCharacter.SetActive(true);
@@ -59,28 +43,21 @@ public class LobbyUIManager : MonoBehaviour
     }
 
 
-    // =====================================================
+    // =========================================================
     // 업그레이드 패널 열기
-    // =====================================================
+    // =========================================================
 
     public void OpenUpgradePanel()
     {
-        // 스킨 패널 닫기
-        if (skinPanel != null)
-        {
-            skinPanel.SetActive(false);
-        }
+        CloseAllPanels();
 
-        // 업그레이드 패널 열기
         if (upgradePanel != null)
         {
             upgradePanel.SetActive(true);
         }
 
-        // 로비 버튼 숨기기
         HideLobbyButtons();
 
-        // 로비 캐릭터 보이기
         if (lobbyCharacter != null)
         {
             lobbyCharacter.SetActive(true);
@@ -88,22 +65,19 @@ public class LobbyUIManager : MonoBehaviour
     }
 
 
-    // =====================================================
+    // =========================================================
     // 업그레이드 패널 닫기
-    // =====================================================
+    // =========================================================
 
     public void CloseUpgradePanel()
     {
-        // 업그레이드 패널 닫기
         if (upgradePanel != null)
         {
             upgradePanel.SetActive(false);
         }
 
-        // 로비 버튼 다시 보이기
         ShowLobbyButtons();
 
-        // 로비 캐릭터 보이기
         if (lobbyCharacter != null)
         {
             lobbyCharacter.SetActive(true);
@@ -111,28 +85,23 @@ public class LobbyUIManager : MonoBehaviour
     }
 
 
-    // =====================================================
+    // =========================================================
     // 스킨 패널 열기
-    // =====================================================
+    // =========================================================
 
     public void OpenSkinPanel()
     {
-        // 업그레이드 패널 닫기
-        if (upgradePanel != null)
-        {
-            upgradePanel.SetActive(false);
-        }
+        CloseAllPanels();
 
-        // 스킨 패널 열기
         if (skinPanel != null)
         {
             skinPanel.SetActive(true);
         }
 
-        // 로비 버튼 숨기기
         HideLobbyButtons();
 
-        // 실제 로비 캐릭터 숨기기
+        // 스킨 패널에서는
+        // 원래 로비 캐릭터 숨김
         if (lobbyCharacter != null)
         {
             lobbyCharacter.SetActive(false);
@@ -140,22 +109,19 @@ public class LobbyUIManager : MonoBehaviour
     }
 
 
-    // =====================================================
+    // =========================================================
     // 스킨 패널 닫기
-    // =====================================================
+    // =========================================================
 
     public void CloseSkinPanel()
     {
-        // 스킨 패널 닫기
         if (skinPanel != null)
         {
             skinPanel.SetActive(false);
         }
 
-        // 로비 버튼 다시 보이기
         ShowLobbyButtons();
 
-        // 로비 캐릭터 다시 보이기
         if (lobbyCharacter != null)
         {
             lobbyCharacter.SetActive(true);
@@ -163,33 +129,63 @@ public class LobbyUIManager : MonoBehaviour
     }
 
 
-    // =====================================================
+    // =========================================================
+    // 난이도 패널 열기
+    // =========================================================
+
+    public void OpenDifficultyPanel()
+    {
+        CloseAllPanels();
+
+        if (difficultyPanel != null)
+        {
+            difficultyPanel.SetActive(true);
+        }
+
+        HideLobbyButtons();
+
+        if (lobbyCharacter != null)
+        {
+            lobbyCharacter.SetActive(true);
+        }
+    }
+
+
+    // =========================================================
+    // 난이도 패널 닫기
+    // =========================================================
+
+    public void CloseDifficultyPanel()
+    {
+        if (difficultyPanel != null)
+        {
+            difficultyPanel.SetActive(false);
+        }
+
+        ShowLobbyButtons();
+
+        if (lobbyCharacter != null)
+        {
+            lobbyCharacter.SetActive(true);
+        }
+    }
+
+
+    // =========================================================
     // 리셋 확인창 열기
-    // =====================================================
+    // =========================================================
 
     public void OpenResetConfirm()
     {
-        // 다른 패널 닫기
-        if (upgradePanel != null)
-        {
-            upgradePanel.SetActive(false);
-        }
+        CloseAllPanels();
 
-        if (skinPanel != null)
-        {
-            skinPanel.SetActive(false);
-        }
-
-        // 리셋 확인창 열기
         if (resetConfirmPanel != null)
         {
             resetConfirmPanel.SetActive(true);
         }
 
-        // 로비 버튼 숨기기
         HideLobbyButtons();
 
-        // 로비 캐릭터는 보이게 유지
         if (lobbyCharacter != null)
         {
             lobbyCharacter.SetActive(true);
@@ -197,22 +193,19 @@ public class LobbyUIManager : MonoBehaviour
     }
 
 
-    // =====================================================
+    // =========================================================
     // 리셋 취소
-    // =====================================================
+    // =========================================================
 
     public void CancelReset()
     {
-        // 리셋 확인창 닫기
         if (resetConfirmPanel != null)
         {
             resetConfirmPanel.SetActive(false);
         }
 
-        // 로비 버튼 다시 보이기
         ShowLobbyButtons();
 
-        // 로비 캐릭터 보이기
         if (lobbyCharacter != null)
         {
             lobbyCharacter.SetActive(true);
@@ -220,80 +213,177 @@ public class LobbyUIManager : MonoBehaviour
     }
 
 
-    // =====================================================
-    // 리셋 확인
-    // =====================================================
+    // =========================================================
+    // ★ 리셋 확인
+    // =========================================================
 
     public void ConfirmReset()
     {
-        // SaveManager의 저장 데이터 초기화
-        if (SaveManager.Instance != null)
+        if (SaveManager.Instance == null)
         {
-            SaveManager.Instance.ResetData();
+            Debug.LogError(
+                "SaveManager가 없습니다."
+            );
+
+            return;
         }
 
-        // 리셋 확인창 닫기
+        Debug.Log(
+            "===== 게임 데이터 리셋 시작 ====="
+        );
+
+
+        // -----------------------------------------------------
+        // 1. 저장 데이터 리셋
+        // -----------------------------------------------------
+
+        SaveManager.Instance.ResetData();
+
+
+        // -----------------------------------------------------
+        // 2. UI 즉시 갱신
+        // -----------------------------------------------------
+
+        RefreshLobbyAfterReset();
+
+
+        // -----------------------------------------------------
+        // 3. 리셋 확인창 닫기
+        // -----------------------------------------------------
+
         if (resetConfirmPanel != null)
         {
             resetConfirmPanel.SetActive(false);
         }
 
-        // 로비 버튼 다시 보이기
+
+        // -----------------------------------------------------
+        // 4. 로비 버튼 다시 표시
+        // -----------------------------------------------------
+
         ShowLobbyButtons();
 
-        // 로비 캐릭터 보이기
+
+        // -----------------------------------------------------
+        // 5. 로비 캐릭터 다시 표시
+        // -----------------------------------------------------
+
         if (lobbyCharacter != null)
         {
             lobbyCharacter.SetActive(true);
         }
+
+
+        Debug.Log(
+            "===== 게임 데이터 리셋 완료 ====="
+        );
     }
 
 
-    // =====================================================
+    // =========================================================
+    // ★ 리셋 후 모든 UI 갱신
+    // =========================================================
+
+    private void RefreshLobbyAfterReset()
+    {
+        Debug.Log(
+            "===== 리셋 후 UI 갱신 시작 ====="
+        );
+
+
+        // -----------------------------------------------------
+        // SkinSelector
+        // -----------------------------------------------------
+
+        SkinSelector[] skinSelectors =
+            FindObjectsByType<SkinSelector>(
+                FindObjectsInactive.Include,
+                FindObjectsSortMode.None
+            );
+
+        foreach (
+            SkinSelector selector
+            in skinSelectors
+        )
+        {
+            selector.RefreshAfterReset();
+        }
+
+
+        // -----------------------------------------------------
+        // UpgradeManager
+        // -----------------------------------------------------
+
+        UpgradeManager[] upgradeManagers =
+            FindObjectsByType<UpgradeManager>(
+                FindObjectsInactive.Include,
+                FindObjectsSortMode.None
+            );
+
+        foreach (
+            UpgradeManager upgradeManager
+            in upgradeManagers
+        )
+        {
+            upgradeManager.RefreshAfterReset();
+        }
+
+
+        Debug.Log(
+            "===== 리셋 후 UI 갱신 완료 ====="
+        );
+    }
+
+
+    // =========================================================
     // 모든 패널 닫기
-    // =====================================================
+    // =========================================================
 
     private void CloseAllPanels()
     {
-        // 업그레이드 패널 닫기
         if (upgradePanel != null)
         {
             upgradePanel.SetActive(false);
         }
 
-        // 스킨 패널 닫기
         if (skinPanel != null)
         {
             skinPanel.SetActive(false);
         }
+
+        if (difficultyPanel != null)
+        {
+            difficultyPanel.SetActive(false);
+        }
     }
 
 
-    // =====================================================
+    // =========================================================
     // 로비 버튼 숨기기
-    // =====================================================
+    // =========================================================
 
     private void HideLobbyButtons()
     {
-        // 업그레이드 버튼
         if (upgradeButton != null)
         {
             upgradeButton.SetActive(false);
         }
 
-        // 스킨 버튼
         if (skinButton != null)
         {
             skinButton.SetActive(false);
         }
 
-        // 게임 시작 버튼
+        if (difficultyButton != null)
+        {
+            difficultyButton.SetActive(false);
+        }
+
         if (startButton != null)
         {
             startButton.SetActive(false);
         }
 
-        // 리셋 버튼
         if (resetButton != null)
         {
             resetButton.SetActive(false);
@@ -301,34 +391,36 @@ public class LobbyUIManager : MonoBehaviour
     }
 
 
-    // =====================================================
-    // 로비 버튼 다시 보이기
-    // =====================================================
+    // =========================================================
+    // 로비 버튼 표시
+    // =========================================================
 
     private void ShowLobbyButtons()
     {
-        // 업그레이드 버튼
         if (upgradeButton != null)
         {
             upgradeButton.SetActive(true);
         }
 
-        // 스킨 버튼
         if (skinButton != null)
         {
             skinButton.SetActive(true);
         }
 
-        // 게임 시작 버튼
+        if (difficultyButton != null)
+        {
+            difficultyButton.SetActive(true);
+        }
+
         if (startButton != null)
         {
             startButton.SetActive(true);
         }
 
-        // 리셋 버튼
         if (resetButton != null)
         {
             resetButton.SetActive(true);
         }
     }
 }
+
