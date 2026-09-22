@@ -4,17 +4,14 @@ using UnityEngine.UI;
 
 public class SkinSelector : MonoBehaviour
 {
-    [Header("실제 로비 캐릭터 스킨")]
+    [Header("스킨")]
     [SerializeField] private GameObject[] skins;
-
-    [Header("스킨 패널 미리보기 스킨")]
-    [SerializeField] private GameObject[] previewSkins;
 
     [Header("스킨 이름")]
     [SerializeField] private string[] skinNames;
-
-    [Header("UI")]
     [SerializeField] private TMP_Text skinNameText;
+
+    [Header("버튼")]
     [SerializeField] private Button previousButton;
     [SerializeField] private Button nextButton;
 
@@ -25,38 +22,61 @@ public class SkinSelector : MonoBehaviour
     private int currentSkin;
 
 
+    // =========================================================
+    // 시작
+    // =========================================================
+
     private void Start()
     {
         if (SaveManager.Instance == null)
         {
-            Debug.LogError("SaveManager가 존재하지 않습니다.");
+            Debug.LogError(
+                "SaveManager가 없습니다."
+            );
+
             return;
         }
 
-        currentSkin = SaveManager.Instance.Data.selectedSkin;
+        currentSkin =
+            SaveManager.Instance.Data.selectedSkin;
 
-        if (skins == null || skins.Length == 0)
-        {
-            Debug.LogWarning("실제 로비 스킨이 등록되어 있지 않습니다.");
-            return;
-        }
+        ClampCurrentSkin();
 
-        if (currentSkin < 0 || currentSkin >= skins.Length)
-        {
-            currentSkin = 0;
-        }
-
-        ApplySkin();
+        UpdateSkin();
+        UpdateButtons();
+        UpdateSkinName();
     }
 
 
-    // =====================================================
+    // =========================================================
+    // 이전 스킨
+    // =========================================================
+
+    public void PreviousSkin()
+    {
+        if (currentSkin <= 0)
+        {
+            return;
+        }
+
+        currentSkin--;
+
+        SaveCurrentSkin();
+
+        UpdateSkin();
+        UpdateButtons();
+        UpdateSkinName();
+    }
+
+
+    // =========================================================
     // 다음 스킨
-    // =====================================================
+    // =========================================================
 
     public void NextSkin()
     {
-        if (skins == null || skins.Length == 0)
+        if (skins == null ||
+            skins.Length == 0)
         {
             return;
         }
@@ -68,207 +88,19 @@ public class SkinSelector : MonoBehaviour
 
         currentSkin++;
 
-        ApplySkin();
+        SaveCurrentSkin();
 
-        SaveSkin();
-    }
-
-
-    // =====================================================
-    // 이전 스킨
-    // =====================================================
-
-    public void PreviousSkin()
-    {
-        if (skins == null || skins.Length == 0)
-        {
-            return;
-        }
-
-        if (currentSkin <= 0)
-        {
-            return;
-        }
-
-        currentSkin--;
-
-        ApplySkin();
-
-        SaveSkin();
-    }
-
-
-    // =====================================================
-    // 스킨 적용
-    // =====================================================
-
-    private void ApplySkin()
-    {
-        Debug.Log("현재 스킨 번호 : " + currentSkin);
-
-
-        // =================================================
-        // 실제 로비 캐릭터
-        // =================================================
-
-        for (int i = 0; i < skins.Length; i++)
-        {
-            if (skins[i] == null)
-            {
-                Debug.LogWarning(
-                    "Skins[" + i + "]가 비어 있습니다."
-                );
-
-                continue;
-            }
-
-            bool active = (i == currentSkin);
-
-            skins[i].SetActive(active);
-
-            Debug.Log(
-                "실제 스킨 [" + i + "] : " +
-                skins[i].name +
-                " / Active = " +
-                active
-            );
-        }
-
-
-        // =================================================
-        // 스킨 패널 미리보기 캐릭터
-        // =================================================
-
-        if (previewSkins == null || previewSkins.Length == 0)
-        {
-            Debug.LogError("Preview Skins가 비어 있습니다!");
-        }
-        else
-        {
-            for (int i = 0; i < previewSkins.Length; i++)
-            {
-                if (previewSkins[i] == null)
-                {
-                    Debug.LogError(
-                        "Preview Skins[" + i + "]가 비어 있습니다!"
-                    );
-
-                    continue;
-                }
-
-                bool active = (i == currentSkin);
-
-                previewSkins[i].SetActive(active);
-
-                Debug.Log(
-                    "미리보기 변경 : " +
-                    previewSkins[i].name +
-                    " / 부모 : " +
-                    previewSkins[i].transform.parent.name +
-                    " / Active : " +
-                    previewSkins[i].activeSelf +
-                    " / 현재 스킨 : " +
-                    currentSkin
-                );
-            }
-        }
-
-
-        // =================================================
-        // UI
-        // =================================================
-
-        UpdateSkinName();
+        UpdateSkin();
         UpdateButtons();
+        UpdateSkinName();
     }
 
 
-    // =====================================================
-    // 스킨 이름
-    // =====================================================
+    // =========================================================
+    // 현재 스킨 저장
+    // =========================================================
 
-    private void UpdateSkinName()
-    {
-        if (skinNameText == null)
-        {
-            return;
-        }
-
-        if (skinNames != null &&
-            currentSkin >= 0 &&
-            currentSkin < skinNames.Length)
-        {
-            skinNameText.text = skinNames[currentSkin];
-        }
-        else
-        {
-            skinNameText.text = "Skin " + (currentSkin + 1);
-        }
-    }
-
-
-    // =====================================================
-    // 버튼 상태
-    // =====================================================
-
-    private void UpdateButtons()
-    {
-        bool canGoPrevious = currentSkin > 0;
-
-        bool canGoNext =
-            currentSkin < skins.Length - 1;
-
-        SetButtonColor(
-            previousButton,
-            canGoPrevious
-        );
-
-        SetButtonColor(
-            nextButton,
-            canGoNext
-        );
-    }
-
-
-    // =====================================================
-    // 버튼 색상
-    // =====================================================
-
-    private void SetButtonColor(
-        Button button,
-        bool active)
-    {
-        if (button == null)
-        {
-            return;
-        }
-
-        button.interactable = active;
-
-        Image image =
-            button.GetComponent<Image>();
-
-        if (image == null)
-        {
-            return;
-        }
-
-        if (active)
-        {
-            image.color = normalColor;
-        }
-        else
-        {
-            image.color = disabledColor;
-        }
-    }
-
-
-    // =====================================================
-    // 저장
-    // =====================================================
-
-    private void SaveSkin()
+    private void SaveCurrentSkin()
     {
         if (SaveManager.Instance == null)
         {
@@ -279,20 +111,195 @@ public class SkinSelector : MonoBehaviour
             currentSkin;
 
         SaveManager.Instance.Save();
+    }
+
+
+    // =========================================================
+    // 스킨 표시
+    // =========================================================
+
+    private void UpdateSkin()
+    {
+        if (skins == null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < skins.Length; i++)
+        {
+            if (skins[i] == null)
+            {
+                continue;
+            }
+
+            skins[i].SetActive(
+                i == currentSkin
+            );
+        }
+    }
+
+
+    // =========================================================
+    // 이전 / 다음 버튼 상태
+    // =========================================================
+
+    private void UpdateButtons()
+    {
+        if (skins == null ||
+            skins.Length == 0)
+        {
+            return;
+        }
+
+        if (previousButton != null)
+        {
+            bool canGoPrevious =
+                currentSkin > 0;
+
+            previousButton.interactable =
+                canGoPrevious;
+
+            SetButtonColor(
+                previousButton,
+                canGoPrevious
+            );
+        }
+
+        if (nextButton != null)
+        {
+            bool canGoNext =
+                currentSkin < skins.Length - 1;
+
+            nextButton.interactable =
+                canGoNext;
+
+            SetButtonColor(
+                nextButton,
+                canGoNext
+            );
+        }
+    }
+
+
+    // =========================================================
+    // 버튼 색상
+    // =========================================================
+
+    private void SetButtonColor(
+        Button button,
+        bool interactable
+    )
+    {
+        if (button == null)
+        {
+            return;
+        }
+
+        ColorBlock colors =
+            button.colors;
+
+        colors.normalColor =
+            interactable
+                ? normalColor
+                : disabledColor;
+
+        colors.highlightedColor =
+            interactable
+                ? normalColor
+                : disabledColor;
+
+        colors.pressedColor =
+            interactable
+                ? normalColor
+                : disabledColor;
+
+        colors.selectedColor =
+            interactable
+                ? normalColor
+                : disabledColor;
+
+        button.colors = colors;
+    }
+
+
+    // =========================================================
+    // 스킨 이름
+    // =========================================================
+
+    private void UpdateSkinName()
+    {
+        if (skinNameText == null)
+        {
+            return;
+        }
+
+        if (skinNames == null ||
+            currentSkin < 0 ||
+            currentSkin >= skinNames.Length)
+        {
+            skinNameText.text = "";
+
+            return;
+        }
+
+        skinNameText.text =
+            skinNames[currentSkin];
+    }
+
+
+    // =========================================================
+    // 스킨 번호 보정
+    // =========================================================
+
+    private void ClampCurrentSkin()
+    {
+        if (skins == null ||
+            skins.Length == 0)
+        {
+            currentSkin = 0;
+
+            return;
+        }
+
+        if (currentSkin < 0)
+        {
+            currentSkin = 0;
+        }
+
+        if (currentSkin >= skins.Length)
+        {
+            currentSkin =
+                skins.Length - 1;
+        }
+    }
+
+
+    // =========================================================
+    // ★ 리셋 직후 호출
+    // =========================================================
+
+    public void RefreshAfterReset()
+    {
+        if (SaveManager.Instance == null)
+        {
+            return;
+        }
+
+        // 저장된 스킨 번호 다시 읽기
+        currentSkin =
+            SaveManager.Instance.Data.selectedSkin;
+
+        ClampCurrentSkin();
+
+        // 화면 즉시 갱신
+        UpdateSkin();
+        UpdateSkinName();
+        UpdateButtons();
 
         Debug.Log(
-            "현재 스킨 저장 : " +
+            "SkinSelector 실시간 갱신 완료 : " +
             currentSkin
         );
     }
-
-
-    // =====================================================
-    // 현재 스킨 번호
-    // =====================================================
-
-    public int GetCurrentSkin()
-    {
-        return currentSkin;
-    }
 }
+
