@@ -10,11 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e22f565e3122a2542b94c842e3804bf4, type: 3}
-  m_Name: DamageSmall
+  m_Name: AttackSpeed
   m_EditorClassIdentifier: Assembly-CSharp::UpgradeData
-  upgradeName: DamageSmall
-  description: Damage increases slightly.
-  icon: {fileID: 21300000, guid: f1368f27b78284bc49603c8e181671f2, type: 3}
-  upgradeType: 2
-  value: 0.06
+  upgradeName: AttackSpeedUpgrade
+  description: '
+
+    Attack speed increases significantly.'
+  icon: {fileID: 21300000, guid: 6ed2d75b1004d4c1eb2d6038b537818f, type: 3}
+  upgradeType: 1
+  value: 0.25
   maxLevel: 5

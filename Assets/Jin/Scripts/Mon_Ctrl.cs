@@ -108,7 +108,10 @@ public class Mon_Ctrl : MonoBehaviour
         }
     }
 
-
+    public void SetHP(float _mul)
+    {
+        curHP = curHP * _mul;   
+    }
     
     //public void TakeDamage(float _damage)
     //{
