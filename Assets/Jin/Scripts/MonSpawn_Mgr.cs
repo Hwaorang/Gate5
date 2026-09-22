@@ -17,11 +17,9 @@ public class MonSpawn_Mgr : MonoBehaviour
     [Header("Pool Settings")]
     [SerializeField] private int poolSize = 50;
 
-    private readonly Dictionary<string, Queue<GameObject>> pools =
-        new Dictionary<string, Queue<GameObject>>();
+    private readonly Dictionary<string, Queue<GameObject>> pools = new Dictionary<string, Queue<GameObject>>();
 
-    private readonly Dictionary<string, Transform> poolParents =
-        new Dictionary<string, Transform>();
+    private readonly Dictionary<string, Transform> poolParents = new Dictionary<string, Transform>();
 
     private PlayerController player;
     private PlayerExperience playerExp;
@@ -34,6 +32,10 @@ public class MonSpawn_Mgr : MonoBehaviour
     private Transform inactiveCreateRoot;
 
     float timeLv = 1;
+    WaitForSeconds hpTimer = new WaitForSeconds(30);
+    int prefabLv = 0;
+
+    float spawnTimer = 1.5f;
     private void Awake()
     {
         if (instance == null)
@@ -102,6 +104,7 @@ public class MonSpawn_Mgr : MonoBehaviour
 
         InitializeField();
         InitializePools();
+
 
         StartCoroutine(SpawnMon(0));
         StartCoroutine(CheckTime());
@@ -216,9 +219,20 @@ public class MonSpawn_Mgr : MonoBehaviour
 
     IEnumerator CheckTime()
     {
-        yield return new WaitForSecondsRealtime(30);
+        while (true)
+        {
+            yield return hpTimer;
 
-        timeLv += 0.1f;
+            if (timeLv <= 5.0f)
+            {
+                timeLv += 0.1f;
+                spawnTimer -= 0.025f;
+            }
+            else
+            {
+                break;
+            }
+        }
     }
     private GameObject CreatePoolObject(string poolName,GameObject prefab)
     {
@@ -323,8 +337,10 @@ public class MonSpawn_Mgr : MonoBehaviour
         // 순서가 중요함
         go.transform.position = spawnPosition;
         monCtrl.SetTarget(target);
-        monCtrl.SetHP(timeLv);
+        
         go.SetActive(true);
+        
+        monCtrl.SetHP(timeLv);
 
         return go;
     }
@@ -456,7 +472,7 @@ public class MonSpawn_Mgr : MonoBehaviour
         );
 
         WaitForSeconds wait =
-            new WaitForSeconds(1.5f);
+            new WaitForSeconds(spawnTimer);
 
         while (true)
         {
