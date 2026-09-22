@@ -147,33 +147,23 @@ public class SaveManager : MonoBehaviour
     {
         if (Data == null)
         {
-            Debug.LogError(
-                "PlayerData가 없습니다."
-            );
-
+            Debug.LogError("PlayerData가 없습니다.");
             return;
         }
 
         if (amount < 0)
         {
-            Debug.LogError(
-                "추가 골드는 음수가 될 수 없습니다."
-            );
-
+            Debug.LogError("추가 골드는 음수가 될 수 없습니다.");
             return;
         }
 
-        Data.gold += amount;
+        // 골드 최대값 99999
+        Data.gold = Mathf.Min(Data.gold + amount, 99999);
 
         Save();
 
-        Debug.Log(
-            "골드 추가 : " + amount
-        );
-
-        Debug.Log(
-            "현재 골드 : " + Data.gold
-        );
+        Debug.Log("골드 추가 : " + amount);
+        Debug.Log("현재 골드 : " + Data.gold);
     }
 
 
@@ -185,16 +175,16 @@ public class SaveManager : MonoBehaviour
     {
         if (Data == null)
         {
+            Debug.LogError("PlayerData가 없습니다.");
             return;
         }
 
-        Data.gold = Mathf.Max(0, amount);
+        // 골드 범위 : 0 ~ 99999
+        Data.gold = Mathf.Clamp(amount, 0, 99999);
 
         Save();
 
-        Debug.Log(
-            "골드 설정 : " + Data.gold
-        );
+        Debug.Log("골드 설정 : " + Data.gold);
     }
 
 
