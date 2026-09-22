@@ -33,6 +33,7 @@ public class MonSpawn_Mgr : MonoBehaviour
     // 프리팹 생성 중 OnEnable 실행을 막기 위한 비활성 부모
     private Transform inactiveCreateRoot;
 
+    float timeLv = 1;
     private void Awake()
     {
         if (instance == null)
@@ -50,10 +51,7 @@ public class MonSpawn_Mgr : MonoBehaviour
     {
         if (field == null)
         {
-            Debug.LogError(
-                "MonSpawn_Mgr에 field Renderer가 할당되지 않았어.",
-                this
-            );
+            Debug.LogError("MonSpawn_Mgr에 field Renderer가 할당되지 않았어.",this);
 
             yield break;
         }
@@ -106,6 +104,7 @@ public class MonSpawn_Mgr : MonoBehaviour
         InitializePools();
 
         StartCoroutine(SpawnMon(0));
+        StartCoroutine(CheckTime());
     }
 
     private IEnumerator FindPlayer()
@@ -215,9 +214,13 @@ public class MonSpawn_Mgr : MonoBehaviour
         }
     }
 
-    private GameObject CreatePoolObject(
-        string poolName,
-        GameObject prefab)
+    IEnumerator CheckTime()
+    {
+        yield return new WaitForSecondsRealtime(30);
+
+        timeLv += 0.1f;
+    }
+    private GameObject CreatePoolObject(string poolName,GameObject prefab)
     {
         /*
          * 비활성 부모 밑에서 생성하기 때문에
@@ -320,6 +323,7 @@ public class MonSpawn_Mgr : MonoBehaviour
         // 순서가 중요함
         go.transform.position = spawnPosition;
         monCtrl.SetTarget(target);
+        monCtrl.SetHP(timeLv);
         go.SetActive(true);
 
         return go;
