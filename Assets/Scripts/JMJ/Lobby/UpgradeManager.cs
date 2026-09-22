@@ -4,84 +4,104 @@ using UnityEngine;
 public class UpgradeManager : MonoBehaviour
 {
     // =====================================================
-    // °ø°İ·Â °­È­ ¼³Á¤
+    // ê³µê²©ë ¥ ê°•í™” ì„¤ì •
     // =====================================================
 
-    [Header("°ø°İ·Â °­È­")]
+    [Header("ê³µê²©ë ¥ ê°•í™”")]
     [SerializeField] private int attackBaseCost = 100;
     [SerializeField] private int attackCostIncrease = 50;
     [SerializeField] private int attackMaxLevel = 10;
 
-    // ·¹º§ 1´ç Áõ°¡ÇÏ´Â °ø°İ·Â
+    // ë ˆë²¨ 1ë‹¹ ì¦ê°€í•˜ëŠ” ê³µê²©ë ¥
     [SerializeField] private int attackIncrease = 5;
 
 
     // =====================================================
-    // ÀÌµ¿¼Óµµ °­È­ ¼³Á¤
+    // ì´ë™ì†ë„ ê°•í™” ì„¤ì •
     // =====================================================
 
-    [Header("ÀÌµ¿¼Óµµ °­È­")]
+    [Header("ì´ë™ì†ë„ ê°•í™”")]
     [SerializeField] private int speedBaseCost = 100;
     [SerializeField] private int speedCostIncrease = 50;
     [SerializeField] private int speedMaxLevel = 10;
 
-    // ·¹º§ 1´ç Áõ°¡ÇÏ´Â ÀÌµ¿¼Óµµ
+    // ë ˆë²¨ 1ë‹¹ ì¦ê°€í•˜ëŠ” ì´ë™ì†ë„
     [SerializeField] private float speedIncrease = 0.5f;
 
 
     // =====================================================
-    // °ø°İ¼Óµµ °­È­ ¼³Á¤
+    // ê³µê²©ì†ë„ ê°•í™” ì„¤ì •
     // =====================================================
 
-    [Header("°ø°İ¼Óµµ °­È­")]
+    [Header("ê³µê²©ì†ë„ ê°•í™”")]
     [SerializeField] private int attackSpeedBaseCost = 100;
     [SerializeField] private int attackSpeedCostIncrease = 50;
     [SerializeField] private int attackSpeedMaxLevel = 10;
 
-    // ·¹º§ 1´ç Áõ°¡ÇÏ´Â °ø°İ¼Óµµ
+    // ë ˆë²¨ 1ë‹¹ ì¦ê°€í•˜ëŠ” ê³µê²©ì†ë„
     [SerializeField] private float attackSpeedIncrease = 0.1f;
 
 
     // =====================================================
-    // ½ºÅ×ÀÌÁö Å¬¸®¾î °ñµå °­È­ ¼³Á¤
+    // ìŠ¤í…Œì´ì§€ í´ë¦¬ì–´ ê³¨ë“œ ë³´ìƒ ê°•í™” ì„¤ì •
     // =====================================================
 
-    [Header("½ºÅ×ÀÌÁö °ñµå È¹µæ·® °­È­")]
+    [Header("ìŠ¤í…Œì´ì§€ í´ë¦¬ì–´ ê³¨ë“œ íšë“ëŸ‰ ê°•í™”")]
     [SerializeField] private int goldRewardBaseCost = 200;
     [SerializeField] private int goldRewardCostIncrease = 100;
     [SerializeField] private int goldRewardMaxLevel = 10;
 
-    // ·¹º§ 1´ç Ãß°¡µÇ´Â °ñµå
+    // ë ˆë²¨ 1ë‹¹ ì¶”ê°€ë˜ëŠ” ê³¨ë“œ
     [SerializeField] private int goldRewardIncrease = 10;
 
 
     // =====================================================
-    // UI
+    // ê³¨ë“œ UI
     // =====================================================
 
-    [Header("°ñµå UI")]
+    [Header("ê³¨ë“œ UI")]
     [SerializeField] private TMP_Text goldText;
 
 
-    [Header("°ø°İ·Â UI")]
+    // =====================================================
+    // ê³µê²©ë ¥ UI
+    // =====================================================
+
+    [Header("ê³µê²©ë ¥ UI")]
     [SerializeField] private TMP_Text attackLevelText;
     [SerializeField] private TMP_Text attackCostText;
 
 
-    [Header("ÀÌµ¿¼Óµµ UI")]
+    // =====================================================
+    // ì´ë™ì†ë„ UI
+    // =====================================================
+
+    [Header("ì´ë™ì†ë„ UI")]
     [SerializeField] private TMP_Text speedLevelText;
     [SerializeField] private TMP_Text speedCostText;
 
 
-    [Header("°ø°İ¼Óµµ UI")]
+    // =====================================================
+    // ê³µê²©ì†ë„ UI
+    // =====================================================
+
+    [Header("ê³µê²©ì†ë„ UI")]
     [SerializeField] private TMP_Text attackSpeedLevelText;
     [SerializeField] private TMP_Text attackSpeedCostText;
 
 
-    [Header("½ºÅ×ÀÌÁö °ñµå UI")]
+    // =====================================================
+    // ìŠ¤í…Œì´ì§€ í´ë¦¬ì–´ ê³¨ë“œ ë³´ìƒ UI
+    // =====================================================
+
+    [Header("ìŠ¤í…Œì´ì§€ í´ë¦¬ì–´ ê³¨ë“œ UI")]
     [SerializeField] private TMP_Text goldRewardLevelText;
     [SerializeField] private TMP_Text goldRewardCostText;
 
+
+    // =====================================================
+    // ì‹œì‘
+    // =====================================================
 
     private void Start()
     {
@@ -90,42 +110,42 @@ public class UpgradeManager : MonoBehaviour
 
 
     // =====================================================
-    // °ø°İ·Â °­È­
+    // ê³µê²©ë ¥ ê°•í™”
     // =====================================================
 
     public void UpgradeAttack()
     {
         PlayerData data = SaveManager.Instance.Data;
 
-        // ÃÖ´ë ·¹º§ °Ë»ç
+        // ìµœëŒ€ ë ˆë²¨ ê²€ì‚¬
         if (data.attackLevel >= attackMaxLevel)
         {
-            Debug.Log("°ø°İ·ÂÀÌ ÃÖ´ë ·¹º§ÀÔ´Ï´Ù.");
+            Debug.Log("ê³µê²©ë ¥ì€ ìµœëŒ€ ë ˆë²¨ì…ë‹ˆë‹¤.");
             return;
         }
 
         int cost = GetAttackCost();
 
-        // °ñµå »ç¿ë
+        // ê³¨ë“œ ì‚¬ìš©
         if (!SaveManager.Instance.SpendGold(cost))
         {
-            Debug.Log("°ñµå°¡ ºÎÁ·ÇÕ´Ï´Ù.");
+            Debug.Log("ê³¨ë“œê°€ ë¶€ì¡±í•©ë‹ˆë‹¤.");
             return;
         }
 
-        // ·¹º§ Áõ°¡
+        // ë ˆë²¨ ì¦ê°€
         data.attackLevel++;
 
-        // ÀúÀå
+        // ì €ì¥
         SaveManager.Instance.Save();
 
-        // UI °»½Å
+        // UI ê°±ì‹ 
         RefreshUI();
     }
 
 
     // =====================================================
-    // ÀÌµ¿¼Óµµ °­È­
+    // ì´ë™ì†ë„ ê°•í™”
     // =====================================================
 
     public void UpgradeSpeed()
@@ -134,7 +154,7 @@ public class UpgradeManager : MonoBehaviour
 
         if (data.speedLevel >= speedMaxLevel)
         {
-            Debug.Log("ÀÌµ¿¼Óµµ°¡ ÃÖ´ë ·¹º§ÀÔ´Ï´Ù.");
+            Debug.Log("ì´ë™ì†ë„ëŠ” ìµœëŒ€ ë ˆë²¨ì…ë‹ˆë‹¤.");
             return;
         }
 
@@ -142,7 +162,7 @@ public class UpgradeManager : MonoBehaviour
 
         if (!SaveManager.Instance.SpendGold(cost))
         {
-            Debug.Log("°ñµå°¡ ºÎÁ·ÇÕ´Ï´Ù.");
+            Debug.Log("ê³¨ë“œê°€ ë¶€ì¡±í•©ë‹ˆë‹¤.");
             return;
         }
 
@@ -155,7 +175,7 @@ public class UpgradeManager : MonoBehaviour
 
 
     // =====================================================
-    // °ø°İ¼Óµµ °­È­
+    // ê³µê²©ì†ë„ ê°•í™”
     // =====================================================
 
     public void UpgradeAttackSpeed()
@@ -164,7 +184,7 @@ public class UpgradeManager : MonoBehaviour
 
         if (data.attackSpeedLevel >= attackSpeedMaxLevel)
         {
-            Debug.Log("°ø°İ¼Óµµ°¡ ÃÖ´ë ·¹º§ÀÔ´Ï´Ù.");
+            Debug.Log("ê³µê²©ì†ë„ëŠ” ìµœëŒ€ ë ˆë²¨ì…ë‹ˆë‹¤.");
             return;
         }
 
@@ -172,7 +192,7 @@ public class UpgradeManager : MonoBehaviour
 
         if (!SaveManager.Instance.SpendGold(cost))
         {
-            Debug.Log("°ñµå°¡ ºÎÁ·ÇÕ´Ï´Ù.");
+            Debug.Log("ê³¨ë“œê°€ ë¶€ì¡±í•©ë‹ˆë‹¤.");
             return;
         }
 
@@ -185,7 +205,7 @@ public class UpgradeManager : MonoBehaviour
 
 
     // =====================================================
-    // ½ºÅ×ÀÌÁö °ñµå È¹µæ·® °­È­
+    // ìŠ¤í…Œì´ì§€ í´ë¦¬ì–´ ê³¨ë“œ ë³´ìƒ ê°•í™”
     // =====================================================
 
     public void UpgradeGoldReward()
@@ -194,7 +214,7 @@ public class UpgradeManager : MonoBehaviour
 
         if (data.goldRewardLevel >= goldRewardMaxLevel)
         {
-            Debug.Log("½ºÅ×ÀÌÁö °ñµå È¹µæ·®ÀÌ ÃÖ´ë ·¹º§ÀÔ´Ï´Ù.");
+            Debug.Log("ìŠ¤í…Œì´ì§€ í´ë¦¬ì–´ ê³¨ë“œ íšë“ëŸ‰ì€ ìµœëŒ€ ë ˆë²¨ì…ë‹ˆë‹¤.");
             return;
         }
 
@@ -202,7 +222,7 @@ public class UpgradeManager : MonoBehaviour
 
         if (!SaveManager.Instance.SpendGold(cost))
         {
-            Debug.Log("°ñµå°¡ ºÎÁ·ÇÕ´Ï´Ù.");
+            Debug.Log("ê³¨ë“œê°€ ë¶€ì¡±í•©ë‹ˆë‹¤.");
             return;
         }
 
@@ -215,12 +235,13 @@ public class UpgradeManager : MonoBehaviour
 
 
     // =====================================================
-    // °ø°İ·Â °­È­ ºñ¿ë
+    // ê³µê²©ë ¥ ê°•í™” ë¹„ìš©
     // =====================================================
 
     public int GetAttackCost()
     {
-        int level = SaveManager.Instance.Data.attackLevel;
+        int level =
+            SaveManager.Instance.Data.attackLevel;
 
         return attackBaseCost +
                level * attackCostIncrease;
@@ -228,12 +249,13 @@ public class UpgradeManager : MonoBehaviour
 
 
     // =====================================================
-    // ÀÌµ¿¼Óµµ °­È­ ºñ¿ë
+    // ì´ë™ì†ë„ ê°•í™” ë¹„ìš©
     // =====================================================
 
     public int GetSpeedCost()
     {
-        int level = SaveManager.Instance.Data.speedLevel;
+        int level =
+            SaveManager.Instance.Data.speedLevel;
 
         return speedBaseCost +
                level * speedCostIncrease;
@@ -241,7 +263,7 @@ public class UpgradeManager : MonoBehaviour
 
 
     // =====================================================
-    // °ø°İ¼Óµµ °­È­ ºñ¿ë
+    // ê³µê²©ì†ë„ ê°•í™” ë¹„ìš©
     // =====================================================
 
     public int GetAttackSpeedCost()
@@ -255,7 +277,7 @@ public class UpgradeManager : MonoBehaviour
 
 
     // =====================================================
-    // ½ºÅ×ÀÌÁö °ñµå °­È­ ºñ¿ë
+    // ìŠ¤í…Œì´ì§€ í´ë¦¬ì–´ ê³¨ë“œ ê°•í™” ë¹„ìš©
     // =====================================================
 
     public int GetGoldRewardUpgradeCost()
@@ -269,7 +291,7 @@ public class UpgradeManager : MonoBehaviour
 
 
     // =====================================================
-    // UI °»½Å
+    // UI ê°±ì‹ 
     // =====================================================
 
     public void RefreshUI()
@@ -279,21 +301,23 @@ public class UpgradeManager : MonoBehaviour
             return;
         }
 
-        PlayerData data = SaveManager.Instance.Data;
+        PlayerData data =
+            SaveManager.Instance.Data;
 
 
         // -------------------------
-        // °ñµå
+        // ê³¨ë“œ
         // -------------------------
 
         if (goldText != null)
         {
-            goldText.text = data.gold.ToString();
+            goldText.text =
+                data.gold.ToString();
         }
 
 
         // -------------------------
-        // °ø°İ·Â
+        // ê³µê²©ë ¥
         // -------------------------
 
         if (attackLevelText != null)
@@ -317,7 +341,7 @@ public class UpgradeManager : MonoBehaviour
 
 
         // -------------------------
-        // ÀÌµ¿¼Óµµ
+        // ì´ë™ì†ë„
         // -------------------------
 
         if (speedLevelText != null)
@@ -341,7 +365,7 @@ public class UpgradeManager : MonoBehaviour
 
 
         // -------------------------
-        // °ø°İ¼Óµµ
+        // ê³µê²©ì†ë„
         // -------------------------
 
         if (attackSpeedLevelText != null)
@@ -365,7 +389,7 @@ public class UpgradeManager : MonoBehaviour
 
 
         // -------------------------
-        // ½ºÅ×ÀÌÁö °ñµå
+        // ìŠ¤í…Œì´ì§€ í´ë¦¬ì–´ ê³¨ë“œ
         // -------------------------
 
         if (goldRewardLevelText != null)
@@ -390,7 +414,23 @@ public class UpgradeManager : MonoBehaviour
 
 
     // =====================================================
-    // ½ÇÁ¦ ´É·ÂÄ¡ °è»ê
+    // â˜… ë¦¬ì…‹ ì§í›„ UI ì‹¤ì‹œê°„ ê°±ì‹ 
+    // =====================================================
+
+    public void RefreshAfterReset()
+    {
+        // SaveManagerì—ì„œ ë¦¬ì…‹ëœ ë°ì´í„°ë¥¼
+        // ë‹¤ì‹œ ì½ì–´ì„œ ëª¨ë“  ì—…ê·¸ë ˆì´ë“œ UI ê°±ì‹ 
+        RefreshUI();
+
+        Debug.Log(
+            "UpgradeManager ì‹¤ì‹œê°„ ê°±ì‹  ì™„ë£Œ"
+        );
+    }
+
+
+    // =====================================================
+    // ê³µê²©ë ¥ ìˆ˜ì¹˜
     // =====================================================
 
     public int GetAttack()
@@ -401,6 +441,10 @@ public class UpgradeManager : MonoBehaviour
     }
 
 
+    // =====================================================
+    // ì´ë™ì†ë„ ìˆ˜ì¹˜
+    // =====================================================
+
     public float GetSpeed()
     {
         return 5f +
@@ -408,6 +452,10 @@ public class UpgradeManager : MonoBehaviour
                speedIncrease;
     }
 
+
+    // =====================================================
+    // ê³µê²©ì†ë„ ìˆ˜ì¹˜
+    // =====================================================
 
     public float GetAttackSpeed()
     {
@@ -418,7 +466,7 @@ public class UpgradeManager : MonoBehaviour
 
 
     // =====================================================
-    // ½ºÅ×ÀÌÁö Å¬¸®¾î °ñµå °è»ê
+    // ìŠ¤í…Œì´ì§€ í´ë¦¬ì–´ ê³¨ë“œ ë³´ìƒ
     // =====================================================
 
     public int GetStageGold()
