@@ -128,7 +128,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8647d7a9b4d0fbd499674852806244d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Mon_Ctrl
-  data: {fileID: 11400000, guid: bfb6cef190c57944a83caf44a4c18191, type: 2}
+  data: {fileID: 11400000, guid: b3ef8e5c9c67f16458a1b763e4d0fb37, type: 2}
   animator: {fileID: 1376822977845924596}
 --- !u!65 &1480445986074387010
 BoxCollider:
