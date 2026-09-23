@@ -34,6 +34,7 @@ public class MonSpawn_Mgr : MonoBehaviour
     float timeLv = 1;
     WaitForSeconds hpTimer = new WaitForSeconds(15);
     int prefabLv = 0;
+    Coroutine spawnRoutine;
 
     float spawnTimer = 1.5f;
     private void Awake()
@@ -106,7 +107,7 @@ public class MonSpawn_Mgr : MonoBehaviour
         InitializePools();
 
 
-        StartCoroutine(SpawnMon(prefabLv));
+        spawnRoutine = StartCoroutine(SpawnMon(prefabLv));
         StartCoroutine(CheckTime());
     }
 
@@ -233,9 +234,11 @@ public class MonSpawn_Mgr : MonoBehaviour
             }
             else
             {
+                StopCoroutine(spawnRoutine);
                 timeLv = 1;
 
                 prefabLv++;
+                spawnRoutine = StartCoroutine(SpawnMon(prefabLv));
             }
         }
     }

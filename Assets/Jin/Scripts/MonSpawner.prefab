@@ -46,4 +46,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MonSpawn_Mgr
   field: {fileID: 0}
   objList:
+  - {fileID: 4022943791312532874, guid: 26305e90d9f76494195294101124e3f1, type: 3}
   - {fileID: 4022943791312532874, guid: b100d96f7e94b8041bc4d7489943acf7, type: 3}
+  poolSize: 50
