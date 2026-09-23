@@ -43,28 +43,33 @@ public class DebugUIBootstrapper : MonoBehaviour
 
     private DebugPerformanceUI debugPerformanceUI;
 
+    // 테스트 빌드: true / 최종 배포 빌드: false
+    private const bool AllowCheatsInBuild = true;
+
+    private bool CanUseCheats =>
+        Application.isEditor || AllowCheatsInBuild;
+
 
     private void Start()
     {
-#if UNITY_EDITOR
+        if (!CanUseCheats)
+            return;
+
         CreateDebugUI();
-#endif
     }
 
 
     private void Update()
     {
-#if UNITY_EDITOR
-        if (Keyboard.current == null)
-        {
+        if (!CanUseCheats || Keyboard.current == null)
             return;
-        }
 
         if (Keyboard.current.f12Key.wasPressedThisFrame)
         {
+            // 빌드에서도 Player.log에 남게 조건부 컴파일 없이 기록
+            Debug.Log("[DebugUIBootstrapper] F12 입력 확인");
             ToggleDebugPanel();
         }
-#endif
     }
 
 
@@ -74,6 +79,9 @@ public class DebugUIBootstrapper : MonoBehaviour
     public void Initialize(
         PlayerContext context)
     {
+        if (!CanUseCheats)
+            return;
+
         if (context == null)
         {
             Debug.LogWarning(
@@ -109,6 +117,9 @@ public class DebugUIBootstrapper : MonoBehaviour
     /// </summary>
     private void CreateDebugUI()
     {
+        if (!CanUseCheats)
+            return;
+
         // 중복 생성 방지
         if (debugCanvasInstance != null)
         {
@@ -131,6 +142,8 @@ public class DebugUIBootstrapper : MonoBehaviour
 
         debugCanvasInstance =
             Instantiate(debugCanvasPrefab);
+
+        Debug.Log("[DebugUIBootstrapper] DebugCanvas 생성 완료");
 
 
         // =========================
@@ -211,8 +224,14 @@ public class DebugUIBootstrapper : MonoBehaviour
     /// </summary>
     public void ToggleDebugPanel()
     {
+        if (!CanUseCheats)
+            return;
+
         if (debugPanel == null)
         {
+            Debug.LogWarning(
+                "[DebugUIBootstrapper] DebugPanel 참조가 없습니다."
+            );
             return;
         }
 
