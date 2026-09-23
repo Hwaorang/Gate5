@@ -1,5 +1,6 @@
+using TMPro;
 using UnityEngine;
-
+using UnityEngine.UI;
 public class LobbyUIManager : MonoBehaviour
 {
     [Header("패널")]
@@ -22,7 +23,17 @@ public class LobbyUIManager : MonoBehaviour
     [SerializeField] private GameObject SettingButton;
     [SerializeField] private GameObject startButton;
 
+    [Header("사운드 설정")]
+    [SerializeField] private Slider masterVolumeSlider;
+    [SerializeField] private Slider bgmVolumeSlider;
+    [SerializeField] private Slider sfxVolumeSlider;
 
+    [Header("사운드 수치 표시")]
+    [SerializeField] private TMP_Text masterVolumeText;
+    [SerializeField] private TMP_Text bgmVolumeText;
+    [SerializeField] private TMP_Text sfxVolumeText;
+
+    [SerializeField] private float defaultVolume = 0.5f;
     // =========================================================
     // 시작
     // =========================================================
@@ -249,11 +260,45 @@ public class LobbyUIManager : MonoBehaviour
 
         if (AudioManager_PlayerController.Instance != null)
         {
-            AudioManager_PlayerController.Instance.SetMasterVolume(0.5f);
-            AudioManager_PlayerController.Instance.SetBgmVolume(0.5f);
-            AudioManager_PlayerController.Instance.SetSfxVolume(0.5f);
+            // 실제 사운드 초기화
+            AudioManager_PlayerController.Instance.SetMasterVolume(defaultVolume);
+            AudioManager_PlayerController.Instance.SetBgmVolume(defaultVolume);
+            AudioManager_PlayerController.Instance.SetSfxVolume(defaultVolume);
         }
 
+        // Slider UI 초기화
+        if (masterVolumeSlider != null)
+        {
+            masterVolumeSlider.SetValueWithoutNotify(defaultVolume);
+        }
+
+        if (bgmVolumeSlider != null)
+        {
+            bgmVolumeSlider.SetValueWithoutNotify(defaultVolume);
+        }
+
+        if (sfxVolumeSlider != null)
+        {
+            sfxVolumeSlider.SetValueWithoutNotify(defaultVolume);
+        }
+
+        // 숫자 UI 초기화
+        int resetVolume = Mathf.RoundToInt(defaultVolume * 100f);
+
+        if (masterVolumeText != null)
+        {
+            masterVolumeText.text = $"{resetVolume}%";
+        }
+
+        if (bgmVolumeText != null)
+        {
+            bgmVolumeText.text = $"{resetVolume}%";
+        }
+
+        if (sfxVolumeText != null)
+        {
+            sfxVolumeText.text = $"{resetVolume}%";
+        }
 
         // -----------------------------------------------------
         // 3. UI 즉시 갱신
@@ -462,9 +507,6 @@ public class LobbyUIManager : MonoBehaviour
             startButton.SetActive(false);
         }
 
-        // 중요
-        // ResetButton은 SettingPanel의 자식이므로
-        // 여기서 직접 끄지 않습니다.
     }
 
 

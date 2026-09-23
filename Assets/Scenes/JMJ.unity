@@ -215,6 +215,13 @@ MonoBehaviour:
   skinButton: {fileID: 1451524703}
   SettingButton: {fileID: 1455016843}
   startButton: {fileID: 1071619856}
+  masterVolumeSlider: {fileID: 164780183100741108}
+  bgmVolumeSlider: {fileID: 2202574681501759164}
+  sfxVolumeSlider: {fileID: 7341784162777131930}
+  masterVolumeText: {fileID: 7379967805750420307}
+  bgmVolumeText: {fileID: 7891899802184417281}
+  sfxVolumeText: {fileID: 3591246429784744760}
+  defaultVolume: 0.5
 --- !u!4 &90589906
 Transform:
   m_ObjectHideFlags: 0
@@ -5300,7 +5307,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1634765453
 RectTransform:
   m_ObjectHideFlags: 0
