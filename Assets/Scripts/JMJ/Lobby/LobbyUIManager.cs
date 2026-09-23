@@ -10,6 +10,9 @@ public class LobbyUIManager : MonoBehaviour
     [Header("리셋 확인")]
     [SerializeField] private GameObject resetConfirmPanel;
 
+    [Header("게임 종료 확인")]
+    [SerializeField] private GameObject exitConfirmPanel;
+
     [Header("실제 로비 캐릭터")]
     [SerializeField] private GameObject lobbyCharacter;
 
@@ -18,7 +21,6 @@ public class LobbyUIManager : MonoBehaviour
     [SerializeField] private GameObject skinButton;
     [SerializeField] private GameObject SettingButton;
     [SerializeField] private GameObject startButton;
-    [SerializeField] private GameObject resetButton;
 
 
     // =========================================================
@@ -32,6 +34,11 @@ public class LobbyUIManager : MonoBehaviour
         if (resetConfirmPanel != null)
         {
             resetConfirmPanel.SetActive(false);
+        }
+
+        if (exitConfirmPanel != null)
+        {
+            exitConfirmPanel.SetActive(false);
         }
 
         ShowLobbyButtons();
@@ -100,8 +107,6 @@ public class LobbyUIManager : MonoBehaviour
 
         HideLobbyButtons();
 
-        // 스킨 패널에서는
-        // 원래 로비 캐릭터 숨김
         if (lobbyCharacter != null)
         {
             lobbyCharacter.SetActive(false);
@@ -177,19 +182,14 @@ public class LobbyUIManager : MonoBehaviour
 
     public void OpenResetConfirm()
     {
-        CloseAllPanels();
-
         if (resetConfirmPanel != null)
         {
             resetConfirmPanel.SetActive(true);
         }
 
-        HideLobbyButtons();
-
-        if (lobbyCharacter != null)
-        {
-            lobbyCharacter.SetActive(true);
-        }
+        Debug.Log(
+            "리셋 확인창을 열었습니다."
+        );
     }
 
 
@@ -204,17 +204,20 @@ public class LobbyUIManager : MonoBehaviour
             resetConfirmPanel.SetActive(false);
         }
 
-        ShowLobbyButtons();
-
-        if (lobbyCharacter != null)
+        // SettingPanel은 그대로 유지
+        if (SettingPanel != null)
         {
-            lobbyCharacter.SetActive(true);
+            SettingPanel.SetActive(true);
         }
+
+        Debug.Log(
+            "리셋을 취소했습니다."
+        );
     }
 
 
     // =========================================================
-    // ★ 리셋 확인
+    // 리셋 확인
     // =========================================================
 
     public void ConfirmReset()
@@ -241,14 +244,26 @@ public class LobbyUIManager : MonoBehaviour
 
 
         // -----------------------------------------------------
-        // 2. UI 즉시 갱신
+        // 2. 오디오 설정 즉시 리셋
+        // -----------------------------------------------------
+
+        if (AudioManager_PlayerController.Instance != null)
+        {
+            AudioManager_PlayerController.Instance.SetMasterVolume(0.5f);
+            AudioManager_PlayerController.Instance.SetBgmVolume(0.5f);
+            AudioManager_PlayerController.Instance.SetSfxVolume(0.5f);
+        }
+
+
+        // -----------------------------------------------------
+        // 3. UI 즉시 갱신
         // -----------------------------------------------------
 
         RefreshLobbyAfterReset();
 
 
         // -----------------------------------------------------
-        // 3. 리셋 확인창 닫기
+        // 4. 리셋 확인창 닫기
         // -----------------------------------------------------
 
         if (resetConfirmPanel != null)
@@ -258,15 +273,14 @@ public class LobbyUIManager : MonoBehaviour
 
 
         // -----------------------------------------------------
-        // 4. 로비 버튼 다시 표시
+        // 5. SettingPanel 유지
         // -----------------------------------------------------
 
-        ShowLobbyButtons();
+        if (SettingPanel != null)
+        {
+            SettingPanel.SetActive(true);
+        }
 
-
-        // -----------------------------------------------------
-        // 5. 로비 캐릭터 다시 표시
-        // -----------------------------------------------------
 
         if (lobbyCharacter != null)
         {
@@ -281,7 +295,61 @@ public class LobbyUIManager : MonoBehaviour
 
 
     // =========================================================
-    // ★ 리셋 후 모든 UI 갱신
+    // 게임 종료 확인창 열기
+    // =========================================================
+
+    public void OpenExitConfirm()
+    {
+        if (exitConfirmPanel != null)
+        {
+            exitConfirmPanel.SetActive(true);
+        }
+
+        Debug.Log(
+            "게임 종료 확인창을 열었습니다."
+        );
+    }
+
+
+    // =========================================================
+    // 게임 종료 취소
+    // =========================================================
+
+    public void CancelExit()
+    {
+        if (exitConfirmPanel != null)
+        {
+            exitConfirmPanel.SetActive(false);
+        }
+
+        // SettingPanel 유지
+        if (SettingPanel != null)
+        {
+            SettingPanel.SetActive(true);
+        }
+
+        Debug.Log(
+            "게임 종료를 취소했습니다."
+        );
+    }
+
+
+    // =========================================================
+    // 게임 종료 확인
+    // =========================================================
+
+    public void ConfirmExit()
+    {
+        Debug.Log(
+            "게임을 종료합니다."
+        );
+
+        Application.Quit();
+    }
+
+
+    // =========================================================
+    // 리셋 후 모든 UI 갱신
     // =========================================================
 
     private void RefreshLobbyAfterReset()
@@ -355,6 +423,16 @@ public class LobbyUIManager : MonoBehaviour
         {
             SettingPanel.SetActive(false);
         }
+
+        if (resetConfirmPanel != null)
+        {
+            resetConfirmPanel.SetActive(false);
+        }
+
+        if (exitConfirmPanel != null)
+        {
+            exitConfirmPanel.SetActive(false);
+        }
     }
 
 
@@ -384,10 +462,9 @@ public class LobbyUIManager : MonoBehaviour
             startButton.SetActive(false);
         }
 
-        if (resetButton != null)
-        {
-            resetButton.SetActive(false);
-        }
+        // 중요
+        // ResetButton은 SettingPanel의 자식이므로
+        // 여기서 직접 끄지 않습니다.
     }
 
 
@@ -415,11 +492,6 @@ public class LobbyUIManager : MonoBehaviour
         if (startButton != null)
         {
             startButton.SetActive(true);
-        }
-
-        if (resetButton != null)
-        {
-            resetButton.SetActive(true);
         }
     }
 }
