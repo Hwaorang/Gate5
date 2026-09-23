@@ -32,7 +32,7 @@ public class MonSpawn_Mgr : MonoBehaviour
     private Transform inactiveCreateRoot;
 
     float timeLv = 1;
-    WaitForSeconds hpTimer = new WaitForSeconds(10);
+    WaitForSeconds hpTimer = new WaitForSeconds(15);
     int prefabLv = 0;
 
     float spawnTimer = 1.5f;
@@ -223,15 +223,18 @@ public class MonSpawn_Mgr : MonoBehaviour
         {
             yield return hpTimer;
 
-            if (timeLv <= 5.0f)
+            if (timeLv <= 2.5f)
             {
-                timeLv += 0.1f;
-                spawnTimer -= 0.025f;
+                timeLv += 0.5f;
+                if (spawnTimer > 0.5f)
+                {
+                    spawnTimer -= 0.025f;
+                }
             }
             else
             {
                 timeLv = 1;
-                spawnTimer = 1.5f;
+
                 prefabLv++;
             }
         }
