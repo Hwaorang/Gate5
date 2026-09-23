@@ -138,7 +138,7 @@ MonoBehaviour:
   soldierPool: {fileID: 0}
   playerStats: {fileID: 7110261656882566274}
   spacing: 1.2
-  maxColumnCount: 7
+  maxColumnCount: 4
   formationRoot: {fileID: 2436036705320241819}
   formationEdgePadding: 0.15
   fireLine: {fileID: 1401601078157791423}

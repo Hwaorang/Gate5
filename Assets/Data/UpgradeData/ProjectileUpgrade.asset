@@ -17,4 +17,4 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 9ee48157d016c4b689a2d28815ca6bc2, type: 3}
   upgradeType: 0
   value: 1
-  maxLevel: 7
+  maxLevel: 5
