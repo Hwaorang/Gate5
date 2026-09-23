@@ -266,7 +266,7 @@ public class LobbyUIManager : MonoBehaviour
             AudioManager_PlayerController.Instance.SetSfxVolume(defaultVolume);
         }
 
-        // Slider 초기화
+        // Slider UI 초기화
         if (masterVolumeSlider != null)
         {
             masterVolumeSlider.SetValueWithoutNotify(defaultVolume);
@@ -282,21 +282,24 @@ public class LobbyUIManager : MonoBehaviour
             sfxVolumeSlider.SetValueWithoutNotify(defaultVolume);
         }
 
-        // 숫자 표시 초기화
+        // 숫자 UI 초기화
+        int resetVolume = Mathf.RoundToInt(defaultVolume * 100f);
+
         if (masterVolumeText != null)
         {
-            masterVolumeText.text = Mathf.RoundToInt(defaultVolume * 100f).ToString();
+            masterVolumeText.text = $"{resetVolume}%";
         }
 
         if (bgmVolumeText != null)
         {
-            bgmVolumeText.text = Mathf.RoundToInt(defaultVolume * 100f).ToString();
+            bgmVolumeText.text = $"{resetVolume}%";
         }
 
         if (sfxVolumeText != null)
         {
-            sfxVolumeText.text = Mathf.RoundToInt(defaultVolume * 100f).ToString();
+            sfxVolumeText.text = $"{resetVolume}%";
         }
+
         // -----------------------------------------------------
         // 3. UI 즉시 갱신
         // -----------------------------------------------------
@@ -504,9 +507,6 @@ public class LobbyUIManager : MonoBehaviour
             startButton.SetActive(false);
         }
 
-        // 중요
-        // ResetButton은 SettingPanel의 자식이므로
-        // 여기서 직접 끄지 않습니다.
     }
 
 
