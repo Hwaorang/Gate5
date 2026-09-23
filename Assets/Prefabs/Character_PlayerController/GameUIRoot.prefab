@@ -1551,7 +1551,7 @@ MonoBehaviour:
   upgradeTitleText: {fileID: 0}
   cardSequenceAnimator: {fileID: 5825376089033834853}
   upgradePanelTransition: {fileID: 5691514514828929065}
-  inGameMenuPresenter: {fileID: 0}
+  inGameMenuPresenter: {fileID: 8535914438529404418}
   upgradeDatas:
   - {fileID: 11400000, guid: e0c4c363b8aa2b142a3d79b2e90e33cc, type: 2}
   - {fileID: 11400000, guid: 64cac7f34695d9643979880b4dbafecb, type: 2}
@@ -8610,7 +8610,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b56103b178dbf704299a491bb50eceed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InGameMenuPresenter
-  upgradeManager: {fileID: 0}
+  upgradeManager: {fileID: 4010096332394430007}
   hudToggleButton: {fileID: 1574512588970238270}
   hudRoot: {fileID: 4113607238725885600}
   hudCloseButton: {fileID: 4036072352089479373}

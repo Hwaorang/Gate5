@@ -111,8 +111,9 @@ public class UpgradeManager_PlayerController : MonoBehaviour
     /// 현재 강화 선택창이 열려 있는지.
     /// </summary>
     public bool IsUpgradePanelOpen =>
-        upgradePanel != null &&
-        upgradePanel.activeInHierarchy;
+        isClosingUpgradePanel ||
+        (upgradePanel != null &&
+         upgradePanel.activeInHierarchy);
 
     private void Awake()
     {
@@ -491,7 +492,21 @@ public class UpgradeManager_PlayerController : MonoBehaviour
         // 3. Game Resume
         // ========================================================
 
-        Time.timeScale = 1f;
+        // ESC 메뉴가 열려 있다면 강화창이 닫혀도 Pause 유지
+        if (inGameMenuPresenter != null &&
+            inGameMenuPresenter.IsMenuPauseActive)
+        {
+            Time.timeScale = 0f;
+        }
+        else if (GameManager.Instance != null)
+        {
+            // GameOver 시 Resume() 내부에서 재개를 차단
+            GameManager.Instance.Resume();
+        }
+        else
+        {
+            Time.timeScale = 1f;
+        }
 
 
         isClosingUpgradePanel = false;
