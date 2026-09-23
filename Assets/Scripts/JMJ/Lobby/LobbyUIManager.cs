@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 public class LobbyUIManager : MonoBehaviour
@@ -26,6 +27,11 @@ public class LobbyUIManager : MonoBehaviour
     [SerializeField] private Slider masterVolumeSlider;
     [SerializeField] private Slider bgmVolumeSlider;
     [SerializeField] private Slider sfxVolumeSlider;
+
+    [Header("사운드 수치 표시")]
+    [SerializeField] private TMP_Text masterVolumeText;
+    [SerializeField] private TMP_Text bgmVolumeText;
+    [SerializeField] private TMP_Text sfxVolumeText;
 
     [SerializeField] private float defaultVolume = 0.5f;
     // =========================================================
@@ -260,7 +266,7 @@ public class LobbyUIManager : MonoBehaviour
             AudioManager_PlayerController.Instance.SetSfxVolume(defaultVolume);
         }
 
-        // Slider UI도 함께 초기화
+        // Slider 초기화
         if (masterVolumeSlider != null)
         {
             masterVolumeSlider.SetValueWithoutNotify(defaultVolume);
@@ -274,6 +280,22 @@ public class LobbyUIManager : MonoBehaviour
         if (sfxVolumeSlider != null)
         {
             sfxVolumeSlider.SetValueWithoutNotify(defaultVolume);
+        }
+
+        // 숫자 표시 초기화
+        if (masterVolumeText != null)
+        {
+            masterVolumeText.text = Mathf.RoundToInt(defaultVolume * 100f).ToString();
+        }
+
+        if (bgmVolumeText != null)
+        {
+            bgmVolumeText.text = Mathf.RoundToInt(defaultVolume * 100f).ToString();
+        }
+
+        if (sfxVolumeText != null)
+        {
+            sfxVolumeText.text = Mathf.RoundToInt(defaultVolume * 100f).ToString();
         }
         // -----------------------------------------------------
         // 3. UI 즉시 갱신
