@@ -1,5 +1,5 @@
 using UnityEngine;
-
+using UnityEngine.UI;
 public class LobbyUIManager : MonoBehaviour
 {
     [Header("패널")]
@@ -22,7 +22,12 @@ public class LobbyUIManager : MonoBehaviour
     [SerializeField] private GameObject SettingButton;
     [SerializeField] private GameObject startButton;
 
+    [Header("사운드 설정")]
+    [SerializeField] private Slider masterVolumeSlider;
+    [SerializeField] private Slider bgmVolumeSlider;
+    [SerializeField] private Slider sfxVolumeSlider;
 
+    [SerializeField] private float defaultVolume = 0.5f;
     // =========================================================
     // 시작
     // =========================================================
@@ -249,12 +254,27 @@ public class LobbyUIManager : MonoBehaviour
 
         if (AudioManager_PlayerController.Instance != null)
         {
-            AudioManager_PlayerController.Instance.SetMasterVolume(0.5f);
-            AudioManager_PlayerController.Instance.SetBgmVolume(0.5f);
-            AudioManager_PlayerController.Instance.SetSfxVolume(0.5f);
+            // 실제 사운드 초기화
+            AudioManager_PlayerController.Instance.SetMasterVolume(defaultVolume);
+            AudioManager_PlayerController.Instance.SetBgmVolume(defaultVolume);
+            AudioManager_PlayerController.Instance.SetSfxVolume(defaultVolume);
         }
 
+        // Slider UI도 함께 초기화
+        if (masterVolumeSlider != null)
+        {
+            masterVolumeSlider.SetValueWithoutNotify(defaultVolume);
+        }
 
+        if (bgmVolumeSlider != null)
+        {
+            bgmVolumeSlider.SetValueWithoutNotify(defaultVolume);
+        }
+
+        if (sfxVolumeSlider != null)
+        {
+            sfxVolumeSlider.SetValueWithoutNotify(defaultVolume);
+        }
         // -----------------------------------------------------
         // 3. UI 즉시 갱신
         // -----------------------------------------------------
