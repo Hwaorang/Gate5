@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: LobbyUpgradeData
   m_EditorClassIdentifier: Assembly-CSharp::LobbyUpgradeData
   damageIncreasePerLevel: 0.025
-  moveSpeedIncreasePerLevel: 0.025
-  attackSpeedIncreasePerLevel: 0.025
+  moveSpeedIncreasePerLevel: 0.01
+  attackSpeedIncreasePerLevel: 0.015
