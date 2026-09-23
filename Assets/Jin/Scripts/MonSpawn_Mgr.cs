@@ -32,7 +32,7 @@ public class MonSpawn_Mgr : MonoBehaviour
     private Transform inactiveCreateRoot;
 
     float timeLv = 1;
-    WaitForSeconds hpTimer = new WaitForSeconds(30);
+    WaitForSeconds hpTimer = new WaitForSeconds(10);
     int prefabLv = 0;
 
     float spawnTimer = 1.5f;
@@ -106,7 +106,7 @@ public class MonSpawn_Mgr : MonoBehaviour
         InitializePools();
 
 
-        StartCoroutine(SpawnMon(0));
+        StartCoroutine(SpawnMon(prefabLv));
         StartCoroutine(CheckTime());
     }
 
@@ -230,7 +230,9 @@ public class MonSpawn_Mgr : MonoBehaviour
             }
             else
             {
-                break;
+                timeLv = 1;
+                spawnTimer = 1.5f;
+                prefabLv++;
             }
         }
     }
